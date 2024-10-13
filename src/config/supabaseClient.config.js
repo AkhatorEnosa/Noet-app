@@ -9,6 +9,4 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
     }
 });
 
-console.log(supabaseUrl)
-
 export default supabase;
