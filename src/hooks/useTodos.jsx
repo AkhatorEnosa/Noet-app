@@ -7,7 +7,9 @@ const useTodos = () => {
     return useQuery({
         queryKey: ['todos'],
         queryFn: async() => {
-            const {data} = await supabase.from('data').select();
+            const {data} = await supabase.from('data').select().order('id', {
+                ascending: false
+            });
             return data
         }
     })
