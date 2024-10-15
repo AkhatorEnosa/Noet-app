@@ -15,7 +15,7 @@ const useCreateTodo = () => {
     },
     onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ['todos'],
+          queryKey: ['notes'],
         })
         console.log("Added")
     }

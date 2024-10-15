@@ -5,7 +5,7 @@ const useTodos = () => {
     // const queryClient = useQueryClient()
 
     return useQuery({
-        queryKey: ['todos'],
+        queryKey: ['notes'],
         queryFn: async() => {
             const {data} = await supabase.from('data').select().order('id', {
                 ascending: false
