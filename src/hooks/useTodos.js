@@ -11,7 +11,8 @@ const useTodos = () => {
                 ascending: false
             });
             return data
-        }
+        },
+        refetchOnWindowFocus: false,
     })
 }
 

@@ -14,7 +14,9 @@ const useCreateTodo = () => {
         return data
     },
     onSuccess: () => {
-        queryClient.invalidateQueries({queryKey: ['todos']})
+        queryClient.invalidateQueries({
+          queryKey: ['todos'],
+        })
         console.log("Added")
     }
   })
