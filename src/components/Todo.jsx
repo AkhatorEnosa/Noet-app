@@ -1,6 +1,7 @@
 import { useState } from "react"
-import { FaTrashCan } from "react-icons/fa6"
+// import { FaTrashCan } from "react-icons/fa6"
 import useDeleteNote from "../hooks/useDeleteNote"
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
 /* eslint-disable react/prop-types */
 const Todo = ({note, noteId}) => {
@@ -17,7 +18,7 @@ const Todo = ({note, noteId}) => {
   return (
     <div className="break-inside-avoid px-4 py-4 border-[1px] border-black/10 bg-white shadow-md rounded-md text-xl cursor-pointer hover:shadow-lg transition-shadow duration-200">
         <p className={note.length > 350 ? "text-sm pb-4" : "pb-8"}>{truncateTodo(note)}</p>
-        <div className="w-full flex justify-end items-center text-sm"><FaTrashCan onClick={() => setShowDeleteModal(!showDeleteModal)}/></div>
+        <div className="w-full flex justify-end items-center text-sm text-neutral/70 hover:text-neutral"><DeleteRoundedIcon onClick={() => setShowDeleteModal(!showDeleteModal)}/></div>
 
 
         {showDeleteModal && <div className="fixed w-full h-full top-0 left-0 flex justify-center items-center bg-black/50 backdrop-blur-md">
