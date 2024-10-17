@@ -54,7 +54,8 @@ const Home = () => {
                   {todos?.map((todo) => (
                       <Todo key={todo.id} 
                       noteId={todo.id}
-                      note={todo.data_value}/>
+                      note={todo.data_value}
+                      updateId={todo.id}/>
                   ))}
                 </div>
             </div>}

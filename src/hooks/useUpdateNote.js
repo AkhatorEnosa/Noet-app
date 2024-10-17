@@ -5,10 +5,10 @@ const useUpdateNote = () => {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: async (newTodo, id) => {
+        mutationFn: async (updateTodo) => {
             const {data, error} = await supabase.from('data')
-            .update(newTodo)
-            .eq('id', id)
+            .update(updateTodo)
+            .eq('id', updateTodo.id)
 
             if(error) console.log(error)
 

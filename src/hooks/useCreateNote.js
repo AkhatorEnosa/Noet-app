@@ -10,7 +10,6 @@ const useCreateTodo = () => {
         const {data, error} = await supabase.from('data').insert(newTodo)
 
         if(error) console.log(error)
-
         return data
     },
     onSuccess: () => {
