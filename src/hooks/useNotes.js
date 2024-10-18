@@ -1,19 +1,31 @@
 import { useQuery } from "@tanstack/react-query"
-import supabase from "../config/supabaseClient.config"
+import { fetchData } from "../reducers/apiSlice";
+import { useDispatch } from "react-redux";
 
-const useTodos = () => {
-    // const queryClient = useQueryClient()
+const useNotes = () => {
+    const dispatch = useDispatch();
 
     return useQuery({
         queryKey: ['notes'],
         queryFn: async() => {
-            const {data} = await supabase.from('data').select().order('id', {
-                ascending: false
-            });
-            return data
+            const result = await dispatch(fetchData());
+            return result.payload;
         },
         refetchOnWindowFocus: false,
-    })
+        refetchOnReconnect: true,
+    });
+
+    // return useQuery({
+    //     queryKey: ['notes'],
+    //     queryFn: async() => {
+    //         const {data} = await supabase.from('data').select().order('id', {
+    //             ascending: false
+    //         });
+    //         return data
+    //     },
+    //     refetchOnWindowFocus: false,
+    //     refetchOnReconnect: true,
+    // })
 }
 
-export default useTodos
+export default useNotes

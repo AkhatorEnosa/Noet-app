@@ -1,14 +1,16 @@
 import { useRef, useState } from "react"
 import useCreateTodo from "../hooks/useCreateNote"
-import useTodos from "../hooks/useNotes"
+import useNotes from "../hooks/useNotes"
 import Todo from "../components/Todo"
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
+import { useSelector } from "react-redux";
 
 const Home = () => {
+  const todos = useSelector((state) => state.data.todos)
   let inputRef = useRef('')
 
-  const {data:todos, error, isLoading, fetchStatus} = useTodos()
+  const {error, isLoading, fetchStatus} = useNotes()
   const {mutate} = useCreateTodo()
 
   const [wordCount, setWordCount] = useState(0)
@@ -50,8 +52,8 @@ const Home = () => {
 
             {!isLoading && <div className="w-full gap-4 flex flex-col items-center justify-center">
               <div className={fetchStatus === 'fetching' ? "flex" : "opacity-0"}><span className="loading loading-spinner loading-sm"></span></div>
-                <div className="w-full gap-4 columns-1 sm:columns-2 lg:columns-3 mx-auto space-y-4">
-                  {todos?.map((todo) => (
+                <div className="w-full gap-4 columns-1 sm:columns-2 md:columns-3 lg:columns-4 mx-auto space-y-4">
+                  {todos?.data.map((todo) => (
                       <Todo key={todo.id} 
                       noteId={todo.id}
                       note={todo.data_value}
