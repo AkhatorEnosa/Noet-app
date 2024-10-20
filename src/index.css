@@ -16,3 +16,18 @@
   opacity: 0;
   transition: opacity 500ms ease-in;
 }
+
+a {
+  color: #15c;
+
+}
+
+a:visited {
+  color: #61c;
+}
+
+a:-webkit-any-link {
+    color: -webkit-link;
+    cursor: pointer;
+    text-decoration: underline;
+}

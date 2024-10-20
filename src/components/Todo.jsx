@@ -3,6 +3,7 @@ import useDeleteNote from "../hooks/useDeleteNote"
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
 import useUpdateNote from "../hooks/useUpdateNote";
 
 /* eslint-disable react/prop-types */
@@ -45,12 +46,30 @@ const Todo = ({note, noteId}) => {
           return x
       }
   }
+
+  const Linkify = (markdown) => {
+    var urlRegex =/(((https?:\/\/)|(www\.))[^\s]+)/g;
+    return markdown.replace(urlRegex, function(url) {
+        if(url.substring(0, 3) === "www") {
+          return `<a href='https://${url}' id='link'>${url}</a>`
+        }
+        return `<a href='${url}' id='link'>${url}</a>`
+    });
+  }
+  
   return (
     <div>
-        <div className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow-md text-lg hover:shadow-lg transition-shadow duration-200  break-words" : "break-inside-avoid w-full pb-6 group border-[1px] border-black/10 bg-white shadow-md rounded-md text-lg cursor-pointer hover:shadow-lg transition-shadow duration-200  break-words z-10"}>
-          <p className={note.length > 300 ? "w-full text-sm leading-normal px-3 pt-3 pb-4" : "w-full leading-normal px-3 pt-2 pb-4"}
-          onClick={() =>  setShowEditModal(!showEditModal)}>{truncateTodo(note)}</p>
-          <div className="w-full px-4 justify-end items-center hidden group-hover:flex transition-all duration-300"><DeleteRoundedIcon onClick={() => setShowDeleteModal(!showDeleteModal)} className="absolute hidden text-neutral/70 hover:text-neutral z-30 cursor-default" sx={{ fontSize: 18 }}/></div>
+
+        <div className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow-md text-lg hover:shadow-lg transition-shadow duration-200  break-words" : "break-inside-avoid w-full group border-[1px] border-black/10 bg-white shadow-md rounded-md text-lg hover:shadow-lg transition-shadow duration-200  break-words z-10"}>
+            <p className={note.length > 300 ? "w-full text-sm leading-normal px-3 pt-3 pb-4" : "w-full leading-normal px-3 pt-2 pb-4"} dangerouslySetInnerHTML={{ __html: Linkify(truncateTodo(note)) }}/>
+          <div className="w-full px-4 pt-3 pb-2 gap-2 justify-end items-center flex lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300">
+            <i className="w-8 h-8 flex justify-center items-center rounded-full bg-neutral/50 hover:bg-primary text-white z-30 transition-all duration-200 cursor-pointer">
+              <EditNoteRoundedIcon onClick={() => setShowEditModal(!showEditModal)} sx={{ fontSize: 18 }}/>
+            </i>
+            <i className="w-8 h-8 flex justify-center items-center rounded-full bg-neutral/50 hover:bg-neutral text-white z-30 transition-all duration-200 cursor-pointer">
+              <DeleteRoundedIcon onClick={() => setShowDeleteModal(!showDeleteModal)} sx={{ fontSize: 18 }}/>
+            </i>
+          </div>
         </div>
 
         <div className={showEditModal ? "fixed w-full h-full top-0 left-0 flex justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50 duration-300 transition-all"}>
