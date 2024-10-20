@@ -5,6 +5,12 @@ import Todo from "../components/Todo"
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import { useSelector } from "react-redux";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(useGSAP);
+gsap.registerPlugin(ScrollTrigger);
 
 const Home = () => {
   const todos = useSelector((state) => state.data.todos)
@@ -33,12 +39,36 @@ const Home = () => {
     inputRef.current.value = ''
   }
 
+
+  useGSAP(() =>{
+    // const tl = gsap.timeline()
+      gsap.to(".nav", {
+        // position: "sticky",
+        top: "0px",
+          scrollTrigger: {
+            trigger: ".nav",
+            start: "top top",
+            ease: "elastic",
+            scrub: true,duration: 0.5,
+            toggleClass: "active",
+            pin: true,
+            toggleActions: "play pause resume reset",
+            onToggle: () => {
+              ScrollTrigger.refresh()
+            },
+          }
+        })
+  })
+
+
+
+
   if(error) return  <h3>Error: {error}</h3>
   return (
     <div className="w-full flex flex-col gap-5 px-3 md:px-10 lg:px-20 py-10 justify-center items-center">
 
 
-        <form onSubmit={handleTodoAdd} className="relative gap-4 w-full md:w-96 lg:w-[500px] h-full p border justify-center items-center rounded-t-lg shadow-md">
+        <form onSubmit={handleTodoAdd} className="form relative gap-4 w-full md:w-96 lg:w-[500px] h-full p border justify-center items-center rounded-t-lg shadow-md">
           <div className="flex items-center justify-end top-2 right-2 px-2 pt-2">
             <button className={wordCount > 0 ? "z-20 text-black/70 hover:text-neutral transition-all duration-300": "hidden transition-all duration-300"} type="button" onClick={clearInput}><ClearRoundedIcon /></button>
           </div>
@@ -52,12 +82,14 @@ const Home = () => {
 
             {!isLoading && <div className="w-full gap-4 flex flex-col items-center justify-center">
                 <div className="w-full gap-4 columns-2 md:columns-3 lg:columns-4 mx-auto space-y-4">
-                  {todos?.data.map((todo) => (
-                      <Todo key={todo.id} 
-                      noteId={todo.id}
-                      note={todo.data_value}
-                      updateId={todo.id}/>
-                  ))}
+                  {
+                    todos?.data.map((todo) => (
+                        <Todo key={todo.id} 
+                        noteId={todo.id}
+                        note={todo.data_value}
+                        updateId={todo.id}/>
+                    ))
+                  }
                 </div>
             </div>}
         </div>

@@ -60,7 +60,7 @@ const Todo = ({note, noteId}) => {
   return (
     <div>
 
-        <div className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow-md text-lg hover:shadow-lg transition-shadow duration-200  break-words" : "break-inside-avoid w-full group border-[1px] border-black/10 bg-white shadow-md rounded-md text-lg hover:shadow-lg transition-shadow duration-200  break-words z-10"}>
+        <div id="todo" className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow-md text-lg hover:shadow-lg transition-shadow duration-200  break-words" : "break-inside-avoid w-full group border-[1px] border-black/10 bg-white shadow-md rounded-md text-lg hover:shadow-lg transition-shadow duration-200  break-words z-10"}>
             <p className={note.length > 300 ? "w-full text-sm leading-normal px-3 pt-3 pb-4" : "w-full leading-normal px-3 pt-2 pb-4"} dangerouslySetInnerHTML={{ __html: Linkify(truncateTodo(note)) }}/>
           <div className="w-full px-4 pt-3 pb-2 gap-2 justify-end items-center flex lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300">
             <i className="w-8 h-8 flex justify-center items-center rounded-full bg-neutral/50 hover:bg-primary text-white z-30 transition-all duration-200 cursor-pointer">
