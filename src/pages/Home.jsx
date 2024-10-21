@@ -43,15 +43,14 @@ const Home = () => {
   useGSAP(() =>{
     // const tl = gsap.timeline()
       gsap.to(".nav", {
-        // position: "sticky",
+        position: "sticky",
         top: "0px",
           scrollTrigger: {
-            trigger: ".nav",
+            trigger: ".form",
             start: "top top",
             ease: "elastic",
             scrub: true,duration: 0.5,
             toggleClass: "active",
-            pin: true,
             toggleActions: "play pause resume reset",
             onToggle: () => {
               ScrollTrigger.refresh()
@@ -87,7 +86,9 @@ const Home = () => {
                         <Todo key={todo.id} 
                         noteId={todo.id}
                         note={todo.data_value}
-                        updateId={todo.id}/>
+                        bgColor={todo.bg_color}
+                        updateId={todo.id}
+                        />
                     ))
                   }
                 </div>
