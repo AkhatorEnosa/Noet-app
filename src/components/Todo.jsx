@@ -2,7 +2,7 @@ import { useState } from "react"
 import useDeleteNote from "../hooks/useDeleteNote"
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
-import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import CheckIcon from '@mui/icons-material/Check';
 import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
 import useUpdateNote from "../hooks/useUpdateNote";
@@ -18,6 +18,7 @@ const Todo = ({note, noteId, bgColor}) => {
   const [showEditModal, setShowEditModal] = useState(false)
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState("")
+
   const {mutate, isPending, isSuccess} = useDeleteNote()
   const {mutate:update, isPending:updating, } = useUpdateNote()
 
@@ -41,6 +42,7 @@ const Todo = ({note, noteId, bgColor}) => {
     setGetNote(note)
     setWordCount(note.length)
       setShowEditModal(!showEditModal)
+      setColorOptionValue("")
   }
 
 
@@ -63,14 +65,14 @@ const Todo = ({note, noteId, bgColor}) => {
   }
 
   const handleColorOption = (e) => {
-    const getColorValue = (e.target.className).split(" ").filter((x) => /bg-/.test(x))[0].replace(/80/, 20)
+    const getColorValue = (e.target.className).split(" ").filter((x) => /bg-/.test(x))[0]
     setColorOptionValue(getColorValue)
   }
   
   return (
     <div>
 
-        <div id="todo" className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow-md text-lg hover:shadow-lg transition-shadow duration-200  break-words" : `break-inside-avoid w-full group ${bgColor} border-[1px] border-black/10 shadow-md rounded-md text-lg hover:shadow-lg transition-shadow duration-200  break-words z-10`}>
+        <div className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow-md text-lg hover:shadow-lg transition-shadow duration-200  break-words" : `break-inside-avoid w-full group ${bgColor}/20 border-[1px] border-black/10 shadow-md rounded-md text-lg hover:shadow-lg transition-shadow duration-200  break-words z-10`}>
             <p className={note.length > 300 ? "w-full text-sm leading-normal px-3 pt-3 pb-4" : "w-full leading-normal px-3 pt-2 pb-4"} dangerouslySetInnerHTML={{ __html: Linkify(truncateTodo(note)) }}/>
           <div className="w-full px-4 pt-3 pb-2 gap-2 justify-end items-center flex lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300">
             <Tooltip title="Edit" arrow>
@@ -93,7 +95,7 @@ const Todo = ({note, noteId, bgColor}) => {
                   <div className="flex items-center justify-end top-2 right-2 px-2 pt-2">
                     <button className={"z-20 text-black/70 hover:text-neutral transition-all duration-300"} type="button" onClick={clearInput}><ClearRoundedIcon /></button>
                   </div>
-                    <textarea type="text" value={getNote} onChange={handleChange} className={wordCount == 0 ? "w-full outline-none p-4 text-base z-30 transition-all duration-300" : wordCount < 300 ? `w-full outline-none ${colorOptionValue} py-4 h-32 px-10 text-lg z-30 transition-all duration-300` : wordCount >= 300 ? `w-full outline-none ${colorOptionValue} py-4 px-6 text-base h-[35rem] z-30 transition-all duration-300` : `w-full outline-none ${colorOptionValue} py-4 px-4 z-30 transition-all duration-300`} placeholder="Write Note"/>
+                    <textarea type="text" value={getNote} onChange={handleChange} className={wordCount == 0 ? "w-full outline-none p-4 text-base z-30 transition-all duration-300" : wordCount < 300 ? `w-full outline-none ${colorOptionValue !== "" ? colorOptionValue : bgColor}/20 py-4 h-32 px-10 text-lg z-30 transition-all duration-300` : wordCount >= 300 ? `w-full outline-none ${colorOptionValue !== "" ? colorOptionValue : bgColor}/20 py-4 px-6 text-base h-[35rem] z-30 transition-all duration-300` : `w-full outline-none ${colorOptionValue !== "" ? colorOptionValue : bgColor} py-4 px-4 z-30 transition-all duration-300`} placeholder="Write Note"/>
 
                     <div className="w-full flex justify-center items-center py-2">
                         <ColorPallete show={showColorPallete} addBackground={handleColorOption}/>
@@ -118,7 +120,7 @@ const Todo = ({note, noteId, bgColor}) => {
 
 
                         <Tooltip title="Update" arrow>
-                          <button type="submit" className={wordCount > 0 ? "cursor-pointer w-8 h-8 flex justify-center items-center rounded-full border-[1px] border-neutral hover:bg-primary/10 hover:border-none z-30 transition-all duration-200" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <AddRoundedIcon/></button>
+                          <button type="submit" className={wordCount > 0 ? "cursor-pointer w-8 h-8 flex justify-center items-center rounded-full border-[1px] border-neutral hover:bg-primary/10 z-30 transition-all duration-200" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckIcon/></button>
                         </Tooltip>
                        </div>
                        }
