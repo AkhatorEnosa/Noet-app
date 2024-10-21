@@ -72,7 +72,7 @@ const Todo = ({note, noteId, bgColor}) => {
   return (
     <div>
 
-        <div className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow-md text-lg hover:shadow-lg transition-shadow duration-200  break-words" : `break-inside-avoid w-full group ${bgColor}/20 border-[1px] border-black/10 shadow-md rounded-md text-lg hover:shadow-lg transition-shadow duration-200  break-words z-10`}>
+        <div className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow-md text-lg hover:shadow-lg transition-shadow duration-200  break-words" : `break-inside-avoid w-full group ${bgColor} border-[1px] border-black/10 shadow-md rounded-md text-lg hover:shadow-lg transition-shadow duration-200  break-words z-10`}>
             <p className={note.length > 300 ? "w-full text-sm leading-normal px-3 pt-3 pb-4" : "w-full leading-normal px-3 pt-2 pb-4"} dangerouslySetInnerHTML={{ __html: Linkify(truncateTodo(note)) }}/>
           <div className="w-full px-4 pt-3 pb-2 gap-2 justify-end items-center flex lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300">
             <Tooltip title="Edit" arrow>
@@ -95,7 +95,7 @@ const Todo = ({note, noteId, bgColor}) => {
                   <div className="flex items-center justify-end top-2 right-2 px-2 pt-2">
                     <button className={"z-20 text-black/70 hover:text-neutral transition-all duration-300"} type="button" onClick={clearInput}><ClearRoundedIcon /></button>
                   </div>
-                    <textarea type="text" value={getNote} onChange={handleChange} className={wordCount == 0 ? "w-full outline-none p-4 text-base z-30 transition-all duration-300" : wordCount < 300 ? `w-full outline-none ${colorOptionValue !== "" ? colorOptionValue : bgColor}/20 py-4 h-32 px-10 text-lg z-30 transition-all duration-300` : wordCount >= 300 ? `w-full outline-none ${colorOptionValue !== "" ? colorOptionValue : bgColor}/20 py-4 px-6 text-base h-[35rem] z-30 transition-all duration-300` : `w-full outline-none ${colorOptionValue !== "" ? colorOptionValue : bgColor} py-4 px-4 z-30 transition-all duration-300`} placeholder="Write Note"/>
+                    <textarea type="text" value={getNote} onChange={handleChange} className={wordCount == 0 ? "w-full outline-none p-4 text-base z-30 transition-all duration-300" : wordCount < 300 ? `w-full outline-none ${colorOptionValue !== "" ? colorOptionValue : bgColor} py-4 h-32 px-10 text-lg z-30 transition-all duration-300` : wordCount >= 300 ? `w-full outline-none ${colorOptionValue !== "" ? colorOptionValue : bgColor} py-4 px-6 text-base h-[35rem] z-30 transition-all duration-300` : `w-full outline-none ${colorOptionValue !== "" ? colorOptionValue : bgColor} py-4 px-4 z-30 transition-all duration-300`} placeholder="Write Note"/>
 
                     <div className="w-full flex justify-center items-center py-2">
                         <ColorPallete show={showColorPallete} addBackground={handleColorOption}/>
