@@ -135,7 +135,7 @@ const Home = () => {
           
         </div>
 
-          {<Tooltip title="Add Noet" arrow className="fixed bottom-2">
+          {<Tooltip title="Add Noet" arrow className="fixed bottom-4 md:bottom-10">
             <button type="submit" className="cursor-pointer w-16 h-16 lg:w-20 lg:h-20 flex justify-center items-center rounded-full bg-neutral text-white transition-all duration-200 z-40" onClick={() => setShowInput(!showInput)}> {showInput ? <ClearRoundedIcon sx={{ fontSize: 30 }}/> : <AddRoundedIcon sx={{ fontSize: 30 }}/>}</button>
           </Tooltip>}
     </div>
