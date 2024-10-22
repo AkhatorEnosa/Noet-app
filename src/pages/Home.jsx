@@ -86,23 +86,23 @@ const Home = () => {
           <div className="flex items-center justify-end top-2 right-2 px-2 pt-2">
             <button className={wordCount > 0 ? "z-20 text-black/70 hover:text-neutral transition-all duration-300": "hidden transition-all duration-300"} type="button" onClick={clearInput}><ClearRoundedIcon /></button>
           </div>
-            <textarea type="text" ref={inputRef} onInput={()=> inputRef.current && setWordCount(inputRef.current.value.length)} className={wordCount < 1 ? `w-full outline-none resize-none p-4 bg-transparent text-base z-30 transition-all duration-300` : wordCount > 100 ? `w-full outline-none resize-none h-64 px-4 bg-transparent text-base z-30 transition-all duration-300` : `w-full outline-none resize-none px-4 bg-transparent text-lg h-auto z-30 transition-all duration-300`} placeholder="Write Noet..."/>
+            <textarea type="text" ref={inputRef} onInput={()=> inputRef.current && setWordCount(inputRef.current.value.length)} className={wordCount < 1 ? `w-full outline-none resize-none p-4 bg-transparent text-base z-30 transition-all duration-300` : wordCount > 100 ? `w-full outline-none resize-none h-64 px-4 bg-transparent text-base z-30 transition-all duration-300` : `w-full outline-none resize-none px-4 bg-transparent text-lg h-auto z-30 transition-all duration-300`} placeholder="Write Noet..." autoFocus />
 
             <div className="w-full flex justify-center items-center py-4">
                 <ColorPallete show={showColorPallete} addBackground={handleColorOption}/>
                 {fetchStatus === 'fetching' ? <span className="loading loading-spinner loading-sm"></span> : 
                 <div className="w-full flex justify-between items-center px-3 md:px-5">
                   <div className="flex gap-2">
-                    <Tooltip title="Edit" arrow>
-                      <i className="w-8 h-8 flex justify-center items-center rounded-full border-[1px] border-neutral hover:bg-warning/50 hover:border-none z-30 transition-all duration-200 cursor-pointer">
-                        <ColorLensRoundedIcon onClick={() => setShowColorPallete(!showColorPallete)} sx={{ fontSize: 18 }}/>
-                      </i>
-                    </Tooltip>
+                      <Tooltip title="Choose color" arrow>
+                        <i className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? 'bg-warning shadow-lg border-none' : 'border-[1px] border-neutral'} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `} onClick={() => setShowColorPallete(!showColorPallete)}>
+                          <ColorLensRoundedIcon sx={{ fontSize: 18 }}/>
+                        </i>
+                      </Tooltip>
                   </div>
   
   
-                  <Tooltip title="Update" arrow>
-                    <button type="submit" className={wordCount > 0 ? "cursor-pointer w-8 h-8 flex justify-center items-center rounded-full border-[1px] border-neutral hover:bg-primary/10 z-30 transition-all duration-200" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon/></button>
+                  <Tooltip title="Add Noet" arrow>
+                    <button type="submit" className={wordCount > 0 ? "cursor-pointer w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-neutral bg-neutral hover:bg-neutral/80 text-white z-30 transition-all duration-200" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon/></button>
                   </Tooltip>
                 </div>
                 }
@@ -114,12 +114,12 @@ const Home = () => {
             {!isLoading && todos?.data.length > 0 ? <div className="w-full gap-4 flex flex-col items-center justify-center">
                 <div className="w-full gap-2 md:gap-4 columns-2 md:columns-3 mx-auto space-y-3 md:space-y-4">
                   {
-                    todos?.data.map((todo) => (
-                        <Todo key={todo.id} 
-                        noteId={todo.id}
-                        note={todo.data_value}
-                        bgColor={todo.bg_color}
-                        updateId={todo.id}
+                    todos?.data.map(({id, data_value, bg_color}) => (
+                        <Todo key={id} 
+                        noteId={id}
+                        note={data_value}
+                        bgColor={bg_color}
+                        updateId={id}
                         />
                     ))
                   }
@@ -133,11 +133,11 @@ const Home = () => {
             </div>
             }
           
-          {<Tooltip title="Add Noet" arrow className="absolute bottom-10">
-            <button type="submit" className="cursor-pointer w-16 h-16 lg:w-20 lg:h-20 flex justify-center items-center rounded-full bg-neutral text-white transition-all duration-200 z-40" onClick={() => setShowInput(!showInput)}> {showInput ? <ClearRoundedIcon sx={{ fontSize: 30 }}/> : <AddRoundedIcon sx={{ fontSize: 30 }}/>}</button>
-          </Tooltip>}
         </div>
 
+          {<Tooltip title="Add Noet" arrow className="fixed bottom-2">
+            <button type="submit" className="cursor-pointer w-16 h-16 lg:w-20 lg:h-20 flex justify-center items-center rounded-full bg-neutral text-white transition-all duration-200 z-40" onClick={() => setShowInput(!showInput)}> {showInput ? <ClearRoundedIcon sx={{ fontSize: 30 }}/> : <AddRoundedIcon sx={{ fontSize: 30 }}/>}</button>
+          </Tooltip>}
     </div>
   )
 }
