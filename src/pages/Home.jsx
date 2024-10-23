@@ -79,7 +79,7 @@ const Home = () => {
 
   if(error) return  <h3>Error: {error}</h3>
   return (
-    <div className="w-full flex flex-col gap-5 px-3 md:px-10 lg:px-20 py-10 justify-center items-center">
+    <div className="w-full flex flex-col gap-5 px-3 md:px-10 lg:px-20 py-10 justify-center items-center overflow-scroll">
 
 
         {showInput && <form onSubmit={handleTodoAdd} className={`form relative ${colorOptionValue} gap-4 w-full md:w-[80%] lg:w-[70%] h-full p border justify-center items-center rounded-t-lg shadow-md`}>
@@ -112,7 +112,7 @@ const Home = () => {
         <div className="w-full flex flex-col justify-center items-center">
 
             {!isLoading && todos?.data.length > 0 ? <div className="w-full gap-4 flex flex-col items-center justify-center">
-                <div className="w-full gap-2 md:gap-4 columns-2 md:columns-3 mx-auto space-y-3 md:space-y-4">
+                <div className="w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 mx-auto space-y-3 md:space-y-4">
                   {
                     todos?.data.map(({id, data_value, bg_color}) => (
                         <Todo key={id} 
