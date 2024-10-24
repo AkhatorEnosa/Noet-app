@@ -8,6 +8,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import Tooltip from '@mui/material/Tooltip';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
+import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
 import { useSelector } from "react-redux";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -47,6 +48,11 @@ const Home = () => {
   const clearInput = () => {
     setWordCount(0)
     inputRef.current.value = ''
+    setColorOptionValue('')
+  }
+
+  const closeInput = () => {
+    setShowInput(false)
   }
 
   const handleColorOption = (e) => {
@@ -82,32 +88,46 @@ const Home = () => {
     <div className="w-full flex flex-col gap-5 px-3 md:px-10 lg:px-20 py-10 justify-center items-center overflow-scroll">
 
 
-        {showInput && <form onSubmit={handleTodoAdd} className={`form relative ${colorOptionValue} gap-4 w-full md:w-[80%] lg:w-[70%] h-full p border justify-center items-center rounded-t-lg shadow-md`}>
-          <div className="flex items-center justify-end top-2 right-2 px-2 pt-2">
-            <button className={wordCount > 0 ? "z-20 text-black/70 hover:text-neutral transition-all duration-300": "hidden transition-all duration-300"} type="button" onClick={clearInput}><ClearRoundedIcon /></button>
-          </div>
-            <textarea type="text" ref={inputRef} onInput={()=> inputRef.current && setWordCount(inputRef.current.value.length)} className={wordCount < 1 ? `w-full outline-none resize-none p-4 bg-transparent text-base z-30 transition-all duration-300` : wordCount > 100 ? `w-full outline-none resize-none h-64 px-4 bg-transparent text-base z-30 transition-all duration-300` : `w-full outline-none resize-none px-4 bg-transparent text-lg h-auto z-30 transition-all duration-300`} placeholder="Write Noet..." autoFocus />
+        
 
-            <div className="w-full flex justify-center items-center py-4">
-                <ColorPallete show={showColorPallete} addBackground={handleColorOption}/>
-                {fetchStatus === 'fetching' ? <span className="loading loading-spinner loading-sm"></span> : 
-                <div className="w-full flex justify-between items-center px-3 md:px-5">
-                  <div className="flex gap-2">
-                      <Tooltip title="Choose color" arrow>
-                        <i className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? 'bg-warning shadow-lg border-none' : 'border-[1px] border-neutral'} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `} onClick={() => setShowColorPallete(!showColorPallete)}>
-                          <ColorLensRoundedIcon sx={{ fontSize: 18 }}/>
-                        </i>
-                      </Tooltip>
+        <div className={showInput ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50 duration-300 transition-all"}>
+              <div className={showInput && "absolute w-full h-full bg-black/70"} onClick={() => setShowInput(!showInput)}  role="button" aria-disabled="true"></div>
+              <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
+                <form onSubmit={handleTodoAdd} className={showInput ? "scale-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-300 transition-all z-50" : "scale-0 relative gap-4 w-full h-full pb-2 border justify-center items-center rounded-lg shadow-md bg-white duration-300 transition-all"}>
+                  <div className="flex items-center justify-end top-2 right-2 px-2 py-2">
+                    <button className={"z-20 text-black/70 hover:text-neutral transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
                   </div>
-  
-  
-                  <Tooltip title="Add Noet" arrow>
-                    <button type="submit" className={wordCount > 0 ? "cursor-pointer w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-neutral bg-neutral hover:bg-neutral/80 text-white z-30 transition-all duration-200" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon/></button>
-                  </Tooltip>
-                </div>
-                }
-            </div>
-        </form>}
+
+                  <textarea type="text" ref={inputRef} onInput={()=> inputRef.current && setWordCount(inputRef.current.value.length)}  className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} p-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
+
+                  <div className="relative w-full flex justify-center items-center py-10">
+                      <ColorPallete show={showColorPallete} addBackground={handleColorOption}/>
+                      
+                      {fetchStatus !== "idle" ? <span className="loading loading-spinner loading-sm"></span> : 
+                      <div className={`w-full flex justify-center gap-4 items-center px-3 md:px-5 pt-4`}>
+                        <div className="flex gap-2 justify-center items-center">
+                          <Tooltip title="Choose color" arrow>
+                            <i className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? 'bg-warning shadow-lg border-none' : 'border-[1px] border-neutral'} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `} onClick={() => setShowColorPallete(!showColorPallete)}>
+                              <ColorLensRoundedIcon sx={{ fontSize: 18 }}/>
+                            </i>
+                          </Tooltip>
+                        </div>
+
+
+                         <Tooltip title="Erase" arrow>
+                          <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 bg-gray-400 shadow-lg border-none text-white hover:text-neutral transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon /></button>
+                        </Tooltip>
+
+
+                        <Tooltip title="Add" arrow>
+                          <button type="submit" className={wordCount > 0 ? "cursor-pointer w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-neutral bg-neutral text-white z-30 transition-all duration-200" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon/></button>
+                        </Tooltip>
+                      </div>
+                      }
+                  </div>
+                </form>
+              </div>
+        </div>
 
         <div className="w-full flex flex-col justify-center items-center">
 

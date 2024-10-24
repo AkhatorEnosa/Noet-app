@@ -7,6 +7,7 @@ import CheckRoundedIcon from'@mui/icons-material/CheckRounded';
 import ColorPallete from "./ColorPallete";
 import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
+import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
 import useUpdateNote from "../hooks/useUpdateNote";
 import Tooltip from '@mui/material/Tooltip';
 
@@ -18,7 +19,7 @@ const Todo = ({note, noteId, bgColor}) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showColorPallete, setShowColorPallete] = useState(false)
-  const [colorOptionValue, setColorOptionValue] = useState("")
+  const [colorOptionValue, setColorOptionValue] = useState(bgColor)
 
   const {mutate, isPending, isSuccess} = useDeleteNote()
   const {mutate:update, isPending:updating, } = useUpdateNote()
@@ -40,10 +41,14 @@ const Todo = ({note, noteId, bgColor}) => {
   }
 
   const clearInput = () => {
+    setGetNote("")
+    setColorOptionValue("")
+  }
+
+  const closeInput = () => {
     setGetNote(note)
     setWordCount(note.length)
-      setShowEditModal(!showEditModal)
-      setColorOptionValue("")
+    setShowEditModal(!showEditModal)
   }
 
 
@@ -72,7 +77,7 @@ const Todo = ({note, noteId, bgColor}) => {
               </Linkify>
             </p>
           <div className="w-full px-4 pt-3 pb-2 md:gap-2 justify-end items-center flex lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300">
-            <Tooltip title="Edit" arrow>
+            <Tooltip title="View/Edit" arrow>
               <i className="w-8 h-8 flex justify-center items-center rounded-full md:border-[1px] border-neutral hover:bg-neutral/10 hover:border-none z-30 transition-all duration-200 cursor-pointer">
                 <EditNoteRoundedIcon onClick={() => setShowEditModal(!showEditModal)} sx={{ fontSize: 18 }}/>
               </i>
@@ -90,7 +95,7 @@ const Todo = ({note, noteId, bgColor}) => {
               <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
                 <form onSubmit={handleTodoUpdate} className={showEditModal ? "scale-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-300 transition-all z-50" : "scale-0 relative gap-4 w-full h-full pb-2 border justify-center items-center rounded-lg shadow-md bg-white duration-300 transition-all"}>
                   <div className="flex items-center justify-end top-2 right-2 px-2 py-2">
-                    <button className={"z-20 text-black/70 hover:text-neutral transition-all duration-300"} type="button" onClick={clearInput}><ClearRoundedIcon /></button>
+                    <button className={"z-20 text-black/70 hover:text-neutral transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
                   </div>
 
                   <textarea type="text" value={getNote} onChange={handleChange} className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} p-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
@@ -107,6 +112,11 @@ const Todo = ({note, noteId, bgColor}) => {
                             </i>
                           </Tooltip>
                         </div>
+
+
+                         <Tooltip title="Erase" arrow>
+                          <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 bg-gray-400 shadow-lg border-none text-white hover:text-neutral transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon /></button>
+                        </Tooltip>
 
 
                         <Tooltip title="Update" arrow>
