@@ -68,26 +68,26 @@ const Todo = ({note, noteId, bgColor}) => {
   return (
     <div className="todo">
 
-        <div className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow text-lg hover:shadow-lg transition-shadow duration-200 break-words" : `break-inside-avoid w-full group ${bgColor} border-[1px] border-black/10 shadow-md rounded-md text-lg hover:shadow-lg transition-shadow duration-200  break-words z-10`} draggable="true">
-            <p className={note.length > 300 ? "w-full text-sm leading-normal px-3 pt-3 pb-4" : "w-full leading-normal px-3 pt-2 pb-4"}>
-              <Linkify>
-                  {
-                    truncateTodo(note)
-                  }
-              </Linkify>
-            </p>
-          <div className="w-full px-4 pt-3 pb-2 md:gap-2 justify-end items-center flex lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300">
+        <div className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow text-lg hover:shadow-lg transition-shadow duration-200 break-words" : `break-inside-avoid w-full group ${bgColor} border-[1px] border-black/10 shadow-md rounded-t-md text-lg hover:shadow-lg transition-shadow duration-200  break-words z-10`} draggable="true">
+          <div className={`w-full px-2 py-2 gap-2 mb-2 flex justify-end items-center bg-white/80 rounded-t-md border-b-[1px]`}>
             <Tooltip title="View/Edit" arrow>
-              <i className="w-8 h-8 flex justify-center items-center rounded-full md:border-[1px] border-neutral hover:bg-neutral/10 hover:border-none z-30 transition-all duration-200 cursor-pointer">
-                <EditNoteRoundedIcon onClick={() => setShowEditModal(!showEditModal)} sx={{ fontSize: 18 }}/>
+              <i className="w-4 h-4 flex justify-center items-center rounded-full lg:border-[1px] border-neutral bg-gradient-to-b from-green-400 to-green-600 lg:from-transparent lg:to-transparent lg:hover:from-green-400 lg:hover:to-green-600 hover:bg-neutral/10 text-white/80 lg:text-neutral lg:hover:text-white/80 hover:border-none z-30 transition-all duration-200 cursor-pointer">
+                <EditNoteRoundedIcon onClick={() => setShowEditModal(!showEditModal)} sx={{ fontSize: 10 }}/>
               </i>
             </Tooltip>
             <Tooltip title="Delete" arrow>
-            <i className="w-8 h-8 flex justify-center items-center rounded-full md:border-[1px] border-neutral hover:bg-neutral/10 hover:border-none z-30 transition-all duration-200 cursor-pointer">
-              <DeleteRoundedIcon onClick={() => setShowDeleteModal(!showDeleteModal) & document.getElementById('delete-modal').showModal()} sx={{ fontSize: 18 }}/>
+            <i className="w-4 h-4 flex justify-center items-center rounded-full border-[1px] border-neutral bg-gradient-to-b from-gray-600 to-gray-900 lg:from-transparent lg:to-transparent lg:hover:from-gray-600 lg:hover:to-gray-900 text-white/80 lg:text-neutral lg:hover:text-white/80 hover:border-none z-30 transition-all duration-200 cursor-pointer">
+              <DeleteRoundedIcon onClick={() => setShowDeleteModal(!showDeleteModal) & document.getElementById('delete-modal').showModal()} sx={{ fontSize: 10 }}/>
             </i>
             </Tooltip>
           </div>
+          <p className={note.length > 300 ? "w-full text-sm leading-normal px-3 pt-3 pb-4" : "w-full leading-normal px-3 pt-2 pb-4"}>
+            <Linkify>
+                {
+                  truncateTodo(note)
+                }
+            </Linkify>
+          </p>
         </div>
 
         <div className={showEditModal ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50 duration-300 transition-all"}>
@@ -95,7 +95,7 @@ const Todo = ({note, noteId, bgColor}) => {
               <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
                 <form onSubmit={handleTodoUpdate} className={showEditModal ? "scale-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-300 transition-all z-50" : "scale-0 relative gap-4 w-full h-full pb-2 border justify-center items-center rounded-lg shadow-md bg-white duration-300 transition-all"}>
                   <div className="flex items-center justify-end top-2 right-2 px-2 py-2">
-                    <button className={"z-20 text-black/70 hover:text-neutral transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
+                    <button className={"w-8 h-8 z-20 text-black/70 hover:text-neutral hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
                   </div>
 
                   <textarea type="text" value={getNote} onChange={handleChange} className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} p-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>

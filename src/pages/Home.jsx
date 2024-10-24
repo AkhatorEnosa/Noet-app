@@ -95,7 +95,7 @@ const Home = () => {
               <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
                 <form onSubmit={handleTodoAdd} className={showInput ? "scale-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-300 transition-all z-50" : "scale-0 relative gap-4 w-full h-full pb-2 border justify-center items-center rounded-lg shadow-md bg-white duration-300 transition-all"}>
                   <div className="flex items-center justify-end top-2 right-2 px-2 py-2">
-                    <button className={"z-20 text-black/70 hover:text-neutral transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
+                    <button className={"w-8 h-8 z-20 text-black/70 hover:text-neutral hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
                   </div>
 
                   <textarea type="text" ref={inputRef} onInput={()=> inputRef.current && setWordCount(inputRef.current.value.length)}  className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} p-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
@@ -156,7 +156,7 @@ const Home = () => {
         </div>
 
           {<Tooltip title="Add Noet" arrow className="fixed bottom-4 md:bottom-10">
-            <button type="submit" className="cursor-pointer w-16 h-16 lg:w-20 lg:h-20 flex justify-center items-center rounded-full bg-neutral text-white transition-all duration-200 z-40" onClick={() => setShowInput(!showInput)}> {showInput ? <ClearRoundedIcon sx={{ fontSize: 30 }}/> : <AddRoundedIcon sx={{ fontSize: 30 }}/>}</button>
+            <button type="submit" className="cursor-pointer w-16 h-16 lg:w-[4.5rem] lg:h-[4.5rem] flex justify-center items-center rounded-full hover:bg-neutral bg-gray-700 text-white transition-all duration-300 z-40" onClick={() => setShowInput(!showInput)}> {showInput ? <ClearRoundedIcon sx={{ fontSize: 30 }}/> : <AddRoundedIcon sx={{ fontSize: 30 }}/>}</button>
           </Tooltip>}
     </div>
   )
