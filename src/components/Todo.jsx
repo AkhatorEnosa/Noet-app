@@ -69,14 +69,14 @@ const Todo = ({note, noteId, bgColor}) => {
     <div className="todo">
 
         <div className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow text-lg hover:shadow-lg transition-shadow duration-200 break-words" : `break-inside-avoid w-full group ${bgColor} border-[1px] border-black/10 shadow-md rounded-t-md text-lg hover:shadow-lg transition-shadow duration-200  break-words z-10`} draggable="true">
-          <div className={`w-full px-2 py-2 gap-2 mb-2 flex justify-end items-center bg-white/80 rounded-t-md border-b-[1px]`}>
+          <div className={`w-full px-2 py-2 gap-2 mb-2 flex justify-between items-center bg-white/80 rounded-t-md border-b-[1px]`}>
             <Tooltip title="View/Edit" arrow>
-              <i className="w-4 h-4 flex justify-center items-center rounded-full lg:border-[1px] border-neutral bg-gradient-to-b from-green-400 to-green-600 lg:from-transparent lg:to-transparent lg:hover:from-green-400 lg:hover:to-green-600 hover:bg-neutral/10 text-white/80 lg:text-neutral lg:hover:text-white/80 hover:border-none z-30 transition-all duration-200 cursor-pointer">
+              <i className="w-4 h-4 flex justify-center items-center rounded-full lg:border-[1px] border-neutral bg-gradient-to-b from-green-400 to-green-600 lg:from-transparent lg:to-transparent lg:hover:from-green-400 lg:hover:to-green-600 hover:bg-neutral/10 text-transparent lg:text-neutral lg:hover:text-transparent hover:border-none z-30 transition-all duration-200 cursor-pointer">
                 <EditNoteRoundedIcon onClick={() => setShowEditModal(!showEditModal)} sx={{ fontSize: 10 }}/>
               </i>
             </Tooltip>
             <Tooltip title="Delete" arrow>
-            <i className="w-4 h-4 flex justify-center items-center rounded-full border-[1px] border-neutral bg-gradient-to-b from-gray-600 to-gray-900 lg:from-transparent lg:to-transparent lg:hover:from-gray-600 lg:hover:to-gray-900 text-white/80 lg:text-neutral lg:hover:text-white/80 hover:border-none z-30 transition-all duration-200 cursor-pointer">
+            <i className="w-4 h-4 flex justify-center items-center rounded-full border-[1px] border-neutral bg-gradient-to-b from-red-400 to-red-600 lg:from-transparent lg:to-transparent lg:hover:from-red-400 lg:hover:to-red-600 text-transparent lg:text-neutral lg:hover:text-transparent hover:border-none z-30 transition-all duration-200 cursor-pointer">
               <DeleteRoundedIcon onClick={() => setShowDeleteModal(!showDeleteModal) & document.getElementById('delete-modal').showModal()} sx={{ fontSize: 10 }}/>
             </i>
             </Tooltip>
