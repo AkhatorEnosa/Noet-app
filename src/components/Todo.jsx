@@ -8,11 +8,12 @@ import ColorPallete from "./ColorPallete";
 import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
 import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import useUpdateNote from "../hooks/useUpdateNote";
 import Tooltip from '@mui/material/Tooltip';
 
 /* eslint-disable react/prop-types */
-const Todo = ({note, noteId, bgColor}) => {
+const Todo = ({note, noteId, bgColor, activeNote}) => {
 
   const [getNote, setGetNote] = useState(note)
   const [wordCount, setWordCount] = useState(note.length)
@@ -20,6 +21,7 @@ const Todo = ({note, noteId, bgColor}) => {
   const [showEditModal, setShowEditModal] = useState(false)
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState(bgColor)
+  const [toggleAction, setToggleAction] = useState(false)
 
   const {mutate, isPending, isSuccess} = useDeleteNote()
   const {mutate:update, isPending:updating, } = useUpdateNote()
@@ -66,20 +68,22 @@ const Todo = ({note, noteId, bgColor}) => {
   }
   
   return (
-    <div className="todo">
-
-        <div className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow text-lg hover:shadow-lg transition-shadow duration-200 break-words" : `break-inside-avoid w-full group ${bgColor} border-[1px] border-black/10 shadow-md rounded-t-md text-lg hover:shadow-lg transition-shadow duration-200  break-words z-10`} draggable="true">
-          <div className={`w-full px-2 py-2 gap-2 mb-2 flex justify-between items-center bg-white/80 rounded-t-md border-b-[1px]`}>
-            <Tooltip title="View/Edit" arrow>
-              <i className="w-4 h-4 flex justify-center items-center rounded-full lg:border-[1px] border-neutral bg-gradient-to-b from-green-400 to-green-600 lg:from-transparent lg:to-transparent lg:hover:from-green-400 lg:hover:to-green-600 hover:bg-neutral/10 text-transparent lg:text-neutral lg:hover:text-transparent hover:border-none z-30 transition-all duration-200 cursor-pointer">
-                <EditNoteRoundedIcon onClick={() => setShowEditModal(!showEditModal)} sx={{ fontSize: 10 }}/>
-              </i>
-            </Tooltip>
-            <Tooltip title="Delete" arrow>
-            <i className="w-4 h-4 flex justify-center items-center rounded-full border-[1px] border-neutral bg-gradient-to-b from-red-400 to-red-600 lg:from-transparent lg:to-transparent lg:hover:from-red-400 lg:hover:to-red-600 text-transparent lg:text-neutral lg:hover:text-transparent hover:border-none z-30 transition-all duration-200 cursor-pointer">
-              <DeleteRoundedIcon onClick={() => setShowDeleteModal(!showDeleteModal) & document.getElementById('delete-modal').showModal()} sx={{ fontSize: 10 }}/>
-            </i>
-            </Tooltip>
+    <article className="todo">
+ 
+        <div className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow text-lg hover:shadow-lg transition-shadow duration-200 break-words" : `break-inside-avoid aspect-video w-full ${bgColor} border-[1px] border-black/10 shadow-md rounded-t-md text-lg hover:shadow-lg transition-shadow duration-200  break-words active:opacity-55 active:cursor-grab z-10`} draggable="true" onDragStart={() => activeNote(noteId)} onDragEnd={() => activeNote(null)}>
+          <div className={`relative w-full px-2 py-2 gap-2 mb-2 flex justify-end items-center bg-white/80 rounded-t-md border-b-[1px]`}>
+            <div className="w-fit">
+              <Tooltip title="Actions" placement="top" arrow className="cursor-pointer w-5 h-5 p-1 rounded-full hover:bg-black/20 pointer" onClick={() => setToggleAction(!toggleAction)}>
+                <MoreVertIcon/>
+              </Tooltip>
+              {toggleAction && <div className="absolute w-[50%] top-12 right-0 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md z-50">
+                <ul>
+                  <li className="flex justify-between hover:bg-neutral-400 p-2" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false)}>Edit <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
+                  <hr className="border-[0.2px] border-black/10"/>
+                  <li className="flex justify-between hover:bg-neutral-400 p-2" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }}/></li>
+                </ul>
+              </div>}
+            </div>
           </div>
           <p className={note.length > 300 ? "w-full text-sm leading-normal px-3 pt-3 pb-4" : "w-full leading-normal px-3 pt-2 pb-4"}>
             <Linkify>
@@ -140,7 +144,7 @@ const Todo = ({note, noteId, bgColor}) => {
                 </div> 
             </div>
         </div>}
-    </div>
+    </article>
   )
 }
 

@@ -10,7 +10,7 @@ const initialState = {
 export const fetchData = createAsyncThunk(
   'api/fetchData',
   async () => {
-    const { data, error } = await supabase.from('data').select().order('id', {
+    const { data, error } = await supabase.from('data').select().order('index_num', {
         ascending: false
     });
     return { data, error };

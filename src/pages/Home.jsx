@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import useCreateTodo from "../hooks/useCreateNote"
 import useNotes from "../hooks/useNotes"
 import Todo from "../components/Todo"
@@ -14,6 +14,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ColorPallete from "../components/ColorPallete";
+import DropArea from "../components/DropArea";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
@@ -25,16 +26,37 @@ const Home = () => {
   const {error, isLoading, fetchStatus} = useNotes()
   const {mutate} = useCreateTodo()
 
+  const [oldNotes, setOldNotes] = useState(localStorage.getItem("notes"))
+
+  const [notes, setNotes] = useState(JSON.parse(oldNotes))
   const [wordCount, setWordCount] = useState(0)
   const [showInput, setShowInput] = useState(false)
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState("")
+  const [activeNote, setactiveNote] = useState(null)
+  const [status, setstatus] = useState('')
+  const [toggleDiv,setToggleDiv] = useState(false)
+
+  useEffect(() => {
+    // if(notes == undefined){
+    //   setNotes(todos?.data)
+    // }
+    // localStorage.setItem("notes", JSON.stringify(notes))
+    // console.log(notes)
+    // const getLastIndexNum = () => {
+    //   todos.data.slice(-1).index_num
+    // }
+  }, [todos?.data, notes])
 
   const handleTodoAdd = (e) => {
     e.preventDefault()
     // findLink(inputRef.current.value)
     if(inputRef.current.value.trim() !== "") {
-      mutate({data_value: inputRef.current.value.toString(), bg_color: colorOptionValue})
+      mutate({data_value: inputRef.current.value.toString(), bg_color: colorOptionValue, index_num: todos.data.pop().index_num + 2})
+      // localStorage.setItem("notes", setNotes[{
+      //   data_value: inputRef.current.value.toString(),
+      //   bg_color: colorOptionValue
+      // }, {...notes}])
       setShowInput(false)
     } else {
       inputRef.current.focus();
@@ -60,8 +82,23 @@ const Home = () => {
     setColorOptionValue(getColorValue)
   }
 
+  const onDrop = (position) => {
+    setstatus(`${activeNote} at position ${position}`)
 
-  useGSAP(() =>{
+    if(activeNote == null || activeNote == undefined) return
+
+    const noteToMove = notes.filter(note => note.id == activeNote)
+    const udpatedNotes = notes.filter((note) => note.id !== activeNote)
+    
+    udpatedNotes.splice(position, 0, noteToMove[0])
+
+    console.log(udpatedNotes)
+
+    setNotes(udpatedNotes)
+    localStorage.setItem("notes", JSON.stringify(udpatedNotes))
+  }
+
+  useGSAP(() => {
     // const tl = gsap.timeline()
       gsap.to(".nav", {
         position: "sticky",
@@ -72,7 +109,7 @@ const Home = () => {
             ease: "elastic",
             scrub: true,duration: 0.5,
             toggleClass: "active",
-            toggleActions: "play pause resume reset",
+            toggleDivs: "play pause resume reset",
             onToggle: () => {
               ScrollTrigger.refresh()
             },
@@ -84,11 +121,8 @@ const Home = () => {
 
 
   if(error) return  <h3>Error: {error}</h3>
-  return (
+  if (todos !== null) return (
     <div className="w-full flex flex-col gap-5 px-3 md:px-10 lg:px-20 py-10 justify-center items-center overflow-scroll">
-
-
-        
 
         <div className={showInput ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50 duration-300 transition-all"}>
               <div className={showInput && "absolute w-full h-full bg-black/70"} onClick={() => setShowInput(!showInput)}  role="button" aria-disabled="true"></div>
@@ -131,33 +165,38 @@ const Home = () => {
 
         <div className="w-full flex flex-col justify-center items-center">
 
-            {!isLoading && todos?.data.length > 0 ? <div className="w-full gap-4 flex flex-col items-center justify-center">
-                <div className="w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 mx-auto space-y-3 md:space-y-4">
+            {!isLoading && notes?.length > 0 ? <div className="w-full gap-4 flex flex-col items-center justify-center">
+                <div className="w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 mx-auto">
                   {
-                    todos?.data.map(({id, data_value, bg_color}) => (
-                        <Todo key={id} 
-                        noteId={id}
-                        note={data_value}
-                        bgColor={bg_color}
-                        updateId={id}
+                    
+                    notes?.map((note) => (
+                      <React.Fragment key={note.id}>
+                        <DropArea handleDrop={() => onDrop(notes.indexOf(note))}/>
+                        <Todo 
+                        noteId={note.id}
+                        note={note.data_value}
+                        bgColor={note.bg_color}
+                        updateId={note.id}
+                        activeNote={setactiveNote}
                         />
+                        <DropArea handleDrop={() => onDrop(notes.indexOf(note) + 1)}/>
+                      </React.Fragment>
                     ))
                   }
                 </div>
             </div> : isLoading ? <div className="py-52 w-full  flex justify-center items-center">A moment please...</div> : 
             <div className="py-52 w-full  flex justify-center items-center">
               <div className="flex flex-col w-full md:w-96 text-neutral-500 justify-center items-center text-center">
-                <DescriptionIcon  sx={{ fontSize: 300 }}/>
+                <DescriptionIcon  sx={{ fontSize: 200 }}/>
                 <p>You have no <b>Noets</b> yet. Click the create below Icon to create one..</p>
               </div>
             </div>
             }
-          
         </div>
-
-          {<Tooltip title="Add Noet" arrow className="fixed bottom-4 md:bottom-10">
+          {fetchStatus === "idle" && <Tooltip title="Add Noet" arrow className="fixed bottom-4 md:bottom-10">
             <button type="submit" className="cursor-pointer w-16 h-16 lg:w-[4.5rem] lg:h-[4.5rem] flex justify-center items-center rounded-full hover:bg-neutral bg-gray-700 text-white transition-all duration-300 z-40" onClick={() => setShowInput(!showInput)}> {showInput ? <ClearRoundedIcon sx={{ fontSize: 30 }}/> : <AddRoundedIcon sx={{ fontSize: 30 }}/>}</button>
           </Tooltip>}
+
     </div>
   )
 }
