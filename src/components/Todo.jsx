@@ -66,19 +66,24 @@ const Todo = ({note, noteId, bgColor, activeNote}) => {
     const getColorValue = (e.target.className).split(" ").filter((x) => /bg-/.test(x))[0]
     setColorOptionValue(getColorValue)
   }
+
+  // const handleAction = () => {
+  //   setToggleAction(false)
+  //   console.log("parts")
+  // }
   
   return (
     <article className="todo">
  
-        <div className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow text-lg hover:shadow-lg transition-shadow duration-200 break-words" : `break-inside-avoid aspect-video w-full ${bgColor} border-[1px] border-black/10 shadow-md rounded-t-md text-lg hover:shadow-lg transition-shadow duration-200  break-words active:opacity-55 active:cursor-grab z-10`} draggable="true" onDragStart={() => activeNote(noteId)} onDragEnd={() => activeNote(null)}>
-          <div className={`relative w-full px-2 py-2 gap-2 mb-2 flex justify-end items-center bg-white/80 rounded-t-md border-b-[1px]`}>
+        <div className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow text-lg hover:shadow-lg transition-shadow duration-200 break-words" : `relative break-inside-avoid aspect-video w-full ${bgColor} border-[1px] border-black/10 shadow-md rounded-t-md text-lg hover:shadow-lg transition-shadow duration-200  break-words active:opacity-55 active:cursor-grab ${toggleAction ? "z-40" : "z-10"}`} draggable="true" onDragStart={() => activeNote(noteId)} onDragEnd={() => activeNote(null)}>
+          <div className={`w-full px-2 py-2 gap-2 mb-2 flex justify-end items-center bg-white/80 rounded-t-md border-b-[1px]`}>
             <div className="w-fit">
               <Tooltip title="Actions" placement="top" arrow className="cursor-pointer w-5 h-5 p-1 rounded-full hover:bg-black/20 pointer" onClick={() => setToggleAction(!toggleAction)}>
                 <MoreVertIcon/>
               </Tooltip>
               {toggleAction && <div className="absolute w-[50%] top-12 right-0 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md z-50">
                 <ul>
-                  <li className="flex justify-between hover:bg-neutral-400 p-2" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false)}>Edit <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
+                  <li className="flex justify-between hover:bg-neutral-400 p-2 z-50" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false)}>Edit <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
                   <hr className="border-[0.2px] border-black/10"/>
                   <li className="flex justify-between hover:bg-neutral-400 p-2" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }}/></li>
                 </ul>
@@ -93,6 +98,8 @@ const Todo = ({note, noteId, bgColor, activeNote}) => {
             </Linkify>
           </p>
         </div>
+
+       <div className={toggleAction ? "fixed w-full h-full top-0 left-0 z-30" : "hidden"} onClick={() => setToggleAction(false)}></div>
 
         <div className={showEditModal ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50 duration-300 transition-all"}>
               <div className={showEditModal && "absolute w-full h-full bg-black/70"} onClick={() => setShowEditModal(!showEditModal)}  role="button" aria-disabled="true"></div>

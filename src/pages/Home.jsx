@@ -38,14 +38,14 @@ const Home = () => {
   const [toggleDiv,setToggleDiv] = useState(false)
 
   useEffect(() => {
-    // if(notes == undefined){
-    //   setNotes(todos?.data)
-    // }
-    // localStorage.setItem("notes", JSON.stringify(notes))
-    // console.log(notes)
-    // const getLastIndexNum = () => {
-    //   todos.data.slice(-1).index_num
-    // }
+    if(notes == undefined){
+      setNotes(todos?.data)
+    }
+    localStorage.setItem("notes", JSON.stringify(notes))
+    console.log(notes)
+    const getLastIndexNum = () => {
+      todos.data.slice(-1).index_num
+    }
   }, [todos?.data, notes])
 
   const handleTodoAdd = (e) => {
@@ -53,10 +53,10 @@ const Home = () => {
     // findLink(inputRef.current.value)
     if(inputRef.current.value.trim() !== "") {
       mutate({data_value: inputRef.current.value.toString(), bg_color: colorOptionValue, index_num: todos.data.pop().index_num + 2})
-      // localStorage.setItem("notes", setNotes[{
-      //   data_value: inputRef.current.value.toString(),
-      //   bg_color: colorOptionValue
-      // }, {...notes}])
+      localStorage.setItem("notes", setNotes[{
+        data_value: inputRef.current.value.toString(),
+        bg_color: colorOptionValue
+      }, {...notes}])
       setShowInput(false)
     } else {
       inputRef.current.focus();
