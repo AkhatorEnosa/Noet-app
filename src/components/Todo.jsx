@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import Linkify from "linkify-react";
 import useDeleteNote from "../hooks/useDeleteNote"
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
@@ -13,7 +13,7 @@ import useUpdateNote from "../hooks/useUpdateNote";
 import Tooltip from '@mui/material/Tooltip';
 
 /* eslint-disable react/prop-types */
-const Todo = ({note, noteId, bgColor, activeNote}) => {
+const Todo = ({note, noteId, bgColor, draggedNote, activeNote, handleDrop}) => {
 
   const [getNote, setGetNote] = useState(note)
   const [wordCount, setWordCount] = useState(note.length)
@@ -22,6 +22,9 @@ const Todo = ({note, noteId, bgColor, activeNote}) => {
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState(bgColor)
   const [toggleAction, setToggleAction] = useState(false)
+  const [showDrop, setShowDrop] = useState(false)
+
+  const editNoteRef = useRef()
 
   const {mutate, isPending, isSuccess} = useDeleteNote()
   const {mutate:update, isPending:updating, } = useUpdateNote()
@@ -66,24 +69,27 @@ const Todo = ({note, noteId, bgColor, activeNote}) => {
     const getColorValue = (e.target.className).split(" ").filter((x) => /bg-/.test(x))[0]
     setColorOptionValue(getColorValue)
   }
-
-  // const handleAction = () => {
-  //   setToggleAction(false)
-  //   console.log("parts")
-  // }
   
   return (
     <article className="todo">
  
-        <div className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow text-lg hover:shadow-lg transition-shadow duration-200 break-words" : `relative break-inside-avoid aspect-video w-full ${bgColor} border-[1px] border-black/10 shadow-md rounded-t-md text-lg hover:shadow-lg transition-shadow duration-200  break-words active:opacity-55 active:cursor-grab ${toggleAction ? "z-40" : "z-10"}`} draggable="true" onDragStart={() => activeNote(noteId)} onDragEnd={() => activeNote(null)}>
-          <div className={`w-full px-2 py-2 gap-2 mb-2 flex justify-end items-center bg-white/80 rounded-t-md border-b-[1px]`}>
+        <div className={showEditModal ? "opacity-0 break-inside-avoid w-full pb-6 border-[1px] border-black/10 shadow text-lg hover:shadow-lg transition-shadow duration-200 break-words" : `relative break-inside-avoid aspect-video w-full ${bgColor} border-[1px] ${showDrop ? "scale-105 z-50" : "transition-all duration"} border-black/10 shadow-md rounded-t-md text-lg hover:shadow-lg transition-shadow duration-200  break-words active:opacity-55 active:cursor-grab ${toggleAction ? "z-40" : "z-10"}`} draggable="true" onDragStart={() => activeNote(draggedNote)} onDragEnd={() => activeNote(null)}>
+          <div className={showDrop ? "absolute w-full border-blue-500 border-2 rounded-md h-full z-50" : "absolute w-full h-full z-40"}
+            onDragEnter={() => setShowDrop(true)} 
+            onDragLeave={() => setShowDrop(false)}
+            onDrop={() => {
+              handleDrop(),
+              setShowDrop(false)
+            }}
+            onDragOver={(e) => e.preventDefault()}></div>
+          <div className={`relative w-full px-2 py-2 gap-2 mb-2 flex justify-end items-center rounded-t-md border-b-[1px] ${!showDrop && "bg-white/80 z-50"}`}>
             <div className="w-fit">
-              <Tooltip title="Actions" placement="top" arrow className="cursor-pointer w-5 h-5 p-1 rounded-full hover:bg-black/20 pointer" onClick={() => setToggleAction(!toggleAction)}>
+              <Tooltip title="Actions" placement="top" arrow className="cursor-pointer w-5 h-5 p-1 rounded-full hover:bg-black/20 pointer z-50" onClick={() => setToggleAction(!toggleAction)}>
                 <MoreVertIcon/>
               </Tooltip>
               {toggleAction && <div className="absolute w-[50%] top-12 right-0 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md z-50">
                 <ul>
-                  <li className="flex justify-between hover:bg-neutral-400 p-2 z-50" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false)}>Edit <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
+                  <li className="flex justify-between hover:bg-neutral-400 p-2 z-50" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false) & editNoteRef.current.focus()}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
                   <hr className="border-[0.2px] border-black/10"/>
                   <li className="flex justify-between hover:bg-neutral-400 p-2" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }}/></li>
                 </ul>
@@ -109,7 +115,7 @@ const Todo = ({note, noteId, bgColor, activeNote}) => {
                     <button className={"w-8 h-8 z-20 text-black/70 hover:text-neutral hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
                   </div>
 
-                  <textarea type="text" value={getNote} onChange={handleChange} className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} p-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
+                  <textarea type="text" ref={editNoteRef} value={getNote} onChange={handleChange} className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} p-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
 
                   <div className="relative w-full flex justify-center items-center py-10">
                       <ColorPallete show={showColorPallete} addBackground={handleColorOption}/>

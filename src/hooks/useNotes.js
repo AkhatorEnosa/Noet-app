@@ -13,6 +13,7 @@ const useNotes = () => {
         },
         refetchOnWindowFocus: false,
         refetchOnReconnect: true,
+        refetchOnMount: true
     });
 
     // return useQuery({
