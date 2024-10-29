@@ -2,12 +2,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import supabase from "../config/supabaseClient.config"
 
 
-const useCreateTodo = () => {
+const useCreateNote = () => {
     const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (newTodo) => {
-        const {data, error} = await supabase.from('data').insert(newTodo)
+    mutationFn: async (newNote) => {
+        const {data, error} = await supabase.from('data').insert(newNote)
 
         if(error) console.log(error)
         return data
@@ -20,4 +20,4 @@ const useCreateTodo = () => {
   })
 }
 
-export default useCreateTodo
+export default useCreateNote

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
-import useCreateTodo from "../hooks/useCreateNote"
+import useCreateNote from "../hooks/useCreateNote"
 import useNotes from "../hooks/useNotes"
-import Todo from "../components/Todo"
+import Note from "../components/Note"
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import DescriptionIcon from '@mui/icons-material/Description';
@@ -14,21 +14,18 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ColorPallete from "../components/ColorPallete";
-import { motion } from "framer-motion"
 import useUpdateNotes from "../hooks/useUpdateNotes";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
 
 const Home = () => {
-  const todos = useSelector((state) => state.data.todos)
+  const stateNotes = useSelector((state) => state.data.notes)
   let inputRef = useRef('')
 
   const {error, isLoading, fetchStatus} = useNotes()
-  const {mutate} = useCreateTodo()
+  const {mutate} = useCreateNote()
   const {mutate:updateIndexNums} = useUpdateNotes()
-
-  // const [oldNotes, setOldNotes] = useState(localStorage.getItem("notes"))
 
   const [notes, setNotes] = useState()
   const [wordCount, setWordCount] = useState(0)
@@ -36,18 +33,17 @@ const Home = () => {
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState("")
   const [activeNote, setactiveNote] = useState(null)
-  // const [index, setIndex] = useState(null)
-  // const [status, setstatus] = useState('')
 
   useEffect(() => {
-      setNotes(todos?.data)
-  }, [todos?.data])
+      setNotes(stateNotes?.data)
+    console.log("notes in useeffect => ", notes)
+  }, [stateNotes?.data])
 
-  const handleTodoAdd = (e) => {
+  const handleNoteAdd = (e) => {
     e.preventDefault()
     if(inputRef.current.value.trim() !== "") {
       mutate({data_value: inputRef.current.value.toString(), bg_color: colorOptionValue, index_num: notes[0].index_num + 2})
-      // setNotes(todos.data)
+      // setNotes(Notes.data)
       setShowInput(false)
     } else {
       inputRef.current.focus();
@@ -77,32 +73,47 @@ const Home = () => {
 
     if(activeNote == null || activeNote == undefined) return
 
-    const noteToMove = notes.filter(note => note.index_num == activeNote)
-    const udpatedNotes = notes.filter((note) => note.index_num !== activeNote)
-    
-    udpatedNotes.splice(position, 0, noteToMove[0])
-    const getOtherNote = udpatedNotes.slice(position + 1, position + 2)
+    var notesCopy = JSON.parse(JSON.stringify(notes))
 
+    const noteToMove = notes.filter(note => note.index_num == activeNote.index_num)
+    const updatedNotes = notes.filter((note) => note.index_num !== activeNote.index_num)
+    
+    updatedNotes.splice(position, 0, noteToMove[0])
+    // const getOtherNote = updatedNotes.slice(position + 1, position + 2);
+
+    console.log("position", position)
+    console.log("notetomoveindex", notes.indexOf(noteToMove[0]))
+    console.log("note to move", noteToMove)
+    console.log('before manipulation', notesCopy)
+
+    notesCopy[position].index_num = notes[notes.indexOf(noteToMove[0])].index_num
+    notesCopy[notes.indexOf(noteToMove[0])].index_num = notes[position].index_num
+
+    // console.log("Notes Copy", notesCopy.sort((a,b) => b.index_num - a.index_num))
+
+    setNotes(notesCopy.sort((a,b) => b.index_num - a.index_num))
     updateIndexNums({
-      id_one: activeNote.id, 
-      index_two: getOtherNote[0].index_num, 
-      index_one: activeNote.index_num,
-      id_two: getOtherNote[0].id, 
+      id_one: notesCopy[position].id, 
+      index_two: notesCopy[position].index_num, 
+      index_one: notesCopy[notes.indexOf(noteToMove[0])].index_num,
+      id_two: notesCopy[notes.indexOf(noteToMove[0])].id, 
     })
+
+    // console.log("Notes outside use effect ", notes)
   }
 
   if(error) return  <h3>Error: {error}</h3>
-  if (todos !== null) return (
+  if (stateNotes !== null) return (
     <div className="w-full flex flex-col gap-5 px-3 py-5 md:px-10 lg:px-20 md:py-10 justify-center items-center overflow-scroll">
         <div className={showInput ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50 duration-300 transition-all"}>
               <div className={showInput && "absolute w-full h-full bg-black/70"} onClick={() => setShowInput(!showInput)}  role="button" aria-disabled="true"></div>
               <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
-                <form onSubmit={handleTodoAdd} className={showInput ? "scale-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-300 transition-all z-50" : "scale-0 relative gap-4 w-full h-full pb-2 border justify-center items-center rounded-lg shadow-md bg-white duration-300 transition-all"}>
+                <form onSubmit={handleNoteAdd} className={showInput ? "scale-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-300 transition-all z-50" : "scale-0 relative gap-4 w-full h-full pb-2 border justify-center items-center rounded-lg shadow-md bg-white duration-300 transition-all"}>
                   <div className="flex items-center justify-end top-2 right-2 px-2 py-2">
                     <button className={"w-8 h-8 z-20 text-black/70 hover:text-neutral hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
                   </div>
 
-                  <textarea type="text" ref={inputRef} onInput={()=> inputRef.current && setWordCount(inputRef.current.value.length)}  className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} p-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
+                  <textarea type="text" ref={inputRef} onInput={()=> inputRef.current && setWordCount(inputRef.current.value.length)}  className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} p-4 placeholder:text-black text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
 
                   <div className="relative w-full flex justify-center items-center py-10">
                       <ColorPallete show={showColorPallete} addBackground={handleColorOption}/>
@@ -140,7 +151,7 @@ const Home = () => {
                     
                     notes?.map((note) => (
                       <React.Fragment key={note.id}>
-                        <Todo 
+                        <Note 
                         noteId={note.id}
                         note={note.data_value}
                         bgColor={note.bg_color}
@@ -174,6 +185,24 @@ export default Home
 
 
 
+    // var returnFromSplicedNotes= notesCopy.splice(notes[position], 1, notes[notes.indexOf(noteToMove[0])])[0]
+    // notesCopy[notes.indexOf(noteToMove[0])] = returnFromSplicedNotes
+
+    // [notes[notes.indexOf(noteToMove[0])], notes[position]] = [notes[position], notes[notes.indexOf(noteToMove[0])]]
+    // console.log(returnFromSplicedNotes)
+    // console.log(notes)
+
+    // console.log("id_one", notesCopy[position].id)
+    // console.log("index_two", notesCopy[position].index_num)
+    // console.log("index_one", notesCopy[notes.indexOf(noteToMove[0])].index_num)
+    // console.log("id_two", notesCopy[notes.indexOf(noteToMove[0])].id )
+
+
+    // console.log("id_one", activeNote.id)
+    // console.log("index_two", getOtherNote[0].index_num)
+    // console.log("index_one", activeNote.index_num)
+    // console.log("id_two", getOtherNote[0].id)
+
 
     // console.log(udpatedNotes)
     // console.log(activeNote.id, getOtherNote[0].index_num)
@@ -191,3 +220,18 @@ export default Home
 
     // setNotes(udpatedNotes)
     // setstatus(`update card with index ${activeNote.index_num} and id ${activeNote.id} to index ${getOtherNote[0].index_num} and ${getOtherNote[0].id}`)
+
+
+
+    // console.log("id_one", notesCopy[notes.indexOf(noteToMove[0])].id)
+    // console.log("index_two", notesCopy[position].index_num)
+    // console.log("index_one", notesCopy[notes.indexOf(noteToMove[0])].index_num)
+    // console.log("id_two", notesCopy[position].id)
+
+    // // setNotes(notesCopy.sort((a,b) => b.index_num - a.index_num))
+    // updateIndexNums({
+    //   id_one: notesCopy[notes.indexOf(noteToMove[0])].id, 
+    //   index_two: notesCopy[position].index_num, 
+    //   index_one: notesCopy[notes.indexOf(noteToMove[0])].index_num,
+    //   id_two: notesCopy[position].id, 
+    // })

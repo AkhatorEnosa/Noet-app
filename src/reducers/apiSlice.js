@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import supabase from '../config/supabaseClient.config';
 
 const initialState = {
-  todos: null,
+  notes: null,
   error: null,
   isLoading: false,
 };
@@ -26,11 +26,11 @@ const apiSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(fetchData.fulfilled, (state, action) => {
-        state.todos = action.payload;
+        state.notes = action.payload;
         state.isLoading = false;
       })
       .addCase(fetchData.rejected, (state, action) => {
-        state.todos = action.error.message;
+        state.notes = action.error.message;
         state.isLoading = false;
       });
   },

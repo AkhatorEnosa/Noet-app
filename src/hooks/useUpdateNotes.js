@@ -6,10 +6,6 @@ const useUpdateNotes = () => {
 
     return useMutation({
         mutationFn: async ({id_one, index_two, id_two, index_one}) => {
-            // const {data, error} = await supabase.from('data')
-            // .update({index_num: index_two})
-            // .eq('id', id_one)
-
 
             const { data, error } = await supabase
             .from('data')
@@ -21,22 +17,12 @@ const useUpdateNotes = () => {
 
             if(error) console.log(error)
 
-            // console.log("id", id_one)
-            // console.log("index", index_two)
-            // console.log("id", id_two)
-            // console.log("index", index_one)
+            // console.log("id_one", id_one)
+            // console.log("index_two", index_two)
+            // console.log("id_two", id_two)
+            // console.log("index_one", index_one)
 
             return data
-
-            // if(data) {
-            //     const {data:data2, error:error2} = await supabase.from('data')
-            //     .update({index_num: index_one})
-            //     .eq('id', id_two)
-
-            //     if(error2) console.log(error)
-
-            //     return data2
-            // }
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
