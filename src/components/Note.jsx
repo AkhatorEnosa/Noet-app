@@ -40,9 +40,11 @@ const Note = ({note, noteId, bgColor, draggedNote, activeNote, handleDrop}) => {
     if(getNote.trim() !== "") {
       update({data_value: getNote.trim().toString(), id: noteId, bg_color: colorOptionValue})
       setShowEditModal(!showEditModal)
+      setShowColorPallete(false)
     } else {
       setGetNote('')
       setWordCount(0)
+      setShowColorPallete(false)
     }
   }
 
@@ -56,7 +58,7 @@ const Note = ({note, noteId, bgColor, draggedNote, activeNote, handleDrop}) => {
     setGetNote(note)
     setWordCount(note.length)
     setShowEditModal(!showEditModal)
-    setShowColorPallete(null)
+    setShowColorPallete(false)
   }
 
 
@@ -74,11 +76,11 @@ const Note = ({note, noteId, bgColor, draggedNote, activeNote, handleDrop}) => {
   }
   
   return (
-    <article className="note">
+     <article className="note">
  
         <motion.div
           initial={{
-            scale: 0
+            scale: 1.1
           }}
           animate={{
             scale: 1
@@ -87,11 +89,14 @@ const Note = ({note, noteId, bgColor, draggedNote, activeNote, handleDrop}) => {
             scale: 0
           }}
           transition={{
+            type: "spring",
+            stiffness: 100,
             duration: 0.5,
             ease: "anticipate"
           }}
           layout
-         className={showEditModal || showDeleteModal ? "opacity-0 break-inside-avoid w-full" : `relative break-inside-avoid aspect-video w-full ${bgColor} shadow-md rounded-t-md text-lg hover:shadow-lg transition-shadow duration-200 break-words active:cursor-grab ${showDrop ? "border-blue-500 border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-40" : "z-10"}`} draggable="true" 
+
+         className={showEditModal || showDeleteModal ? "opacity-0 break-inside-avoid w-full" : `relative break-inside-avoid aspect-video w-full ${bgColor} rounded-md text-lg hover:shadow-md transition-shadow duration-200 break-words active:cursor-grab ${showDrop ? "border-blue-500 border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-40" : "z-10"}`} draggable="true" 
 
             onDragStart={() => activeNote(draggedNote)} 
             onDragEnd={() => activeNote(null)}
@@ -108,13 +113,13 @@ const Note = ({note, noteId, bgColor, draggedNote, activeNote, handleDrop}) => {
               <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full hover:bg-black/20 pointer z-50" onClick={() => setToggleAction(!toggleAction)}>
                 <MoreVertIcon/>
               </Tooltip>
-              {toggleAction && <div className="absolute w-[50%] top-12 right-0 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md z-50">
+              {toggleAction && <motion.div className="absolute w-[50%] top-12 right-0 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md z-50">
                 <ul>
                   <li className="flex justify-between hover:bg-neutral-400 p-2 z-50" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false) & editNoteRef.current.focus()}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
                   <hr className="border-[0.2px] border-black/10"/>
                   <li className="flex justify-between hover:bg-neutral-400 p-2" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }}/></li>
                 </ul>
-              </div>}
+              </motion.div>}
             </div>
           </div>
           <p className={note.length > 300 ? "w-full text-sm leading-normal px-3 pt-3 pb-4" : "w-full leading-normal px-3 pt-2 pb-4"}>

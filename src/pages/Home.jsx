@@ -15,6 +15,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ColorPallete from "../components/ColorPallete";
 import useUpdateNotes from "../hooks/useUpdateNotes";
+import SignIn from "../components/SignIn";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
@@ -42,7 +43,7 @@ const Home = () => {
   const handleNoteAdd = (e) => {
     e.preventDefault()
     if(inputRef.current.value.trim() !== "") {
-      mutate({data_value: inputRef.current.value.toString(), bg_color: colorOptionValue, index_num: notes[0].index_num + 2})
+      mutate({data_value: inputRef.current.value.toString(), bg_color: colorOptionValue == "" ? "bg-white" : colorOptionValue, index_num: notes[0].index_num + 2})
       // setNotes(Notes.data)
       setShowInput(false)
     } else {
@@ -105,6 +106,7 @@ const Home = () => {
   if(error) return  <h3>Error: {error}</h3>
   if (stateNotes !== null) return (
     <div className="w-full flex flex-col gap-5 px-3 py-5 md:px-10 lg:px-20 md:py-10 justify-center items-center overflow-scroll">
+    {/* <SignIn /> */}
         <div className={showInput ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50 duration-300 transition-all"}>
               <div className={showInput && "absolute w-full h-full bg-black/70"} onClick={() => setShowInput(!showInput)}  role="button" aria-disabled="true"></div>
               <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
@@ -146,7 +148,7 @@ const Home = () => {
         <div className="w-full flex flex-col justify-center items-center">
 
             {!isLoading && notes?.length > 0 ? <div className="w-full gap-4 flex flex-col items-center justify-center">
-                <div className="w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 mx-auto">
+                <div className="w-full gap-4 columns-2 md:columns-3 lg:columns-4 space-y-4 mx-auto">
                   {
                     
                     notes?.map((note) => (
