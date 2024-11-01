@@ -1,14 +1,15 @@
 import { useQuery } from "@tanstack/react-query"
 import { fetchData } from "../reducers/apiSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const useNotes = () => {
+  const stateUser = useSelector((state) => state.data.user)
     const dispatch = useDispatch();
 
     return useQuery({
         queryKey: ['notes'],
         queryFn: async() => {
-            const result = await dispatch(fetchData());
+            const result = await dispatch(fetchData(stateUser.id));
             return result.payload;
         },
         refetchOnWindowFocus: false,

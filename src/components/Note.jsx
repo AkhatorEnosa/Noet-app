@@ -186,7 +186,7 @@ const Note = ({note, noteId, bgColor, draggedNote, activeNote, handleDrop}) => {
                 <hr />
                 <p className="text-sm">Are you sure you want to Delete?</p>
                 <div className="w-full flex justify-center items-center gap-5 mt-5 text-sm">
-                  {isPending || isSuccess ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-error rounded-md" onClick={() => mutate(noteId) && setShowDeleteModal(!showDeleteModal)}><DeleteRoundedIcon />Accept</button>
+                  {isPending || isSuccess ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-error rounded-md text-sm text-white" onClick={() => mutate(noteId) && setShowDeleteModal(!showDeleteModal)}><DeleteRoundedIcon />Yes, Delete</button>
                   <button className="flex justify-center items-center p-3 bg-neutral hover:bg-black text-white rounded-md" onClick={() => setShowDeleteModal(!showDeleteModal)}><ClearRoundedIcon/>Cancel</button></>}
                 </div> 
             </div>
