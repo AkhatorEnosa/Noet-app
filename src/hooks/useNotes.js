@@ -3,31 +3,20 @@ import { fetchData } from "../reducers/apiSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const useNotes = () => {
-  const stateUser = useSelector((state) => state.data.user)
     const dispatch = useDispatch();
+    const user = useSelector((state) => state.data.user)
 
     return useQuery({
         queryKey: ['notes'],
         queryFn: async() => {
-            const result = await dispatch(fetchData(stateUser.id));
-            return result.payload;
+            const result = dispatch(fetchData(user.id))
+            return result;
         },
+        initialData: [],
         refetchOnWindowFocus: false,
         refetchOnReconnect: true,
-        refetchOnMount: true
-    });
-
-    // return useQuery({
-    //     queryKey: ['notes'],
-    //     queryFn: async() => {
-    //         const {data} = await supabase.from('data').select().order('id', {
-    //             ascending: false
-    //         });
-    //         return data
-    //     },
-    //     refetchOnWindowFocus: false,
-    //     refetchOnReconnect: true,
-    // })
+        retry: true
+    })
 }
 
 export default useNotes

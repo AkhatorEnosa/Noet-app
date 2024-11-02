@@ -35,8 +35,8 @@ const Home = () => {
 
   useEffect(() => {
       setUid(stateUser?.id)
-      setNotes(stateNotes?.data)
-  }, [stateNotes?.data, stateUser?.id])
+      setNotes(stateNotes)
+  }, [stateNotes, stateUser?.id])
 
   const handleNoteAdd = (e) => {
     e.preventDefault()
@@ -102,7 +102,7 @@ const Home = () => {
   }
 
   if(userLoading) return <div className="py-52 w-full  flex justify-center items-center">A moment please...</div>
-  if(error) return  <h3>Error: {error}</h3>
+  if(error) return  <h3>Error: {console.log(error)}</h3>
   if (stateUser == null) {
     return <SignIn />
   } else {
@@ -148,7 +148,7 @@ const Home = () => {
 
           <div className="w-full flex flex-col justify-center items-center">
 
-              {!isLoading && notes?.length > 0 ? <div className="w-full gap-4 flex flex-col items-center justify-center">
+              {!isLoading && !userLoading && notes?.length > 0 ? <div className="w-full gap-4 flex flex-col items-center justify-center">
                   <div className="w-full gap-4 columns-2 md:columns-3 lg:columns-4 space-y-4 mx-auto">
                     {
                       
@@ -167,7 +167,7 @@ const Home = () => {
                       ))
                     }
                   </div>
-              </div> : isLoading ? <div className="py-52 w-full  flex justify-center items-center">A moment please...</div> : 
+              </div> : 
               <div className="py-40 w-full  flex justify-center items-center">
                 <div className="flex flex-col w-full md:w-96 text-neutral-500 justify-center items-center text-center">
                   <DescriptionIcon  sx={{ fontSize: 200 }}/>

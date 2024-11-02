@@ -2,10 +2,20 @@ import { useSelector } from "react-redux"
 import Logo from '../assets/logo.webp'
 import useSignOut from "../hooks/useSignOut"
 import {motion} from "framer-motion"
+import { useEffect, useState } from "react"
 
 const Navbar = () => {
   const { user, isLoading } = useSelector(state => (state.data))
   const {mutate} = useSignOut()
+
+  const [name, setName] = useState("")
+  const [imgUrl, setImgUrl] = useState("")
+
+  useEffect(() => {
+    setName(user?.identities[0].identity_data.name)
+    setImgUrl(user?.identities[0].identity_data.avatar_url)
+  }, [user?.identities])
+  
 
   const handleSignOut = async() => {
       mutate()
@@ -18,8 +28,8 @@ const Navbar = () => {
           {user !== null && 
           <div className="flex justify-center items-center gap-5">
             <div className="flex gap-2 justify-center items-center bg-gray-200 pl-2 pr-5 py-2 rounded-full">
-              <img src={user.identities[0].identity_data.avatar_url} alt="" className="w-8 h-8 rounded-full border-black border-[1px]"/>
-              <p>{user.identities[0].identity_data.name}</p>
+              <img src={imgUrl} alt="" className="w-8 h-8 rounded-full border-black border-[1px]"/>
+              <p>{name}</p>
             </div>
             <motion.button
               whileHover={{

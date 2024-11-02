@@ -13,9 +13,7 @@ export const signIn = createAsyncThunk('api/signIn', async() => {
         provider: 'google'
     })
 
-
     if (error) throw error
-
     return data
 })
 
@@ -23,9 +21,7 @@ export const getUser = createAsyncThunk('api/getUser', async() => {
   const { data: { user }, error } = await supabase.auth.getUser()
 
   if(error) throw error
-  if (user) {
     return user
-  }
 })
 
 export const signOut = createAsyncThunk('api/signOut', async() => {
@@ -35,9 +31,7 @@ export const signOut = createAsyncThunk('api/signOut', async() => {
   return data
 })
 
-export const fetchData = createAsyncThunk(
-  'api/fetchData',
-  async (id) => {
+export const fetchData = createAsyncThunk('api/fetchData', async (id) => {
     const { data, error } = await supabase.
       from('data')
       .select()
@@ -45,7 +39,9 @@ export const fetchData = createAsyncThunk(
       .order('index_num', {
         ascending: false
     });
-    return { data, error };
+    
+    if(error) return error
+    if (data) return data;
   }
 );
 

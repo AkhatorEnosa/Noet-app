@@ -16,7 +16,7 @@ const SignIn = () => {
 
   if (!isLoading) return (
     <motion.div 
-      className='w-full h-[100%] grid grid-cols-5 justify-center px-10 py-56 items-center'
+      className='w-full h-[100%] flex flex-col gap-2 md:grid grid-cols-5 justify-center px-10 py-56 items-center'
       initial={{
         opacity: 0
       }}
@@ -33,7 +33,7 @@ const SignIn = () => {
         <p>Welcome to,</p>
         <img src={Logo} alt="Logo" className='w-64'/>
        </div>
-       <div className='w-full h-full flex justify-center items-center px-3 col-span-2 border-l'>
+       <div className='w-full h-full flex justify-center items-center px-3 col-span-2 md:border-l'>
         <motion.button 
           whileHover={{
             scale: 1.05,
