@@ -20,7 +20,8 @@ const Navbar = () => {
   const handleSignOut = async() => {
       mutate()
   }
-    return (
+
+    if(user !== null) return (
       <div className="nav w-full flex justify-between items-center px-3 md:px-20 py-3 md:py-5 shadow-md z-50 bg-white text-sm">
         <img src={Logo} alt="Logo" className="w-14 md:w-20"/>
 
