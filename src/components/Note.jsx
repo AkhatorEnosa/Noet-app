@@ -12,9 +12,10 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import useUpdateNote from "../hooks/useUpdateNote";
 import Tooltip from '@mui/material/Tooltip';
 import { motion } from 'framer-motion'
+import moment from "moment/moment";
 
 /* eslint-disable react/prop-types */
-const Note = ({note, noteId, bgColor, draggedNote, activeNote, handleDrop}) => {
+const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handleDrop}) => {
 
   const [getNote, setGetNote] = useState(note)
   const [wordCount, setWordCount] = useState(note.length)
@@ -101,7 +102,7 @@ const Note = ({note, noteId, bgColor, draggedNote, activeNote, handleDrop}) => {
           }}
           layout
 
-          className={showEditModal || showDeleteModal ? "opacity-0 break-inside-avoid w-full" : `relative break-inside-avoid aspect-video w-full ${bgColor} rounded-md text-lg hover:shadow-lg transition-shadow duration-200 break-words active:cursor-grab ${showDrop ? "border-blue-500 border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-40" : "z-10"}`} draggable="true" 
+          className={showEditModal || showDeleteModal ? "opacity-0 break-inside-avoid w-full" : `group relative break-inside-avoid aspect-video w-full ${bgColor} rounded-md text-lg hover:shadow-lg transition-shadow duration-200 break-words active:cursor-grab ${showDrop ? "border-blue-500 border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-40" : "z-10"}`} draggable="true" 
 
             onDragStart={() => activeNote(draggedNote)} 
             onDragEnd={() => activeNote(null)}
@@ -117,18 +118,19 @@ const Note = ({note, noteId, bgColor, draggedNote, activeNote, handleDrop}) => {
           <div className="absolute w-full h-full" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false) & editNoteRef.current.focus()}></div>
 
           {/* <div className={showDrop ? "absolute w-full border-blue-500 border-2 rounded-md h-full z-50" : ""}></div> */}
-          <div className={`relative w-full px-2 py-2 gap-2 mb-2 flex justify-end items-center rounded-t-md border-b-[1px] ${!showDrop && "bg-white/80 z-50"}`}>
+          <div className={`relative w-full px-2 py-2 gap-2 mb-2 flex justify-between items-center rounded-t-md border-b-[1px] ${!showDrop && "bg-white/80 z-50"}`}>
+            <span className="group-hover:opacity-100 opacity-0 text-xs font-light transition-all duration-150">noeted on <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></span>
             <div className="w-fit">
               <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full hover:bg-black/20 pointer z-50" onClick={() => setToggleAction(!toggleAction)}>
                 <MoreVertIcon/>
               </Tooltip>
-              {toggleAction && <motion.div className="absolute w-[50%] top-12 right-0 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md z-50">
+              {toggleAction && <div className="absolute w-[50%] top-12 right-0 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md z-50">
                 <ul>
                   <li className="flex justify-between hover:bg-neutral-400 p-2 z-50" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false) & editNoteRef.current.focus()}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
                   <hr className="border-[0.2px] border-black/10"/>
                   <li className="flex justify-between hover:bg-neutral-400 p-2" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }}/></li>
                 </ul>
-              </motion.div>}
+              </div>}
             </div>
           </div>
           <p className={note.length > 300 ? "w-full text-sm leading-normal px-3 pt-3 pb-4" : "w-full leading-normal px-3 pt-2 pb-4"}>

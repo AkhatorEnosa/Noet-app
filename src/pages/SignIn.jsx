@@ -30,7 +30,7 @@ const SignIn = () => {
           animate={{ x: 0}}
           transition={{ type: "spring", damping: 8, velocity: 2}}
         >
-          <h2 className='px-20 text-3xl md:text-5xl text-center font-semibold'>Get your <i className='text-blue-500 font-extrabold not-italic'>thoughts</i> and <i className='text-blue-500 font-extrabold not-italic'>ideas</i>, <i className='text-blue-500 font-extrabold not-italic'>structured</i> and <i className='text-blue-500 font-extrabold not-italic'>organised</i>, all in one place.</h2>
+          <h2 className='px-20 text-3xl lg:text-5xl text-center font-semibold'>Get your <i className='text-blue-500 font-extrabold not-italic'>thoughts</i> and <i className='text-blue-500 font-extrabold not-italic'>ideas</i>, <i className='text-blue-500 font-extrabold not-italic'>structured</i> and <i className='text-blue-500 font-extrabold not-italic'>organised</i>, all in one place.</h2>
         </motion.div>
        </motion.div>
 

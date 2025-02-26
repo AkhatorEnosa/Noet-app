@@ -159,6 +159,7 @@ const Home = () => {
                           <Note 
                           noteId={note.id}
                           note={note.data_value}
+                          note_date={note.created_at}
                           bgColor={note.bg_color}
                           updateId={note.id}
                           draggedNote={note}
