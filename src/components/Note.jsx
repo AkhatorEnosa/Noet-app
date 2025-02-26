@@ -74,6 +74,11 @@ const Note = ({note, noteId, bgColor, draggedNote, activeNote, handleDrop}) => {
     const getColorValue = (e.target.className).split(" ").filter((x) => /bg-/.test(x))[0]
     setColorOptionValue(getColorValue)
   }
+
+  const renderLink = ({ attributes, content }) => {
+    const { href, ...props } = attributes;
+    return <a href={href} target="_blank" {...props} className="relative z-20 hover:underline">{content}</a>;
+  };
   
   return (
      <article className="note">
@@ -89,14 +94,14 @@ const Note = ({note, noteId, bgColor, draggedNote, activeNote, handleDrop}) => {
             scale: 0
           }}
           transition={{
-            type: "spring",
-            stiffness: 100,
-            duration: 0.5,
+            type: "tween",
+            // stiffness: 100,
+            // duration: 0.5,
             ease: "anticipate"
           }}
           layout
 
-         className={showEditModal || showDeleteModal ? "opacity-0 break-inside-avoid w-full" : `relative break-inside-avoid aspect-video w-full ${bgColor} rounded-md text-lg hover:shadow-md transition-shadow duration-200 break-words active:cursor-grab ${showDrop ? "border-blue-500 border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-40" : "z-10"}`} draggable="true" 
+          className={showEditModal || showDeleteModal ? "opacity-0 break-inside-avoid w-full" : `relative break-inside-avoid aspect-video w-full ${bgColor} rounded-md text-lg hover:shadow-lg transition-shadow duration-200 break-words active:cursor-grab ${showDrop ? "border-blue-500 border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-40" : "z-10"}`} draggable="true" 
 
             onDragStart={() => activeNote(draggedNote)} 
             onDragEnd={() => activeNote(null)}
@@ -106,7 +111,11 @@ const Note = ({note, noteId, bgColor, draggedNote, activeNote, handleDrop}) => {
               handleDrop(),
               setShowDrop(false)
             }}
-            onDragOver={(e) => e.preventDefault()}>
+            onDragOver={(e) => e.preventDefault()}
+        >
+
+          <div className="absolute w-full h-full" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false) & editNoteRef.current.focus()}></div>
+
           {/* <div className={showDrop ? "absolute w-full border-blue-500 border-2 rounded-md h-full z-50" : ""}></div> */}
           <div className={`relative w-full px-2 py-2 gap-2 mb-2 flex justify-end items-center rounded-t-md border-b-[1px] ${!showDrop && "bg-white/80 z-50"}`}>
             <div className="w-fit">
@@ -123,25 +132,29 @@ const Note = ({note, noteId, bgColor, draggedNote, activeNote, handleDrop}) => {
             </div>
           </div>
           <p className={note.length > 300 ? "w-full text-sm leading-normal px-3 pt-3 pb-4" : "w-full leading-normal px-3 pt-2 pb-4"}>
-            <Linkify>
-                {
+            <Linkify options={{ render: renderLink }}>
+                <pre className={`break-words whitespace-pre-wrap font-sans line-clamp-6 md:line-clamp-none`}>{
                   truncateNote(note)
-                }
+                }</pre>
             </Linkify>
           </p>
         </motion.div>
 
        <div className={toggleAction ? "fixed w-full h-full top-0 left-0 z-30" : "hidden"} onClick={() => setToggleAction(false)}></div>
 
-        <div className={showEditModal ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50 duration-200 transition-all"}>
-              <div className={showEditModal && "absolute w-full h-full md:bg-black/75"} onClick={() => setShowEditModal(!showEditModal)}  role="button" aria-disabled="true"></div>
+        {/* Edit modal  */}
+        <div className={showEditModal ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
+
+              {/* backdrop  */}
+              <div className={showEditModal && "fixed w-full h-full md:bg-black/75"} onClick={() => setShowEditModal(!showEditModal)}></div>
+
               <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
-                <form onSubmit={handleNoteUpdate} className={showEditModal ? "scale-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-200 transition-all z-50" : "scale-0 relative gap-4 w-full h-full pb-2 border justify-center items-center rounded-lg shadow-md bg-white duration-200 transition-all"}>
+                <form onSubmit={handleNoteUpdate} className={`${showEditModal ? "opacity-100" : "opacity-0"} relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-150 transition-all z-50`}>
                   <div className="flex items-center justify-end top-2 right-2 px-2 py-2">
                     <button className={"w-8 h-8 z-20 text-black/70 hover:text-neutral hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
                   </div>
 
-                  <textarea type="text" ref={editNoteRef} value={getNote} onChange={handleChange} className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} placeholder:text-black p-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Noet"/>
+                  <textarea type="text" ref={editNoteRef} value={getNote} onChange={handleChange} className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} placeholder:text-black p-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Noet" maxLength={1000}/>
 
                   <div className="relative w-full flex justify-center items-center py-10">
                       <ColorPallete show={showColorPallete} addBackground={handleColorOption}/>
@@ -172,16 +185,14 @@ const Note = ({note, noteId, bgColor, draggedNote, activeNote, handleDrop}) => {
               </div>
         </div>
 
-        {showDeleteModal && <motion.div layout
-          initial={{scale: 0}}
-          animate={{scale: 1}}
-          exit={{scale: 0}}
-          transition={{
-            duration: 0.2,
-            ease: "easeInOut"
-          }}
-          className="fixed w-full h-full top-0 left-0 flex justify-center items-center bg-black md:bg-black/70 z-50">
-            <div className="w-full h-full md:w-96 md:h-auto flex flex-col gap-3 px-4 py-4 bg-white rounded-md">
+        {/* Delete modal  */}
+        <div
+          className={showDeleteModal ? "fixed w-full h-full top-0 left-0 flex justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
+
+            {/* backdrop  */}
+            <div className={showDeleteModal && "w-full h-full fixed bg-black md:bg-black/75"} onClick={() => setShowDeleteModal(!showDeleteModal)}></div>
+
+            <div className={`w-full h-full md:w-96 md:h-auto flex flex-col gap-3 px-4 py-4 ${showDeleteModal ? "opacity-100" : "opacity-0"} bg-white rounded-md transition-all duration-150 z-30`}>
                 <h1 className="text-lg font-semibold">Delete</h1>
                 <hr />
                 <p className="text-sm">Are you sure you want to Delete?</p>
@@ -190,7 +201,7 @@ const Note = ({note, noteId, bgColor, draggedNote, activeNote, handleDrop}) => {
                   <button className="flex justify-center items-center p-3 bg-neutral hover:bg-black text-white rounded-md" onClick={() => setShowDeleteModal(!showDeleteModal)}><ClearRoundedIcon/>Cancel</button></>}
                 </div> 
             </div>
-        </motion.div>}
+        </div>
     </article>
   )
 }

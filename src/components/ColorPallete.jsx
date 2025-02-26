@@ -2,7 +2,7 @@
 
 const ColorPallete = ({show, addBackground}) => {
   return (
-    <div className={show ? "absolute flex items-center justify-center bottom-24 md:top-0 gap-2 z-50" : "hidden"}>
+    <div className={`absolute flex items-center justify-center bottom-24 md:top-0 ${show ? "scale-100" : "scale-0 translate-y-10"} transition-all duration-150 gap-2 z-50`}>
       <div className="relative w-8 h-8 flex justify-center items-center rounded-full bg-white border-[1px] border-black cursor-pointer" onClick={addBackground}></div>
       <div className="w-8 h-8 rounded-full bg-green-100 border-[1px] border-black cursor-pointer" onClick={addBackground}></div>
       <div className="w-8 h-8 rounded-full bg-red-100 border-[1px] border-black cursor-pointer" onClick={addBackground}></div>

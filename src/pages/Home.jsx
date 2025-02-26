@@ -12,7 +12,7 @@ import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
 import { useSelector } from "react-redux";
 import ColorPallete from "../components/ColorPallete";
 import useUpdateNotes from "../hooks/useUpdateNotes";
-import SignIn from "../components/SignIn";
+import SignIn from "./SignIn";
 import useGetUser from "../hooks/useGetUser";
 
 const Home = () => {
@@ -108,10 +108,10 @@ const Home = () => {
   } else {
     if (stateNotes !== null && isSuccess) return (
       <div className="w-full flex flex-col gap-5 px-3 py-5 md:px-10 lg:px-20 md:py-10 justify-center items-center overflow-scroll">
-          <div className={showInput ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50 duration-300 transition-all"}>
-                <div className={showInput && "absolute w-full h-full bg-black/70"} onClick={() => setShowInput(!showInput)}  role="button" aria-disabled="true"></div>
+          <div className={showInput ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
+                <div className={showInput && "fixed w-full h-full bg-black/70"} onClick={() => setShowInput(!showInput)}></div>
                 <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
-                  <form onSubmit={handleNoteAdd} className={showInput ? "scale-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-300 transition-all z-50" : "scale-0 relative gap-4 w-full h-full pb-2 border justify-center items-center rounded-lg shadow-md bg-white duration-300 transition-all"}>
+                  <form onSubmit={handleNoteAdd} className={`${showInput ? "opacity-100" : "opacity-0"} relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-150 transition-all z-50`}>
                     <div className="flex items-center justify-end top-2 right-2 px-2 py-2">
                       <button className={"w-8 h-8 z-20 text-black/70 hover:text-neutral hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
                     </div>
@@ -122,7 +122,7 @@ const Home = () => {
                         <ColorPallete show={showColorPallete} addBackground={handleColorOption}/>
                         
                         {fetchStatus !== "idle" ? <span className="loading loading-spinner loading-sm"></span> : 
-                        <div className={`w-full flex justify-center gap-4 items-center px-3 md:px-5 pt-4`}>
+                        <div className={`w-full flex justify-center ${wordCount > 0 ? "gap-4" : "gap-0"} items-center px-3 md:px-5 pt-4 transition-all duration-150`}>
                           <div className="flex gap-2 justify-center items-center">
                             <Tooltip title="Choose color" arrow>
                               <i className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? 'bg-warning shadow-lg border-none' : 'border-[1px] border-neutral'} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `} onClick={() => setShowColorPallete(!showColorPallete)}>
@@ -145,6 +145,8 @@ const Home = () => {
                   </form>
                 </div>
           </div>
+
+          <div className="bg-white/95 h-screen w-screen fixed top-0"></div>
 
           <div className="w-full flex flex-col justify-center items-center">
 
@@ -176,8 +178,9 @@ const Home = () => {
               </div>
               }
           </div>
-            {fetchStatus === "idle" && <Tooltip title="Add Noet" arrow placement="top"  className="fixed bottom-4 md:bottom-10">
-              <button type="submit" className="cursor-pointer w-16 h-16 lg:w-[4.5rem] lg:h-[4.5rem] flex justify-center items-center rounded-full hover:bg-neutral bg-gray-700 text-white transition-all duration-300 z-40" onClick={() => setShowInput(!showInput)  & inputRef.current.focus()}> {showInput ? <ClearRoundedIcon sx={{ fontSize: 30 }}/> : <AddRoundedIcon sx={{ fontSize: 30 }}/>}</button>
+
+            {fetchStatus === "idle" && <Tooltip title="Add Noet" arrow placement="top"  className="fixed bottom-4 md:bottom-10 z-40">
+              <button type="submit" className="cursor-pointer w-16 h-16 lg:w-[4.5rem] lg:h-[4.5rem] flex justify-center items-center rounded-full hover:bg-neutral-950 bg-neutral-700 hover:shadow-md text-white transition-all duration-300 z-40" onClick={() => setShowInput(!showInput)  & inputRef.current.focus()}> {showInput ? <ClearRoundedIcon sx={{ fontSize: 30 }}/> : <AddRoundedIcon sx={{ fontSize: 30 }}/>}</button>
             </Tooltip>}
 
       </div>

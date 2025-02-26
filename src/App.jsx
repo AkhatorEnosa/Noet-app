@@ -3,7 +3,7 @@ import Home from "./pages/Home"
 
 function App() {
   return (
-    <div className="w-full relative top-0 bottom-0 bg-white" translate="yes">
+    <div className="w-screen flex flex-col justify-between items-center relative bg-[url(./assets/bg-img.webp)] bg-opacity-5" translate="yes">
         <Navbar />
         <Home />
     </div>
