@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+
 import { useSelector } from "react-redux"
 import Logo from '../assets/logo.webp'
 import useSignOut from "../hooks/useSignOut"

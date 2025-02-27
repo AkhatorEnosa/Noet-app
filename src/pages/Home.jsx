@@ -113,7 +113,7 @@ const Home = () => {
                 <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
                   <form onSubmit={handleNoteAdd} className={` relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-150 transition-all z-50`}>
                     <div className="flex items-center justify-end top-2 right-2 px-2 py-2">
-                      <button className={"w-8 h-8 z-20 text-black/70 hover:text-neutral hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
+                      <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
                     </div>
 
                     <textarea type="text" ref={inputRef} onInput={()=> inputRef.current && setWordCount(inputRef.current.value.length)}  className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} p-4 placeholder:text-black text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
@@ -132,12 +132,12 @@ const Home = () => {
                           </div>
 
                           <Tooltip title="Erase" arrow>
-                            <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 bg-gray-400 shadow-lg border-none text-white hover:text-neutral transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon /></button>
+                            <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 bg-gray-400 shadow-lg border-none text-white hover:text-neutral transition-all duration-300": "w-0 h-0 scale-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon /></button>
                           </Tooltip>
 
 
                           <Tooltip title="Add" arrow>
-                            <button type="submit" className={wordCount > 0 ? "cursor-pointer w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-neutral bg-neutral text-white z-30 transition-all duration-200" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon/></button>
+                            <button type="submit" className={wordCount > 0 ? "cursor-pointer w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-neutral bg-neutral text-white z-30 transition-all duration-200" : "w-0 h-0 scale-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon/></button>
                           </Tooltip>
                         </div>
                         }
@@ -145,8 +145,7 @@ const Home = () => {
                   </form>
                 </div>
           </div>
-
-          {/* <div className="bg-white/95 h-screen w-screen fixed top-0"></div> */}
+          
 
           <div className="w-full flex flex-col justify-center items-center">
 
@@ -180,8 +179,12 @@ const Home = () => {
               }
           </div>
 
-            {fetchStatus === "idle" && <Tooltip title="Add Noet" arrow placement="top"  className="fixed bottom-4 md:bottom-10 z-40">
-              <button type="submit" className="cursor-pointer w-16 h-16 lg:w-[4.5rem] lg:h-[4.5rem] flex justify-center items-center rounded-full hover:bg-neutral-950 bg-neutral-700 hover:shadow-md text-white transition-all duration-300 z-40" onClick={() => setShowInput(!showInput)  & inputRef.current.focus()}> {showInput ? <ClearRoundedIcon sx={{ fontSize: 30 }}/> : <AddRoundedIcon sx={{ fontSize: 30 }}/>}</button>
+            {fetchStatus === "idle" && <Tooltip title="Add Noet" arrow placement="top"  className="fixed bottom-4 md:bottom-10 right-10 lg:right-12 z-40">
+              <div className="bg-[#333333] p-2 rounded-full">
+                <button type="submit" className="cursor-pointer w-16 h-16 lg:w-[3.5rem] lg:h-[3.5rem] flex justify-center items-center rounded-full shadow-md shadow-white text-white transition-all duration-300 z-40" onClick={() => setShowInput(!showInput)  & inputRef.current.focus()}> 
+                  <AddRoundedIcon sx={{ fontSize: 30 }}/> 
+                </button>
+              </div>
             </Tooltip>}
 
       </div>
