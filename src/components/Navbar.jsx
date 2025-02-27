@@ -4,7 +4,7 @@ import useSignOut from "../hooks/useSignOut"
 import {motion} from "framer-motion"
 import { useEffect, useState } from "react"
 
-const Navbar = () => {
+const Navbar = ({ variant }) => {
   const { user, isLoading } = useSelector(state => (state.data))
   const {mutate} = useSignOut()
 
@@ -22,7 +22,7 @@ const Navbar = () => {
   }
 
     if(user !== null) return (
-      <div className="nav w-full flex justify-between items-center px-3 md:px-20 py-3 md:py-5 shadow-md z-50 bg-white text-sm">
+      <div className={`w-full flex justify-between items-center px-3 md:px-20 py-3 md:py-5 shadow-md z-50 bg-white text-sm ${variant}`}>
         <img src={Logo} alt="Logo" className="w-14 md:w-20"/>
 
         <div className="flex gap-3">

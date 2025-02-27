@@ -107,11 +107,11 @@ const Home = () => {
     return <SignIn />
   } else {
     if (stateNotes !== null && isSuccess) return (
-      <div className="w-full flex flex-col gap-5 px-3 py-5 md:px-10 lg:px-20 md:py-10 justify-center items-center overflow-scroll">
+      <div className="relative w-full flex flex-col gap-5 px-3 py-5 md:px-10 lg:px-20 md:py-10 justify-center items-center overflow-scroll">
           <div className={showInput ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
                 <div className={showInput && "fixed w-full h-full bg-black/70"} onClick={() => setShowInput(!showInput)}></div>
                 <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
-                  <form onSubmit={handleNoteAdd} className={`${showInput ? "opacity-100" : "opacity-0"} relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-150 transition-all z-50`}>
+                  <form onSubmit={handleNoteAdd} className={` relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-150 transition-all z-50`}>
                     <div className="flex items-center justify-end top-2 right-2 px-2 py-2">
                       <button className={"w-8 h-8 z-20 text-black/70 hover:text-neutral hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
                     </div>
@@ -146,7 +146,7 @@ const Home = () => {
                 </div>
           </div>
 
-          <div className="bg-white/95 h-screen w-screen fixed top-0"></div>
+          {/* <div className="bg-white/95 h-screen w-screen fixed top-0"></div> */}
 
           <div className="w-full flex flex-col justify-center items-center">
 

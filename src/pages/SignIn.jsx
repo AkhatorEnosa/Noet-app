@@ -12,11 +12,11 @@ const SignIn = () => {
     mutate()
   }
 
-  if(isPending || isLoading) return <div className="animate-pulse py-52 w-full h-screen bg-white/90 flex justify-center items-center">A moment please...</div>
+  if(isPending || isLoading) return <div className="animate-pulse py-52 w-full h-screen flex justify-center items-center">A moment please...</div>
 
   if (!isLoading) return (
     <div 
-      className='w-full h-full flex flex-col bg-white/90 gap-10 md:grid grid-cols-5 justify-center px-10 py-44 items-center '
+      className='relative w-screen h-screen flex flex-col gap-10 md:grid grid-cols-5 justify-center px-10 py-44 items-center '
     >
        <motion.div 
         initial={{y: -40}} 
