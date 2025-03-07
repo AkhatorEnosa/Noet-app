@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 
 import { useSelector } from "react-redux"
-import Logo from '../assets/logo.webp'
+// import Logo from '../assets/logo.webp'
 import useSignOut from "../hooks/useSignOut"
 import {motion} from "framer-motion"
 import { useEffect, useState } from "react"
@@ -25,7 +25,7 @@ const Navbar = ({ variant }) => {
 
     if(user !== null) return (
       <div className={`w-full flex justify-between items-center px-3 md:px-20 py-3 md:py-5 shadow-md z-50 bg-white text-sm ${variant}`}>
-        <img src={Logo} alt="Logo" className="w-14 md:w-20"/>
+        <h1 className="logo-nav">my<b>Noet</b></h1>
 
         <div className="flex gap-3">
           {user !== null && 

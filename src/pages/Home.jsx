@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import useCreateNote from "../hooks/useCreateNote"
 import useNotes from "../hooks/useNotes"
 import Note from "../components/Note"
@@ -9,21 +9,29 @@ import Tooltip from '@mui/material/Tooltip';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ColorPallete from "../components/ColorPallete";
 import useUpdateNotes from "../hooks/useUpdateNotes";
 import SignIn from "./SignIn";
 import useGetUser from "../hooks/useGetUser";
+import Search from "../components/Search";
+import { useDebounce } from "react-use";
+import { searchData } from "../reducers/apiSlice";
+// import useSearch from "../hooks/useSearch";
 
 const Home = () => {
   const stateNotes = useSelector((state) => state.data.notes)
   const stateUser = useSelector((state) => state.data.user)
+  const dispatch = useDispatch()
+
+
   let inputRef = useRef('')
 
   const { isLoading:userLoading, isSuccess } = useGetUser()
   const {error, isLoading, fetchStatus} = useNotes()
   const {mutate} = useCreateNote()
   const {mutate:updateIndexNums} = useUpdateNotes()
+  // const {mutate:searchData} = useSearch()
 
   const [uid, setUid] = useState()
   const [notes, setNotes] = useState()
@@ -32,6 +40,17 @@ const Home = () => {
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState("")
   const [activeNote, setactiveNote] = useState(null)
+
+  const [searchInput, setSearchInput] = useState("")
+  const [debouncedSearchInput, setDebouncedSearchInput] = useState("")
+
+  // This hook debounces the searchTerm from making a request to the api on every change. Debouncing stalls the request until searchTerm does not change for a number of time 
+  useDebounce(() => {
+    setDebouncedSearchInput(searchInput)
+    }, 500, [searchInput]
+  )
+
+  useMemo(() => dispatch(searchData({ searchInput: debouncedSearchInput, id: stateUser?.id })), [dispatch, stateUser?.id, debouncedSearchInput])
 
   useEffect(() => {
       setUid(stateUser?.id)
@@ -148,8 +167,15 @@ const Home = () => {
           
 
           <div className="w-full flex flex-col justify-center items-center">
+              <div className="w-[50%] my-8">
+                <Search 
+                  searchInput={searchInput}
+                  setSearchInput={setSearchInput}
+                />
+              </div>
 
-              {!isLoading && !userLoading && notes?.length > 0 ? <div className="w-full gap-4 flex flex-col items-center justify-center">
+              {!isLoading && !userLoading && notes?.length > 0 ?
+               <div className="w-full gap-4 flex flex-col items-center justify-center">
                   <div className="w-full gap-4 columns-2 md:columns-3 lg:columns-4 space-y-4 mx-auto">
                     {
                       
@@ -169,11 +195,11 @@ const Home = () => {
                       ))
                     }
                   </div>
-              </div> : 
+                </div> : 
               <div className="py-40 w-full  flex justify-center items-center">
                 <div className="flex flex-col w-full md:w-96 text-neutral-500 justify-center items-center text-center">
                   <DescriptionIcon  sx={{ fontSize: 200 }}/>
-                  <p>You have no <b>Noets</b> yet. Click the create below Icon to create one..</p>
+                  <p>No <b>Noets</b> found</p>
                 </div>
               </div>
               }

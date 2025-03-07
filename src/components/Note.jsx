@@ -124,7 +124,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
               <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full bg-black/10 lg:bg-transparent lg:hover:bg-black/20 pointer z-50" onClick={() => setToggleAction(!toggleAction)}>
                 <MoreVertIcon/>
               </Tooltip>
-              {toggleAction && <div className="absolute w-[50%] top-12 right-0 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md z-50">
+              {toggleAction && <div className="absolute w-[50%] top-12 right-1 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md z-50">
                 <ul>
                   <li className="flex justify-between hover:bg-neutral-400 p-2 z-50" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false) & editNoteRef.current.focus()}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
                   <hr className="border-[0.2px] border-black/10"/>

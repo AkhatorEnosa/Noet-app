@@ -4,6 +4,7 @@ import supabase from '../config/supabaseClient.config';
 const initialState = {
   user: null,
   notes: null,
+  searchedNotes: null,
   error: null,
   isLoading: false,
 };
@@ -45,6 +46,26 @@ export const fetchData = createAsyncThunk('api/fetchData', async (id) => {
   }
 );
 
+export const searchData = createAsyncThunk('api/searchData', async ({ searchInput, id }) => {
+    if(id) {
+      const { data, error } = await supabase.
+        from('data')
+        .select()
+        .ilike('data_value', `%${searchInput}%`)
+        .eq('user_id', id)
+        .order('index_num', {
+          ascending: false
+      });
+      
+      if(error) return error
+      if (data) {
+        // console.log(data);
+        return data;
+      }
+    }
+  }
+);
+
 const apiSlice = createSlice({
   name: 'api',
   initialState,
@@ -59,6 +80,19 @@ const apiSlice = createSlice({
       })
       .addCase(fetchData.rejected, (state, action) => {
         state.notes = action.error.message;
+        state.isLoading = false;
+      })
+      .addCase(searchData.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(searchData.fulfilled, (state, action) => {
+        state.notes = action.payload;
+        state.searchedNotes = action.payload;
+        state.isLoading = false;
+      })
+      .addCase(searchData.rejected, (state, action) => {
+        state.notes = action.error.message;
+        state.searchedNotes = action.error.message;
         state.isLoading = false;
       })
       .addCase(signIn.pending, (state) => {
