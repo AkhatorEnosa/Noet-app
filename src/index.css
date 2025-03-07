@@ -19,7 +19,7 @@
   @apply text-4xl lg:text-8xl 
 }
 
-.logo-nav, .logo-signin > b {
+.logo-nav > b, .logo-signin > b {
   @apply capitalize ;
   font-family: "Montserrat Alternates", sans-serif;
 }
