@@ -120,7 +120,7 @@ const Home = () => {
     // console.log("Notes outside use effect ", notes)
   }
 
-  if(userLoading) return <div className="animate-pulse py-52 w-full  flex justify-center items-center">A moment please...</div>
+  if(userLoading || isLoading) return <div className="animate-pulse py-52 w-full  flex justify-center items-center">A moment please...</div>
   if(error) return  <h3>Error: {console.log(error)}</h3>
   if (stateUser == null) {
     return <SignIn />
@@ -174,7 +174,7 @@ const Home = () => {
                 />
               </div>
 
-              {!isLoading && !userLoading && notes?.length > 0 ?
+              {stateNotes !== null && notes?.length > 0 ?
                <div className="w-full gap-4 flex flex-col items-center justify-center">
                   <div className="w-full gap-4 columns-2 md:columns-3 lg:columns-4 space-y-4 mx-auto">
                     {

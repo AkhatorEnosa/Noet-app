@@ -10,7 +10,11 @@ const useNotes = () => {
         queryKey: ['notes'],
         queryFn: async() => {
             const result = dispatch(fetchData(user.id))
-            return result;
+            if(result !== undefined) {
+                return result;
+            } else {
+                return null
+            }
         },
         initialData: [],
         refetchOnWindowFocus: false,

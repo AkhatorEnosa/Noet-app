@@ -22,7 +22,7 @@ export const getUser = createAsyncThunk('api/getUser', async() => {
   const { data: { user }, error } = await supabase.auth.getUser()
 
   if(error) throw error
-    return user
+  return user
 })
 
 export const signOut = createAsyncThunk('api/signOut', async() => {
@@ -72,6 +72,7 @@ const apiSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchData.pending, (state) => {
+        state.notes = null;
         state.isLoading = true;
       })
       .addCase(fetchData.fulfilled, (state, action) => {
@@ -87,12 +88,12 @@ const apiSlice = createSlice({
       })
       .addCase(searchData.fulfilled, (state, action) => {
         state.notes = action.payload;
-        state.searchedNotes = action.payload;
+        // state.searchedNotes = action.payload;
         state.isLoading = false;
       })
       .addCase(searchData.rejected, (state, action) => {
         state.notes = action.error.message;
-        state.searchedNotes = action.error.message;
+        // state.searchedNotes = action.error.message;
         state.isLoading = false;
       })
       .addCase(signIn.pending, (state) => {

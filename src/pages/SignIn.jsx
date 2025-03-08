@@ -16,7 +16,7 @@ const SignIn = () => {
 
   if (!isLoading) return (
     <div 
-      className='relative w-full flex flex-col gap-10 md:grid grid-cols-5 justify-center px-10 py-44 items-center'
+      className='relative w-full flex flex-col gap-10 lg:grid lg:grid-cols-5 justify-center px-10 py-44 items-center'
     >
        <motion.div 
         initial={{y: -40}} 

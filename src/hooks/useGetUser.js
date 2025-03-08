@@ -9,7 +9,11 @@ const useGetUser = () => {
         queryKey: ['user'],
         queryFn: async() => {
             const result = await dispatch(getUser());
-            return result.payload;
+            if(result.payload != undefined) {
+                return result.payload;
+            } else {
+                return null
+            }
         },
         initialData: [],
         refetchOnWindowFocus: false,
