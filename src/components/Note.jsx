@@ -13,6 +13,7 @@ import useUpdateNote from "../hooks/useUpdateNote";
 import Tooltip from '@mui/material/Tooltip';
 import { motion } from 'framer-motion'
 import moment from "moment/moment";
+import { useSelector } from "react-redux";
 
 /* eslint-disable react/prop-types */
 const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handleDrop}) => {
@@ -25,6 +26,8 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
   const [colorOptionValue, setColorOptionValue] = useState(bgColor)
   const [toggleAction, setToggleAction] = useState(false)
   const [showDrop, setShowDrop] = useState(false)
+
+  const stateLoading = useSelector((state) => state.data.isLoading)
 
   const editNoteRef = useRef()
 
@@ -40,7 +43,13 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
     e.preventDefault()
     if(getNote.trim() !== "") {
       update({data_value: getNote.trim().toString(), id: noteId, bg_color: colorOptionValue})
-      setShowEditModal(!showEditModal)
+      
+      setTimeout(() => {
+        if(!updating) {
+          setShowEditModal(!showEditModal)
+        }
+      }, 1000);
+
       setShowColorPallete(false)
     } else {
       setGetNote('')
@@ -163,7 +172,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                   <div className="relative w-full flex justify-center items-center py-10">
                       <ColorPallete show={showColorPallete} addBackground={handleColorOption}/>
                       
-                      {updating ? <span className="loading loading-spinner loading-sm"></span> : 
+                      {updating || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : 
                       <div className={`w-full flex justify-center gap-4 items-center px-3 md:px-5 pt-4`}>
                         <div className="flex gap-2 justify-center items-center">
                           <Tooltip title="Choose color" arrow>
@@ -201,7 +210,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                 <hr />
                 <p className="text-sm">Are you sure you want to Delete?</p>
                 <div className="w-full flex justify-center items-center gap-5 mt-5 text-sm">
-                  {isPending || isSuccess ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-error rounded-md text-sm text-white" onClick={() => mutate(noteId) && setShowDeleteModal(!showDeleteModal)}><DeleteRoundedIcon />Yes, Delete</button>
+                  {isPending || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-error rounded-md text-sm text-white" onClick={() => mutate(noteId) && setShowDeleteModal(!showDeleteModal)}><DeleteRoundedIcon />Yes, Delete</button>
                   <button className="flex justify-center items-center p-3 bg-neutral hover:bg-black text-white rounded-md" onClick={() => setShowDeleteModal(!showDeleteModal)}><ClearRoundedIcon/>Cancel</button></>}
                 </div> 
             </div>

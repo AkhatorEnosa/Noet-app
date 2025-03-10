@@ -22,6 +22,7 @@ import { searchData } from "../reducers/apiSlice";
 const Home = () => {
   const stateNotes = useSelector((state) => state.data.notes)
   const stateUser = useSelector((state) => state.data.user)
+  // const stateLoading = useSelector((state) => state.data.isLoading)
   const dispatch = useDispatch()
 
 
@@ -29,7 +30,7 @@ const Home = () => {
 
   const { isLoading:userLoading, isSuccess } = useGetUser()
   const {error, isLoading, fetchStatus} = useNotes()
-  const {mutate} = useCreateNote()
+  const {mutate, isPending} = useCreateNote()
   const {mutate:updateIndexNums} = useUpdateNotes()
   // const {mutate:searchData} = useSearch()
 
@@ -50,26 +51,34 @@ const Home = () => {
     }, 500, [searchInput]
   )
 
-  useMemo(() => dispatch(searchData({ searchInput: debouncedSearchInput, id: stateUser?.id })), [dispatch, stateUser?.id, debouncedSearchInput])
-
+  
   useEffect(() => {
-      setUid(stateUser?.id)
+    setUid(stateUser?.id)
+    if(stateUser !== null) {
       setNotes(stateNotes)
+    }
   }, [stateNotes, stateUser?.id])
 
+  useMemo(() => dispatch(searchData({ searchInput: debouncedSearchInput, id: stateUser?.id })), [dispatch, stateUser?.id, debouncedSearchInput])
+  
   const handleNoteAdd = (e) => {
     e.preventDefault()
     if(inputRef.current.value.trim() !== "") {
       mutate({data_value: inputRef.current.value.toString(), bg_color: colorOptionValue == "" ? "bg-white" : colorOptionValue, index_num: notes.length > 0 ? notes[0].index_num + 2 : 2, user_id: uid})
       // setNotes(Notes.data)
-      setShowInput(false)
+      setTimeout(() => {
+        if(!isPending) {
+          setShowInput(!showInput)
+          inputRef.current.value = ''
+          setWordCount(0)
+          setShowColorPallete(false)
+        }
+      }, 1000);
     } else {
       inputRef.current.focus();
       setWordCount(0)
     }
-      inputRef.current.value = ''
-      setWordCount(0)
-      setShowInput(false)
+      // setShowInput(false)
   }
 
   const clearInput = () => {
@@ -120,7 +129,7 @@ const Home = () => {
     // console.log("Notes outside use effect ", notes)
   }
 
-  if(userLoading || isLoading) return <div className="animate-pulse py-52 w-full  flex justify-center items-center">A moment please...</div>
+  if(userLoading) return <div className="animate-pulse py-52 w-full  flex justify-center items-center">A moment please...</div>
   if(error) return  <h3>Error: {console.log(error)}</h3>
   if (stateUser == null) {
     return <SignIn />
@@ -140,7 +149,7 @@ const Home = () => {
                     <div className="relative w-full flex justify-center items-center py-10">
                         <ColorPallete show={showColorPallete} addBackground={handleColorOption}/>
                         
-                        {fetchStatus !== "idle" ? <span className="loading loading-spinner loading-sm"></span> : 
+                        {fetchStatus == "fetching" || isLoading ? <span className="loading loading-spinner loading-sm"></span> : 
                         <div className={`w-full flex justify-center ${wordCount > 0 ? "gap-4" : "gap-0"} items-center px-3 md:px-5 pt-4 transition-all duration-150`}>
                           <div className="flex gap-2 justify-center items-center">
                             <Tooltip title="Choose color" arrow>
@@ -174,7 +183,7 @@ const Home = () => {
                 />
               </div>
 
-              {stateNotes !== null && notes?.length > 0 ?
+              {stateNotes !== null && !isLoading && notes?.length > 0 ?
                <div className="w-full gap-4 flex flex-col items-center justify-center">
                   <div className="w-full gap-4 columns-2 md:columns-3 lg:columns-4 space-y-4 mx-auto">
                     {

@@ -72,7 +72,7 @@ const apiSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchData.pending, (state) => {
-        state.notes = null;
+        // state.notes = null;
         state.isLoading = true;
       })
       .addCase(fetchData.fulfilled, (state, action) => {
@@ -113,6 +113,7 @@ const apiSlice = createSlice({
       })
       .addCase(getUser.fulfilled, (state, action) => {
         state.user = action.payload;
+        state.notes = null;
         state.isLoading = false;
       })
       .addCase(getUser.rejected, (state, action) => {
