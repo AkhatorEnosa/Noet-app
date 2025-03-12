@@ -5,6 +5,7 @@ import { useSelector } from "react-redux"
 import useSignOut from "../hooks/useSignOut"
 import {motion} from "framer-motion"
 import { useEffect, useState } from "react"
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 
 const Navbar = ({ variant }) => {
   const { user, isLoading } = useSelector(state => (state.data))
@@ -48,7 +49,7 @@ const Navbar = ({ variant }) => {
           {isLoading ? 
           <div className="flex gap-2">
             <span className="loading loading-spinner loading-sm"></span>
-          </div> : "Sign Out"}</motion.button>
+           </div> : <p className="flex gap-2 items-center justify-center text-xs"><LogoutRoundedIcon sx={{ fontSize: "18px" }}/><span className="hidden lg:block">Logout</span></p>}</motion.button>
           </div>}
         </div>
       </div>
