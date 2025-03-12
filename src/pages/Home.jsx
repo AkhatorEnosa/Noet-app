@@ -142,7 +142,7 @@ const Home = () => {
   } else {
     if (stateNotes !== null && isSuccess) return (
       <div className="relative w-full flex flex-col gap-5 px-3 py-5 md:px-10 lg:px-20 md:py-10 justify-center items-center overflow-scroll">
-          <div className={showInput ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
+          <div className={showInput ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-[60]" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
                 <div className={showInput && "fixed w-full h-full bg-black/70"} onClick={() => setShowInput(!showInput)}></div>
                 <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
                   <form onSubmit={handleNoteAdd} className={` relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-150 transition-all z-50`}>
@@ -181,8 +181,8 @@ const Home = () => {
           </div>
           
 
-          <div className="w-full flex flex-col justify-center items-center">
-              <div className="flex justify-center items-center gap-2 lg:gap-6 w-full my-8">
+          <div className="w-full flex flex-col gap-4 justify-center items-center">
+              <div className="flex justify-center items-center gap-2 lg:gap-6 w-full my-2 md:my-8">
                 <Search 
                   searchInput={searchInput}
                   setSearchInput={setSearchInput}
@@ -196,7 +196,7 @@ const Home = () => {
 
               {stateNotes !== null && !isLoading && notes?.length > 0 ?
                <div className="w-full gap-4 flex flex-col items-center justify-center">
-                  <div className="w-full gap-4 columns-2 md:columns-3 lg:columns-4 space-y-4 mx-auto">
+                  <div className="w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto">
                     {
                       
                       notes?.map((note) => (
@@ -225,9 +225,9 @@ const Home = () => {
               }
           </div>
 
-            <Tooltip title="Add Noet" arrow placement="top"  className="fixed bottom-4 md:bottom-10 right-10 lg:right-12 z-40">
+            <Tooltip title="Add Noet" arrow placement="top"  className="fixed bottom-4 md:bottom-10 right-10 lg:right-12 z-30">
               <div className="bg-[#333333] p-2 rounded-full">
-                <button type="submit" className="cursor-pointer w-16 h-16 lg:w-[3.5rem] lg:h-[3.5rem] flex justify-center items-center rounded-full shadow-md shadow-white text-white transition-all duration-300 z-40" onClick={() => setShowInput(!showInput)  & inputRef.current.focus()}> 
+                <button type="submit" className="cursor-pointer w-16 h-16 lg:w-[3.5rem] lg:h-[3.5rem] flex justify-center items-center rounded-full shadow-md shadow-white text-white transition-all duration-300 z-30" onClick={() => setShowInput(!showInput)  & inputRef.current.focus()}> 
                   <AddRoundedIcon sx={{ fontSize: 30 }}/> 
                 </button>
               </div>

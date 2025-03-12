@@ -12,7 +12,7 @@
 }
 
 .logo-nav {
-  @apply text-4xl
+  @apply text-2xl lg:text-4xl
 }
 
 .logo-signin {
