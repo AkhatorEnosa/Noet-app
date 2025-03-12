@@ -3,7 +3,7 @@ import SortRoundedIcon from '@mui/icons-material/SortRounded';
 import { Tooltip } from '@mui/material';
 import { useState } from 'react';
 
-const FilterButton = ({ setSortValue, options }) => {
+const FilterButton = ({ sortValue, setSortValue, options }) => {
     const [showSortOptions, setShowOptions] = useState(false)
 
 
@@ -17,7 +17,7 @@ const FilterButton = ({ setSortValue, options }) => {
         <div className={`${showSortOptions ? "z-40" : "z-0"} w-screen h-screen top-0 left-0 fixed`} onClick={()=> setShowOptions(false)}></div>
         <ul className={`${showSortOptions ? "scale-100" : "scale-0"} lg:w-52 top-16 divide-y bg-white border-[1px] border-gray-300 rounded-md shadow-md absolute text-xs transition-all duration-150 ease-in-out overflow-hidden z-50`}>
             {options.map((option) => (
-                <li key={option} className='capitalize p-3 hover:bg-blue-500/10' onClick={() => setShowOptions(false) & setSortValue(option)}>{option}</li>
+                <li key={option} className={`capitalize p-3 hover:bg-blue-500/10 ${sortValue == option && 'font-extrabold bg-blue-500/10'}`} onClick={() => setShowOptions(false) & setSortValue(option)}>{option}</li>
             ))}
         </ul>
     </div>

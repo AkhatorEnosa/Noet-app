@@ -190,6 +190,7 @@ const Home = () => {
                 <FilterButton 
                   options={options}
                   setSortValue={setSortValue}
+                  sortValue={sortValue}
                 />
               </div>
 
