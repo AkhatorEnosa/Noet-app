@@ -5,5 +5,5 @@ export const store = configureStore({
     reducer: {
         data: apiReducer
     },
-    devTools: true
+    devTools: false
 })

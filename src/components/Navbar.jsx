@@ -31,7 +31,7 @@ const Navbar = ({ variant }) => {
           {user !== null && 
           <div className="flex justify-center items-center gap-5">
             <div className="w-[40%] sm:w-fit flex gap-2 justify-center items-center bg-gray-200 pl-2 pr-5 py-2 rounded-full">
-              <img src={imgUrl} alt="" className="w-8 h-8 rounded-full border-black border-[1px]"/>
+              <img src={imgUrl} alt="" className="w-8 h-8 rounded-full border-gray-300 border-[1px]"/>
               <p className="line-clamp-1">{name}</p>
             </div>
             <motion.button

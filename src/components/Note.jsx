@@ -31,7 +31,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
 
   const editNoteRef = useRef()
 
-  const {mutate, isPending, isSuccess} = useDeleteNote()
+  const {mutate, isPending} = useDeleteNote()
   const {mutate:update, isPending:updating, } = useUpdateNote()
 
   const handleChange = (e) => {
@@ -127,7 +127,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           <div className="absolute w-full h-full" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false) & editNoteRef.current.focus()}></div>
 
           {/* <div className={showDrop ? "absolute w-full border-blue-500 border-2 rounded-md h-full z-50" : ""}></div> */}
-          <div className={`relative w-full px-2 py-2 gap-2 mb-2 flex justify-end items-center rounded-t-md border-b-[1px] ${!showDrop && "bg-white/80 z-50"}`}>
+          <div className={`relative w-full px-2 py-2 gap-2 mb-2 flex justify-end items-center rounded-md group-hover:shadow ${!showDrop && "bg-white/80 z-50"}`}>
             <span className="flex md:gap-2 flex-col md:flex-row group-hover:lg:opacity-100 lg:opacity-0 text-xs font-light transition-all duration-150">noeted on <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></span>
             <div className="w-fit">
               <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full bg-black/10 lg:bg-transparent lg:hover:bg-black/20 pointer z-50" onClick={() => setToggleAction(!toggleAction)}>
@@ -142,7 +142,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
               </div>}
             </div>
           </div>
-          <div className={note.length > 300 ? "w-full text-sm leading-normal px-3 pt-3 pb-4" : "w-full leading-normal px-3 pt-2 pb-4"}>
+          <div className={note.length > 300 ? "w-full text-xs leading-normal px-3 pt-2 pb-4" : "w-full leading-normal px-3 pt-2 pb-4"}>
             <Linkify options={{ render: renderLink }}>
                 <pre className={`break-words whitespace-pre-wrap font-sans line-clamp-6 lg:line-clamp-none`}>{
                   truncateNote(note)
@@ -163,7 +163,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                 <form onSubmit={handleNoteUpdate} className={`${showEditModal ? "opacity-100" : "opacity-0"} relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-150 transition-all z-50`}>
 
                   <div className="flex items-center justify-end gap-2 px-2 py-2">
-                    <span className={`flex lg:gap-2 flex-col md:flex-row border-[1px] px-4 py-2 rounded-full ${colorOptionValue} text-xs font-light transition-all duration-150`}>noeted on <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></span>
+                    <span className={`flex lg:gap-2 flex-row border-[1px] px-4 py-2 rounded-full ${colorOptionValue} text-xs font-light transition-all duration-150`}>noeted on <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></span>
                     <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
                   </div>
 

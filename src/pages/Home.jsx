@@ -9,30 +9,28 @@ import Tooltip from '@mui/material/Tooltip';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import ColorPallete from "../components/ColorPallete";
 import useUpdateNotes from "../hooks/useUpdateNotes";
 import SignIn from "./SignIn";
 import useGetUser from "../hooks/useGetUser";
 import Search from "../components/Search";
 import { useDebounce } from "react-use";
-import { searchData } from "../reducers/apiSlice";
-// import useSearch from "../hooks/useSearch";
+import FilterButton from "../components/FilterButton";
+
+const options = [ 'date', 'color', 'content', 'default']
 
 const Home = () => {
   const stateNotes = useSelector((state) => state.data.notes)
   const stateUser = useSelector((state) => state.data.user)
-  // const stateLoading = useSelector((state) => state.data.isLoading)
-  const dispatch = useDispatch()
 
 
   let inputRef = useRef('')
 
   const { isLoading:userLoading, isSuccess } = useGetUser()
-  const {error, isLoading, fetchStatus} = useNotes()
+  const { mutate:getNotes, error, isLoading, fetchStatus} = useNotes()
   const {mutate, isPending} = useCreateNote()
   const {mutate:updateIndexNums} = useUpdateNotes()
-  // const {mutate:searchData} = useSearch()
 
   const [uid, setUid] = useState()
   const [notes, setNotes] = useState()
@@ -45,12 +43,21 @@ const Home = () => {
   const [searchInput, setSearchInput] = useState("")
   const [debouncedSearchInput, setDebouncedSearchInput] = useState("")
 
+  const [sortValue, setSortValue] = useState("default")
+
   // This hook debounces the searchTerm from making a request to the api on every change. Debouncing stalls the request until searchTerm does not change for a number of time 
   useDebounce(() => {
     setDebouncedSearchInput(searchInput)
     }, 500, [searchInput]
   )
 
+  useMemo(() => getNotes({ 
+      id: stateUser?.id, 
+      sortValue: sortValue == 'color' ? 'bg_color' 
+                : sortValue == 'content' ? 'data_value' 
+                : sortValue == 'date' ? 'created_at' 
+                : 'index_num', searchInput: debouncedSearchInput
+    }), [getNotes, sortValue, stateUser?.id, debouncedSearchInput])
   
   useEffect(() => {
     setUid(stateUser?.id)
@@ -58,8 +65,7 @@ const Home = () => {
       setNotes(stateNotes)
     }
   }, [stateNotes, stateUser?.id])
-
-  useMemo(() => dispatch(searchData({ searchInput: debouncedSearchInput, id: stateUser?.id })), [dispatch, stateUser?.id, debouncedSearchInput])
+  
   
   const handleNoteAdd = (e) => {
     e.preventDefault()
@@ -176,10 +182,14 @@ const Home = () => {
           
 
           <div className="w-full flex flex-col justify-center items-center">
-              <div className="w-[50%] my-8">
+              <div className="flex justify-center items-center gap-2 lg:gap-6 w-full my-8">
                 <Search 
                   searchInput={searchInput}
                   setSearchInput={setSearchInput}
+                />
+                <FilterButton 
+                  options={options}
+                  setSortValue={setSortValue}
                 />
               </div>
 
@@ -214,13 +224,13 @@ const Home = () => {
               }
           </div>
 
-            {fetchStatus === "idle" && <Tooltip title="Add Noet" arrow placement="top"  className="fixed bottom-4 md:bottom-10 right-10 lg:right-12 z-40">
+            <Tooltip title="Add Noet" arrow placement="top"  className="fixed bottom-4 md:bottom-10 right-10 lg:right-12 z-40">
               <div className="bg-[#333333] p-2 rounded-full">
                 <button type="submit" className="cursor-pointer w-16 h-16 lg:w-[3.5rem] lg:h-[3.5rem] flex justify-center items-center rounded-full shadow-md shadow-white text-white transition-all duration-300 z-40" onClick={() => setShowInput(!showInput)  & inputRef.current.focus()}> 
                   <AddRoundedIcon sx={{ fontSize: 30 }}/> 
                 </button>
               </div>
-            </Tooltip>}
+            </Tooltip>
 
       </div>
     )

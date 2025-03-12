@@ -1,25 +1,25 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchData } from "../reducers/apiSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+
 
 const useNotes = () => {
     const dispatch = useDispatch();
-    const user = useSelector((state) => state.data.user)
+    // const user = useSelector((state) => state.data.user)
 
-    return useQuery({
-        queryKey: ['notes'],
-        queryFn: async() => {
-            const result = dispatch(fetchData(user.id))
-            if(result !== undefined) {
-                return result;
-            } else {
-                return null
-            }
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: async ({id, sortValue, searchInput}) => {
+            const result = dispatch(fetchData({id: id, filter: sortValue, searchInput}))
+
+            return result
         },
-        initialData: [],
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: true,
-        retry: true
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+            queryKey: ['notes'],
+            })
+        }
     })
 }
 
