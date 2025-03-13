@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import useCreateNote from "../hooks/useCreateNote"
-import useNotes from "../hooks/useNotes"
 import Note from "../components/Note"
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
@@ -17,20 +16,12 @@ import useGetUser from "../hooks/useGetUser";
 import Search from "../components/Search";
 import { useDebounce } from "react-use";
 import FilterButton from "../components/FilterButton";
+import useFetchNotes from "../hooks/useFetchNotes";
+import { motion } from 'framer-motion'
 
-const options = [ 'date', 'color', 'content', 'default']
+const options = [ 'date', 'content', 'default']
 
 const Home = () => {
-  const stateNotes = useSelector((state) => state.data.notes)
-  const stateUser = useSelector((state) => state.data.user)
-
-
-  let inputRef = useRef('')
-
-  const { isLoading:userLoading, isSuccess } = useGetUser()
-  const { mutate:getNotes, error, isLoading, fetchStatus} = useNotes()
-  const {mutate, isPending} = useCreateNote()
-  const {mutate:updateIndexNums} = useUpdateNotes()
 
   const [uid, setUid] = useState()
   const [notes, setNotes] = useState()
@@ -42,8 +33,19 @@ const Home = () => {
 
   const [searchInput, setSearchInput] = useState("")
   const [debouncedSearchInput, setDebouncedSearchInput] = useState("")
-
   const [sortValue, setSortValue] = useState("default")
+  const [message, setMessage] = useState("")
+
+
+  const stateNotes = useSelector((state) => state.data.notes)
+  const stateUser = useSelector((state) => state.data.user)
+
+
+  let inputRef = useRef('')
+
+  const { isLoading:userLoading, isSuccess } = useGetUser()
+  const {mutate, isPending} = useCreateNote()
+  const {mutate:updateIndexNums} = useUpdateNotes()
 
   // This hook debounces the searchTerm from making a request to the api on every change. Debouncing stalls the request until searchTerm does not change for a number of time 
   useDebounce(() => {
@@ -51,13 +53,25 @@ const Home = () => {
     }, 500, [searchInput]
   )
 
-  useMemo(() => getNotes({ 
-      id: stateUser?.id, 
-      sortValue: sortValue == 'color' ? 'bg_color' 
-                : sortValue == 'content' ? 'data_value' 
-                : sortValue == 'date' ? 'created_at' 
-                : 'index_num', searchInput: debouncedSearchInput
-    }), [getNotes, sortValue, stateUser?.id, debouncedSearchInput])
+
+  const { error, isLoading, fetchStatus} = useFetchNotes(stateUser?.id, sortValue == 'color' ? 'bg_color' 
+    : sortValue == 'content' ? 'data_value' 
+    : sortValue == 'date' ? 'created_at' 
+    : 'index_num', debouncedSearchInput)
+
+    useEffect(() => {
+      const timeoutId = setTimeout(() => {
+        setMessage(
+          <>
+            <DescriptionIcon  sx={{ fontSize: 200 }}/>
+            <p>No <b>Noets</b> found</p>
+          </>
+        );
+      }, 2000);
+  
+      // Cleanup function to clear the timeout
+      return () => clearTimeout(timeoutId);
+    }, []);
   
   useEffect(() => {
     setUid(stateUser?.id)
@@ -180,8 +194,8 @@ const Home = () => {
                 </div>
           </div>
           
-
-          <div className="w-full flex flex-col gap-4 justify-center items-center">
+          {/* Main section of Homepage  */}
+          <section className="w-full flex flex-col gap-4 justify-center items-center">
               <div className="flex justify-center items-center gap-2 lg:gap-6 w-full my-2 md:my-8">
                 <Search 
                   searchInput={searchInput}
@@ -218,19 +232,27 @@ const Home = () => {
                 </div> : 
               <div className="py-40 w-full  flex justify-center items-center">
                 <div className="flex flex-col w-full md:w-96 text-neutral-500 justify-center items-center text-center">
-                  <DescriptionIcon  sx={{ fontSize: 200 }}/>
-                  <p>No <b>Noets</b> found</p>
+                  {message}
                 </div>
               </div>
               }
-          </div>
+          </section>
 
             <Tooltip title="Add Noet" arrow placement="top"  className="fixed bottom-4 md:bottom-10 right-10 lg:right-12 z-30">
-              <div className="bg-[#333333] p-2 rounded-full">
-                <button type="submit" className="cursor-pointer w-16 h-16 lg:w-[3.5rem] lg:h-[3.5rem] flex justify-center items-center rounded-full shadow-md shadow-white text-white transition-all duration-300 z-30" onClick={() => setShowInput(!showInput)  & inputRef.current.focus()}> 
+              <motion.div
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0px 5px 10px rgba(0,0,0,0.1)"
+                }}
+                whileTap={{
+                  scale: 0.75,
+                  backgroundColor: 'rgba(20 130 255 1)'
+                }}
+                className="bg-blue-500 shadow p-2 rounded-full">
+                <button type="submit" className="cursor-pointer w-14 h-14 lg:w-[3rem] lg:h-[3rem] flex justify-center items-center rounded-full shadow-md shadow-white text-white transition-all duration-300 z-30" onClick={() => setShowInput(!showInput)  & inputRef.current.focus()}> 
                   <AddRoundedIcon sx={{ fontSize: 30 }}/> 
                 </button>
-              </div>
+              </motion.div>
             </Tooltip>
 
       </div>

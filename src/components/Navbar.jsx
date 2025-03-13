@@ -3,7 +3,7 @@
 import { useSelector } from "react-redux"
 // import Logo from '../assets/logo.webp'
 import useSignOut from "../hooks/useSignOut"
-import {motion} from "framer-motion"
+// import {motion} from "framer-motion"
 import { useEffect, useState } from "react"
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 
@@ -30,8 +30,8 @@ const Navbar = () => {
 
         <div className="flex gap-3">
           {user !== null && 
-          <div className="flex justify-center items-center gap-5">
-            <div className="flex gap-2 justify-center items-center bg-gray-200 pl-2 pr-5 py-2 rounded-full">
+          <div className="w-full flex justify-end items-center gap-5">
+            <div className="flex w-[50%] md:w-full gap-2 justify-center items-center bg-gray-200 pl-2 pr-5 py-2 rounded-full">
               <img src={imgUrl} alt="" className="w-8 h-8 rounded-full border-gray-300 border-[1px]"/>
               <p className="line-clamp-1">{name}</p>
             </div>

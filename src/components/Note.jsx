@@ -95,7 +95,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
  
         <motion.div
           initial={{
-            scale: 1.1
+            scale: 0.85
           }}
           animate={{
             scale: 1
@@ -111,7 +111,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           }}
           layout
 
-          className={showEditModal || showDeleteModal ? "opacity-0 break-inside-avoid w-full" : `group relative break-inside-avoid aspect-video w-full ${bgColor} rounded-md text-lg hover:shadow-lg transition-shadow duration-200 break-words active:cursor-grab ${showDrop ? "border-blue-500 border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-40" : "z-10"}`} draggable="true" 
+          className={showEditModal || showDeleteModal ? "opacity-0 break-inside-avoid w-full" : `group relative break-inside-avoid aspect-video w-full ${bgColor} rounded-md text-lg hover:lg:shadow-lg hover:lg:-top-1 transition-all duration-200 break-words active:cursor-grab ${showDrop ? "border-blue-500 border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-40" : "z-10"}`} draggable="true" 
 
             onDragStart={() => activeNote(draggedNote)} 
             onDragEnd={() => activeNote(null)}
@@ -124,25 +124,27 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
             onDragOver={(e) => e.preventDefault()}
         >
 
-          <div className="absolute w-full h-full" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false) & editNoteRef.current.focus()}></div>
+          <div className="absolute w-full h-full" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false)}></div>
 
           {/* <div className={showDrop ? "absolute w-full border-blue-500 border-2 rounded-md h-full z-50" : ""}></div> */}
-          <div className={`relative w-full px-2 py-2 gap-2 mb-2 flex justify-end items-center rounded-md group-hover:shadow ${!showDrop && "bg-white/80 z-50"}`}>
+          <div className={`relative w-full px-2 py-2 gap-2 mb-2 flex justify-between md:justify-end items-center rounded-md shadow lg:shadow-none group-hover:shadow ${!showDrop && "bg-white/80 z-50"}`}>
             <span className="flex md:gap-2 flex-col md:flex-row group-hover:lg:opacity-100 lg:opacity-0 text-xs font-light transition-all duration-150">noeted on <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></span>
             <div className="w-fit">
-              <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full bg-black/10 lg:bg-transparent lg:hover:bg-black/20 pointer z-50" onClick={() => setToggleAction(!toggleAction)}>
+              <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-black/20 pointer z-50" onClick={() => setToggleAction(!toggleAction)}>
                 <MoreVertIcon/>
               </Tooltip>
-              {toggleAction && <div className="absolute w-[50%] top-12 right-1 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md z-50">
-                <ul>
-                  <li className="flex justify-between hover:bg-neutral-400 p-2 z-50" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false) & editNoteRef.current.focus()}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
-                  <hr className="border-[0.2px] border-black/10"/>
-                  <li className="flex justify-between hover:bg-neutral-400 p-2" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }}/></li>
-                </ul>
-              </div>}
+              {toggleAction && 
+                <div className="absolute w-[50%] top-12 right-1 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md z-50">
+                  <ul>
+                    <li className="flex justify-between hover:bg-neutral-400 p-2 z-50" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false)}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
+                    <hr className="border-[0.2px] border-black/10"/>
+                    <li className="flex justify-between hover:bg-neutral-400 p-2" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }}/></li>
+                  </ul>
+                </div>
+              }
             </div>
           </div>
-          <div className={note.length > 300 ? "w-full text-xs leading-normal px-3 pt-2 pb-4" : "w-full leading-normal px-3 pt-2 pb-4"}>
+          <div className={`w-full ${note.length > 300 && "text-sm"} w-full leading-normal px-3 pt-2 pb-4`}>
             <Linkify options={{ render: renderLink }}>
                 <pre className={`break-words whitespace-pre-wrap font-sans line-clamp-6 lg:line-clamp-none`}>{
                   truncateNote(note)
@@ -167,7 +169,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                     <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
                   </div>
 
-                  <textarea type="text" ref={editNoteRef} value={getNote} onChange={handleChange} className={`w-full h-[90%] outline-none resize-none placeholder:text-black p-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Noet" maxLength={1000}/>
+                  <textarea type="text" ref={editNoteRef} value={getNote} onChange={handleChange} className={`w-full h-[90%] outline-none resize-none placeholder:text-black p-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Noet"/>
 
                   <div className="relative w-full flex justify-center items-center py-10">
                       <ColorPallete show={showColorPallete} addBackground={handleColorOption}/>
@@ -200,17 +202,17 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
 
         {/* Delete modal  */}
         <div
-          className={showDeleteModal ? "fixed w-full h-full top-0 left-0 flex justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
+          className={showDeleteModal ? "fixed w-full h-full top-0 left-0 flex px-6 justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
 
             {/* backdrop  */}
             <div className={showDeleteModal && "w-full h-full fixed bg-black md:bg-black/75"} onClick={() => setShowDeleteModal(!showDeleteModal)}></div>
 
-            <div className={`w-full h-full md:w-96 md:h-auto flex flex-col gap-3 px-4 py-4 ${showDeleteModal ? "opacity-100" : "opacity-0"} bg-white rounded-md transition-all duration-150 z-30`}>
+            <div className={`w-full h-fit md:w-96 md:h-auto flex flex-col gap-3 px-4 py-4 ${showDeleteModal ? "opacity-100" : "opacity-0"} bg-white rounded-md transition-all duration-150 z-30`}>
                 <h1 className="text-lg font-semibold">Delete</h1>
                 <hr />
                 <p className="text-sm">Are you sure you want to Delete?</p>
                 <div className="w-full flex justify-center items-center gap-5 mt-5 text-sm">
-                  {isPending || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-error rounded-md text-sm text-white" onClick={() => mutate(noteId) && setShowDeleteModal(!showDeleteModal)}><DeleteRoundedIcon />Yes, Delete</button>
+                  {isPending || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-error rounded-md text-sm text-white" onClick={() => mutate(noteId) && setShowDeleteModal(false)}><DeleteRoundedIcon />Yes, Delete</button>
                   <button className="flex justify-center items-center p-3 bg-neutral hover:bg-black text-white rounded-md" onClick={() => setShowDeleteModal(!showDeleteModal)}><ClearRoundedIcon/>Cancel</button></>}
                 </div> 
             </div>

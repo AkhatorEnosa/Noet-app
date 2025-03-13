@@ -11,7 +11,7 @@ const useLogin = () => {
             return result.payload;
         },
         onSuccess: () => {
-           console.log("Signing In")
+           console.log("Signed In")
         },
         onError: (error) => {
             console.error("Error signing in", error)

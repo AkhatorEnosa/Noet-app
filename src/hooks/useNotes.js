@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchData } from "../reducers/apiSlice";
+import { shuffleNoets } from "../reducers/apiSlice";
 import { useDispatch } from "react-redux";
 
 
@@ -11,14 +11,18 @@ const useNotes = () => {
 
     return useMutation({
         mutationFn: async ({id, sortValue, searchInput}) => {
-            const result = dispatch(fetchData({id: id, filter: sortValue, searchInput}))
+            const result = dispatch(shuffleNoets({id: id, filter: sortValue, searchInput}))
 
             return result
         },
-        onSuccess: () => {
+        onSuccess: (result) => {
+            console.log("Notes loaded", result)
             queryClient.invalidateQueries({
-            queryKey: ['notes'],
-            })
+                queryKey: ['notes'],
+              })
+        },
+        onError: (error) => {
+            console.log("Notes Mutation Failed", error)
         }
     })
 }

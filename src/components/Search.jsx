@@ -2,9 +2,9 @@
 
 const Search = ({ searchInput, setSearchInput }) => {
   return (
-    <div className="w-[80%] md:w-[50%] p-3 md:p-4 rounded-full shadow-md bg-white border-[1px] border-gray-300 z-10">
+    <div className="w-[80%] md:w-[50%] z-10">
         <input type="text" 
-            className="w-full h-full outline-none bg-transparent text-sm lg:text-base"
+             className="w-full h-full p-3 md:p-4 outline-none bg-transparent text-sm lg:text-base rounded-full shadow-md bg-white border-[1px] border-gray-300 focus:border-blue-500"
             value={searchInput}
             placeholder="Search for mynoet"
             onChange={(e) => setSearchInput(e.target.value)}

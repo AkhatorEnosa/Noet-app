@@ -12,10 +12,14 @@ const useCreateNote = () => {
         if(error) console.log(error)
         return data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Created", data)
         queryClient.invalidateQueries({
           queryKey: ['notes'],
         })
+    },
+    onError: (error) => {
+        console.log("Create Mutation Failed", error)
     }
   })
 }

@@ -16,8 +16,8 @@ const useUpdateNote = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
-            queryKey: ['notes'],
-            })
+                queryKey: ['notes'],
+              })
         }
     })
 }

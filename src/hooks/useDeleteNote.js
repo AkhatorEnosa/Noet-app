@@ -16,8 +16,11 @@ const useDeleteNote = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ['notes']
-            })
+                queryKey: ['notes'],
+              })
+        },
+        onError: (error) => {
+            console.log("Mutation Failed", error)
         }
     })
 }
