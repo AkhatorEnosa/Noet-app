@@ -7,6 +7,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import Tooltip from '@mui/material/Tooltip';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
 import { useSelector } from "react-redux";
 import ColorPallete from "../components/ColorPallete";
@@ -30,6 +31,8 @@ const Home = () => {
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState("")
   const [activeNote, setactiveNote] = useState(null)
+  const [closeSectionPinned, setCloseSectionPinned] = useState(false)
+  const [closeSection, setCloseSection] = useState(false)
 
   const [searchInput, setSearchInput] = useState("")
   const [debouncedSearchInput, setDebouncedSearchInput] = useState("")
@@ -52,6 +55,12 @@ const Home = () => {
     setDebouncedSearchInput(searchInput)
     }, 500, [searchInput]
   )
+
+  const checkForPinned = () => {
+    const containsPinned = notes.some((note) => note.pinned)
+    return containsPinned
+  }
+  
 
 
   const { error, isLoading, fetchStatus} = useFetchNotes(stateUser?.id, sortValue == 'color' ? 'bg_color' 
@@ -209,25 +218,69 @@ const Home = () => {
               </div>
 
               {stateNotes !== null && !isLoading && notes?.length > 0 ?
-               <div className="w-full gap-4 flex flex-col items-center justify-center">
-                  <div className="w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto">
+               <div className="w-full gap-6 flex flex-col items-center justify-center">
+
+                  <div className="w-full flex flex-col gap-2">
+                    
                     {
-                      
-                      notes?.map((note) => (
-                        <React.Fragment key={note.id}>
-                          <Note 
-                          noteId={note.id}
-                          note={note.data_value}
-                          note_date={note.created_at}
-                          bgColor={note.bg_color}
-                          updateId={note.id}
-                          draggedNote={note}
-                          activeNote={setactiveNote}
-                          handleDrop={() => onDrop(notes.indexOf(note))}
-                          />
-                        </React.Fragment>
-                      ))
+                        checkForPinned() == true && <div className={`w-full flex justify-between items-center flex-row-reverse border-b-[1px] border-gray-500/20 pb-2 z-40`}>
+                          <p onClick={() => setCloseSectionPinned(!closeSectionPinned)} className={`${!closeSectionPinned && "-rotate-180"} p-1 border-[1px] border-gray-500 text-gray-500 rounded-full cursor-pointer transition-all duration-150`}><KeyboardArrowDownIcon /></p>
+                          <h2 className="uppercase text-xs lg:text-base tracking-tight text-gray-500 font-extrabold">pinned notes</h2>
+                        </div>
                     }
+                    
+                    <div className={`${closeSectionPinned ? "hidden" : "block"} w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto overflow-clip`}>
+                      {
+                        notes?.map((note) => (
+                              note.pinned && <React.Fragment key={note.id}>
+                                <Note 
+                                  noteId={note.id}
+                                  note={note.data_value}
+                                  note_date={note.created_at}
+                                  bgColor={note.bg_color}
+                                  updateId={note.id}
+                                  draggedNote={note}
+                                  activeNote={setactiveNote}
+                                  handleDrop={() => onDrop(notes.indexOf(note))}
+                                />
+                              </React.Fragment>
+                            )
+                          )
+                      }
+                    </div>
+
+                  </div>
+
+                  <div className="w-full flex flex-col gap-2">
+
+                    {
+                      checkForPinned() == true && <div className={`w-full flex justify-between items-center flex-row-reverse border-b-[1px] border-gray-500/20 pb-2 z-40`}>
+                      <p onClick={() => setCloseSection(!closeSection)} className={`${!closeSection && "-rotate-180"} p-1 border-[1px] border-gray-500 text-gray-500 rounded-full cursor-pointer transition-all duration-150`}><KeyboardArrowDownIcon /></p>
+                      <h2 className="uppercase text-xs lg:text-base tracking-tight text-gray-500 font-extrabold">other notes</h2>
+                    </div>
+                    }
+                    
+                    <div className={`${closeSection ? "hidden" : "block"} w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto overflow-clip`}>
+                      
+                      {
+                        notes?.map((note) => (
+                              !note.pinned && <React.Fragment key={note.id}>
+                                <Note 
+                                noteId={note.id}
+                                note={note.data_value}
+                                note_date={note.created_at}
+                                bgColor={note.bg_color}
+                                updateId={note.id}
+                                draggedNote={note}
+                                activeNote={setactiveNote}
+                                handleDrop={() => onDrop(notes.indexOf(note))}
+                                />
+                              </React.Fragment>
+                            )
+                          )
+                      }
+                    </div>
+
                   </div>
                 </div> : 
               <div className="py-40 w-full  flex justify-center items-center">
