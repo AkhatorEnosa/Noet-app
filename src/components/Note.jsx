@@ -138,8 +138,8 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
 
           {/* <div className={showDrop ? "absolute w-full border-blue-500 border-2 rounded-md h-full z-50" : ""}></div> */}
           <div className={`relative w-full px-2 py-2 gap-2 mb-2 flex justify-between md:justify-end items-center rounded-md shadow lg:shadow-none group-hover:shadow ${!showDrop && "bg-white/80 z-50"}`}>
-            <span className="flex md:gap-2 flex-col md:flex-row group-hover:lg:opacity-100 lg:opacity-0 text-xs font-light transition-all duration-150">noeted on <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></span>
-            <div className="w-fit flex gap-2">
+            <div className="w-full h-fit lg:w-fit flex gap-0 md:gap-2 flex-col lg:flex-row group-hover:lg:opacity-100 lg:opacity-0 text-[12px] md:text-xs font-light transition-all duration-150"><span className="h-fit hidden md:block">noeted on</span> <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></div>
+            <div className="w-fit flex lg:gap-2">
               <Tooltip title="Pin" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-blue-500/20 pointer z-50" onClick={() => handlePinUpdate()}>
                   {updatingPin ? <CircularProgress size="20px" color="inherit"/> : !draggedNote.pinned ? <PushPinOutlinedIcon/> : <PushPinRoundedIcon />}
               </Tooltip>
