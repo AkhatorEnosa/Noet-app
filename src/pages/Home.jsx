@@ -187,7 +187,7 @@ const Home = () => {
                     
                     {
                         checkForPinned() == true && <div className={`w-full flex justify-between items-center flex-row-reverse border-b-[1px] border-gray-500/20 pb-2 z-40`}>
-                          <p onClick={() => setCloseSectionPinned(!closeSectionPinned)} className={`${!closeSectionPinned && "-rotate-180"} p-1 border-[1px] border-gray-500 text-gray-500 rounded-full cursor-pointer duration-300`}>{closeSectionPinned ? <AddRoundedIcon /> : <RemoveRoundedIcon/>}</p>
+                          <p onClick={() => setCloseSectionPinned(!closeSectionPinned)} className={`${!closeSectionPinned && "-rotate-180"} p-1 border-[1px] border-gray-500 text-gray-500 rounded-full cursor-pointer duration-300`}>{closeSectionPinned ? <AddRoundedIcon /> : <RemoveRoundedIcon />}</p>
                           <h2 className="capitalize text-xs lg:text-sm tracking-tight text-gray-500 font-extrabold">pinned notes</h2>
                         </div>
                     }

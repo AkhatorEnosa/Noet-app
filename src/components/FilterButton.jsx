@@ -10,7 +10,7 @@ const FilterButton = ({ sortValue, setSortValue, options }) => {
   return (
     <div className="relative h-fit">
         <Tooltip title="Sort: all sorts are in descending order." arrow placement='top'>
-            <button className={`relative flex justify-center items-center p-3 md:p-4 shadow-md gap-2 active:shadow-lg hover:bg-white hover:text-blue-500 ${showSortOptions ? 'bg-white text-blue-500 border-[1px] border-gray-300' : 'text-white bg-blue-500'} rounded-full transition-all duration-200 z-50`} onClick={() => setShowOptions(!showSortOptions)}>
+            <button className={`relative flex justify-center items-center p-3 md:p-4 shadow-md gap-2 active:shadow-lg hover:bg-blur-600 text-white hover:bg-blue-600 ${showSortOptions ? 'bg-blue-600 border-[1px] border-gray-300' : 'bg-blue-500'} rounded-full transition-all duration-200 z-50`} onClick={() => setShowOptions(!showSortOptions)}>
                 <SortRoundedIcon sx={{ fontSize: "20px" }}/>
             </button>
         </Tooltip>
