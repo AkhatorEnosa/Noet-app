@@ -35,7 +35,7 @@ const Navbar = () => {
               <img src={imgUrl} alt="" className="w-8 h-8 rounded-full border-gray-300 border-[1px]"/>
               <p className="line-clamp-1">{name}</p>
             </div>
-            <button className="flex justify-center items-center px-4 py-2 rounded-lg gap-3 active:shadow-lg bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200" onClick={handleSignOut} disabled={isLoading}>
+            <button className="flex justify-center items-center px-4 py-3 rounded-full gap-3 active:shadow-lg bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200" onClick={handleSignOut} disabled={isLoading}>
               {isLoading ? 
                 <div className="flex gap-2">
                   <span className="loading loading-spinner loading-sm"></span>

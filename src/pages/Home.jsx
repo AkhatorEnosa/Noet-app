@@ -19,7 +19,6 @@ import Search from "../components/Search";
 import { useDebounce } from "react-use";
 import FilterButton from "../components/FilterButton";
 import useFetchNotes from "../hooks/useFetchNotes";
-import { motion } from 'framer-motion'
 
 const options = [ 'date', 'content', 'default']
 
@@ -297,20 +296,10 @@ const Home = () => {
 
           {/* Add Noet Button */}
             <Tooltip title="Add Noet" arrow placement="top"  className="fixed bottom-4 md:bottom-10 right-10 lg:right-12 z-30">
-              <motion.div
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: "0px 5px 10px rgba(0,0,0,0.1)"
-                }}
-                whileTap={{
-                  scale: 0.75,
-                  backgroundColor: 'rgba(20 130 255 1)'
-                }}
-                className="bg-blue-500 shadow p-2 rounded-full">
-                <button type="submit" className="cursor-pointer w-14 h-14 lg:w-[3rem] lg:h-[3rem] flex justify-center items-center rounded-full shadow-md shadow-white text-white transition-all duration-300 z-30" onClick={() => setShowInput(!showInput)  & inputRef.current.focus()}> 
-                  <AddRoundedIcon sx={{ fontSize: 30 }}/> 
+                <button type="submit" className="cursor-pointer flex justify-center items-center rounded-full shadow-lg text-white text-sm font-bold bg-blue-500 hover:bg-blue-600 px-4 py-4 transition-all duration-300 z-30" onClick={() => setShowInput(!showInput)  & inputRef.current.focus()}> 
+                  <AddRoundedIcon sx={{ fontSize: 20 }}/> 
+                  Add Noet
                 </button>
-              </motion.div>
             </Tooltip>
 
       </div>

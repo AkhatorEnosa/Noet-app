@@ -6,7 +6,7 @@ const Search = ({ searchInput, setSearchInput }) => {
         <input type="text" 
              className="w-full h-full p-3 md:p-4 outline-none bg-transparent text-sm lg:text-base rounded-full shadow-md bg-white border-[1px] border-gray-300 focus:border-blue-500"
             value={searchInput}
-            placeholder="Search for mynoet"
+            placeholder="Search myNoet"
             onChange={(e) => setSearchInput(e.target.value)}
         />
     </div>
