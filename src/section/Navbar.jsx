@@ -25,7 +25,7 @@ const Navbar = () => {
   }
 
     if(user !== null) return (
-      <div className={`w-full flex justify-between items-center px-3 md:px-20 py-3 md:py-5 shadow-md z-50 bg-white text-sm`}>
+      <section className={`w-full flex justify-between items-center px-3 md:px-20 py-3 md:py-5 shadow-md z-50 bg-white text-sm`}>
         <h1 className="logo-nav">my<b>Noet</b></h1>
 
         <div className="flex gap-3">
@@ -45,7 +45,7 @@ const Navbar = () => {
            </button>
           </div>}
         </div>
-      </div>
+      </section>
     )
 }
 

@@ -105,13 +105,13 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
  
         <motion.div
           initial={{
-            scale: 0.85
+            opacity: 0.85
           }}
           animate={{
-            scale: 1
+            opacity: 1
           }}
           exit={{
-            scale: 1
+            opacity: 0
           }}
           transition={{
             type: "linear",
@@ -121,7 +121,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           }}
           layout
 
-          className={showEditModal || showDeleteModal ? "opacity-0 break-inside-avoid w-full" : `group relative break-inside-avoid aspect-video w-full ${bgColor} rounded-md text-lg hover:lg:shadow-lg hover:lg:-top-1 transition-all duration-200 break-words active:cursor-grab ${showDrop ? "border-blue-500 border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-40" : "z-10"}`} draggable="true" 
+          className={showEditModal || showDeleteModal ? "opacity-0 break-inside-avoid w-full" : `group relative break-inside-avoid aspect-video w-full ${bgColor} rounded-md text-lg hover:lg:shadow-lg transition-all duration-200 break-words active:cursor-grab ${showDrop ? "border-blue-500 border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-40" : "z-10"}`} draggable="true" 
 
             onDragStart={() => activeNote(draggedNote)} 
             onDragEnd={() => activeNote(null)}
