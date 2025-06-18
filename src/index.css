@@ -16,7 +16,7 @@
 }
 
 .logo-signin {
-  @apply text-4xl lg:text-8xl 
+  @apply text-8xl 
 }
 
 .logo-nav > b, .logo-signin > b {

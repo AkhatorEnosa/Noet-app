@@ -159,7 +159,9 @@ const Home = () => {
   }
 
   if(userLoading) return <div className="animate-pulse py-52 w-full  flex justify-center items-center">A moment please...</div>
+
   if(error) return  <h3>Error: {console.log(error)}</h3>
+  
   if (stateUser == null) {
     return <SignIn />
   } else {
