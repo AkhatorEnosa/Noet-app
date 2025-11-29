@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Linkify from "linkify-react";
 import useDeleteNote from "../hooks/useDeleteNote"
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
@@ -100,6 +100,20 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
     const { href, ...props } = attributes;
     return <a href={href} target="_blank" {...props} className="relative z-20 hover:underline">{content}</a>;
   };
+
+  const body = document.body
+  
+  useEffect(() => {
+      const shouldHideScroll = showEditModal || showDeleteModal || toggleAction
+    
+      body.style.height = '100vh'
+      body.style.overflowY = shouldHideScroll ? 'hidden' : 'scroll'
+
+      return () => {
+          body.style.height = ''
+          body.style.overflowY = ''
+      }
+  }, [showEditModal, showDeleteModal, toggleAction, body])
   
   return (
      <article className="note">
@@ -148,9 +162,9 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           </div>
 
           {/* date and actions  */}
-          <div className={`relative w-full px-2 py-2 gap-2 group-hover:opacity-100 lg:opacity-0 flex justify-between md:justify-end items-center border-t-[1px] rounded-md shadow lg:shadow-none group-hover:shadow ${!showDrop && "bg-white/80 z-50"}`}>
+          <div className={`relative w-full px-2 py-2 gap-2 ${toggleAction ? "lg:opacity-100" : "group-hover:lg:opacity-100 lg:opacity-0 "} flex justify-between md:justify-end items-center border-t-[1px] rounded-md shadow lg:shadow-none group-hover:shadow ${!showDrop && "bg-white/80 z-50"}`}>
 
-            <div className="w-full h-fit lg:w-fit flex gap-0 lg:gap-2 flex-col lg:flex-row group-hover:lg:opacity-100 lg:opacity-0 text-[12px] md:text-xs font-light transition-all duration-150"><span className="h-fit hidden md:block">noeted on</span> <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></div>
+            <div className={`w-full h-fit lg:w-fit flex gap-0 lg:gap-2 flex-col lg:flex-row ${toggleAction ? "lg:opacity-100" : "group-hover:lg:opacity-100 lg:opacity-0 "} text-[12px] md:text-xs font-light transition-all duration-150`}><span className="h-fit hidden md:block">noeted on</span> <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></div>
             <div className="w-fit flex lg:gap-2">
               <Tooltip title="Pin" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-blue-500/20 pointer z-50" onClick={() => handlePinUpdate()}>
                   {updatingPin ? <CircularProgress size="20px" color="inherit"/> : !draggedNote.pinned ? <PushPinOutlinedIcon/> : <PushPinRoundedIcon />}
