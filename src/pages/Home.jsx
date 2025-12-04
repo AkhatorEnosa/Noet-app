@@ -38,6 +38,7 @@ const Home = () => {
   const [debouncedSearchInput, setDebouncedSearchInput] = useState("")
   const [sortValue, setSortValue] = useState("default")
   const [message, setMessage] = useState("")
+  const body = document.body
 
 
   const stateNotes = useSelector((state) => state.data.notes)
@@ -60,8 +61,6 @@ const Home = () => {
     const containsPinned = notes.some((note) => note.pinned)
     return containsPinned
   }
-  
-
 
   const { error, isLoading, fetchStatus} = useFetchNotes(stateUser?.id, sortValue == 'color' ? 'bg_color' 
     : sortValue == 'content' ? 'data_value' 
@@ -88,6 +87,19 @@ const Home = () => {
       setNotes(stateNotes)
     }
   }, [stateNotes, stateUser?.id])
+  
+  
+  useEffect(() => {
+    const shouldHideScroll = showInput;
+  
+    body.style.height = '100vh'
+    body.style.overflowY = shouldHideScroll ? 'hidden' : 'scroll'
+
+    return () => {
+        body.style.height = ''
+        body.style.overflowY = ''
+    }
+  }, [showInput, body])
   
   
   const handleNoteAdd = (e) => {
@@ -282,12 +294,12 @@ const Home = () => {
                           </div>
 
                           <Tooltip title="Erase" arrow>
-                            <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 bg-gray-400 shadow-lg border-none text-white hover:text-neutral transition-all duration-300": "w-0 h-0 scale-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon /></button>
+                            <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-gray-500 hover:border-none transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon /></button>
                           </Tooltip>
 
 
                           <Tooltip title="Add" arrow>
-                            <button type="submit" className={wordCount > 0 ? "cursor-pointer w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-neutral bg-neutral text-white z-30 transition-all duration-200" : "w-0 h-0 scale-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon/></button>
+                            <button type="submit" className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon/></button>
                           </Tooltip>
                         </div>
                         }
@@ -298,7 +310,7 @@ const Home = () => {
 
           {/* Add Noet Button */}
             <Tooltip title="Add Noet" arrow placement="top"  className="fixed bottom-4 md:bottom-10 right-10 lg:right-12 z-30">
-                <button type="submit" className="cursor-pointer flex justify-center items-center rounded-full shadow-lg text-white text-sm font-bold bg-blue-500 hover:bg-blue-600 px-4 py-4 transition-all duration-300 z-30" onClick={() => setShowInput(!showInput)  & inputRef.current.focus()}> 
+                <button type="submit" className="cursor-pointer flex justify-center items-center rounded-full shadow-lg text-white text-sm font-bold bg-[#114f60] hover:bg-[#255f6f] px-4 py-4 transition-all duration-300 z-30" onClick={() => setShowInput(!showInput)  & inputRef.current.focus()}> 
                   <AddRoundedIcon sx={{ fontSize: 20 }}/> 
                   Add Noet
                 </button>

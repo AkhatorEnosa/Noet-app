@@ -136,7 +136,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           }}
           layout
 
-          className={showEditModal || showDeleteModal ? "opacity-0 break-inside-avoid w-full" : `group flex flex-col justify-between relative break-inside-avoid  pt-4 aspect-video w-full ${bgColor} rounded-md text-lg hover:lg:shadow-lg transition-all duration-200 break-words active:cursor-grab ${showDrop ? "border-blue-500 border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-40" : "z-10"}`} draggable="true" 
+          className={showEditModal || showDeleteModal ? "opacity-0 break-inside-avoid w-full" : `group flex flex-col justify-between relative break-inside-avoid  pt-4 aspect-video w-full ${bgColor} rounded-md text-lg hover:lg:shadow-lg transition-all duration-200 break-words active:cursor-grab ${showDrop ? "border-[#114f60] border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-40" : "z-10"}`} draggable="true" 
 
             onDragStart={() => activeNote(draggedNote)} 
             onDragEnd={() => activeNote(null)}
@@ -149,10 +149,10 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
             onDragOver={(e) => e.preventDefault()}
         >
 
-          {/* overlay to open noet edit modal */}
+          {/* overlay to open note edit modal */}
           <div className="absolute w-full h-full" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false)}></div>
           
-          {/* noet div  */}
+          {/* note div  */}
           <div className={`w-full ${note.length > 300 && "text-sm"} w-full leading-normal px-3 pb-4`}>
             <Linkify options={{ render: renderLink }}>
                 <pre className={`break-words whitespace-pre-wrap font-sans line-clamp-6 lg:line-clamp-none`}>{
@@ -164,18 +164,18 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           {/* date and actions  */}
           <div className={`relative w-full px-2 py-2 gap-2 ${toggleAction ? "lg:opacity-100" : "group-hover:lg:opacity-100 lg:opacity-0 "} flex justify-between md:justify-end items-center border-t-[1px] rounded-md shadow lg:shadow-none group-hover:shadow ${!showDrop && "bg-white/80 z-50"}`}>
 
-            <div className={`w-full h-fit lg:w-fit flex gap-0 lg:gap-2 flex-col lg:flex-row ${toggleAction ? "lg:opacity-100" : "group-hover:lg:opacity-100 lg:opacity-0 "} text-[12px] md:text-xs font-light transition-all duration-150`}><span className="h-fit hidden md:block">noeted on</span> <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></div>
+            <div className={`w-full h-fit lg:w-fit flex gap-0 lg:gap-2 flex-col lg:flex-row ${toggleAction ? "lg:opacity-100" : "group-hover:lg:opacity-100 lg:opacity-0 "} text-[12px] md:text-xs font-light transition-all duration-150`}><span className="h-fit hidden md:block">noted on</span> <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></div>
             <div className="w-fit flex lg:gap-2">
-              <Tooltip title="Pin" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-blue-500/20 pointer z-50" onClick={() => handlePinUpdate()}>
+              <Tooltip title="Pin" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50" onClick={() => handlePinUpdate()}>
                   {updatingPin ? <CircularProgress size="20px" color="inherit"/> : !draggedNote.pinned ? <PushPinOutlinedIcon/> : <PushPinRoundedIcon />}
               </Tooltip>
-              <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-blue-500/20 pointer z-50" onClick={() => setToggleAction(!toggleAction)}>
+              <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50" onClick={() => setToggleAction(!toggleAction)}>
                 <MoreVertIcon/>
               </Tooltip>
               {toggleAction && 
                 <div className="absolute w-[50%] top-12 right-1 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md z-50">
                   <ul>
-                    <li className="flex justify-between hover:text-blue-500 p-2 z-50" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false)}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
+                    <li className="flex justify-between hover:text-[#114f60] p-2 z-50" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false)}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
                     <hr className="border-[0.2px] border-black/10"/>
                     <li className="flex justify-between hover:text-red-600 p-2" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }}/></li>
                   </ul>
@@ -189,7 +189,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
        <div className={toggleAction ? "fixed w-full h-full top-0 left-0 z-30" : "hidden"} onClick={() => setToggleAction(false)}></div>
 
         {/* Edit modal  */}
-        <div className={showEditModal ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
+        <div className={showEditModal ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-[70]" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
 
               {/* backdrop  */}
               <div className={showEditModal && "fixed w-full h-full md:bg-black/75"} onClick={() => setShowEditModal(!showEditModal)}></div>
@@ -198,11 +198,11 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                 <form onSubmit={handleNoteUpdate} className={`${showEditModal ? "opacity-100" : "opacity-0"} relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-150 transition-all z-50`}>
 
                   <div className="flex items-center justify-end gap-2 px-2 py-2">
-                    <span className={`flex lg:gap-2 flex-row border-[1px] px-4 py-2 rounded-full ${colorOptionValue} text-xs font-light transition-all duration-150`}>noeted on <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></span>
+                    <span className={`flex lg:gap-2 flex-row border-[1px] px-4 py-2 rounded-full ${colorOptionValue} text-xs font-light transition-all duration-150`}>noted on <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></span>
                     <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
                   </div>
 
-                  <textarea type="text" ref={editNoteRef} value={getNote} onChange={handleChange} className={`w-full h-[90%] outline-none resize-none placeholder:text-black p-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Noet"/>
+                  <textarea type="text" ref={editNoteRef} value={getNote} onChange={handleChange} className={`w-full h-[90%] outline-none resize-none placeholder:text-black p-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
 
                   <div className="relative w-full flex justify-center items-center py-10">
                       <ColorPallete show={showColorPallete} addBackground={handleColorOption}/>
@@ -226,8 +226,8 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                         </Tooltip>
 
 
-                        <Tooltip title="Update" arrow placement="top">
-                          <button type="submit" className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-blue-500 shadow-lg text-blue-500 hover:text-white hover:bg-blue-500 hover:border-none transition-all duration-300" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon sx={{ fontSize: 18 }}/></button>
+                        <Tooltip title="Update Note" arrow placement="top">
+                          <button type="submit" className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon sx={{ fontSize: 18 }}/></button>
                         </Tooltip>
                       </div>
                       }

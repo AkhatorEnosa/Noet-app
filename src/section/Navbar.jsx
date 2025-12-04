@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 
 import { useSelector } from "react-redux"
-// import Logo from '../assets/logo.webp'
+import Logo from '../assets/logo.webp'
 import useSignOut from "../hooks/useSignOut"
 // import {motion} from "framer-motion"
 import { useEffect, useState } from "react"
@@ -13,11 +13,32 @@ const Navbar = () => {
 
   const [name, setName] = useState("")
   const [imgUrl, setImgUrl] = useState("")
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  const changeNavBarOnScroll = () => {
+    const scrollThreshold = 100;
+
+    if (window.scrollY >= scrollThreshold) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false)
+    }
+  }
 
   useEffect(() => {
     setName(user?.identities[0].identity_data.name)
     setImgUrl(user?.identities[0].identity_data.avatar_url)
+    console.log(user?.identities[0].identity_data);
   }, [user?.identities])
+
+  useEffect(() => {
+    window.addEventListener('scroll', changeNavBarOnScroll);
+
+    return () => {
+      window.removeEventListener('scroll', changeNavBarOnScroll);
+    };
+  }, []);
+  
   
 
   const handleSignOut = async() => {
@@ -25,17 +46,18 @@ const Navbar = () => {
   }
 
     if(user !== null) return (
-      <section className={`w-full flex justify-between items-center px-3 md:px-20 py-3 md:py-5 shadow-md z-50 bg-white text-sm`}>
-        <h1 className="logo-nav">my<b>Noet</b></h1>
+      <section className={`sticky top-0 w-full flex justify-between items-center px-3 md:px-20 py-3 md:py-5 ${isScrolled && 'bg-white/10 backdrop-blur-md shadow'} text-sm z-[60] duration-150 ease-in-out`}>
+        {/* <h1 className="logo-nav">my<b>Noet</b></h1> */}
+        <img src={Logo} alt="website_logo" className="w-28 md:w-32"/>
 
         <div className="flex gap-3">
           {user !== null && 
           <div className="w-full flex justify-end items-center gap-5">
             <div className="flex w-[50%] md:w-full gap-2 justify-center items-center bg-gray-200 pl-2 pr-5 py-2 rounded-full">
-              <img src={imgUrl} alt="" className="w-8 h-8 rounded-full border-gray-300 border-[1px]"/>
+                <img src={imgUrl} alt={"Your username profile pic"} className="w-8 h-8 rounded-full border-gray-300 border-[1px]"/>
               <p className="line-clamp-1">{name}</p>
             </div>
-            <button className="flex justify-center items-center px-4 py-3 rounded-full gap-3 active:shadow-lg bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200" onClick={handleSignOut} disabled={isLoading}>
+            <button className="flex justify-center items-center px-4 py-3 rounded-full gap-3 active:shadow-lg bg-[#114f60] hover:bg-[#255f6f] text-white transition-all duration-200" onClick={handleSignOut} disabled={isLoading}>
               {isLoading ? 
                 <div className="flex gap-2">
                   <span className="loading loading-spinner loading-sm"></span>

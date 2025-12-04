@@ -3,6 +3,7 @@ import GoogleIcon from '@mui/icons-material/Google';
 import { motion } from 'framer-motion'
 import useLogin from '../hooks/useLogin';
 import { useSelector } from 'react-redux';
+import Logo from '../assets/logo.webp'
 
 const SignIn = () => {
   const {mutate, isPending} = useLogin()
@@ -24,7 +25,8 @@ const SignIn = () => {
         transition={{ type: "spring", damping: 8, velocity: 2 }} 
         className='w-full col-span-3 flex flex-col gap-4 bg-white/70 rounded-xl justify-center items-center'>
 
-        <h1 className='logo-signin'>my<b>Noet</b></h1>
+        <img src={Logo} alt="website_logo" />
+        {/* <h1 className='logo-signin'>wrote<b>Note</b></h1> */}
        </motion.div>
 
        <motion.div 
@@ -38,7 +40,7 @@ const SignIn = () => {
            animate={{ x: 0}}
            transition={{ type: "spring", damping: 8, velocity: 2}}
          >
-           <h2 className='px-20 text-xl lg:text-3xl text-center font-semibold'>Get your <i className='text-blue-500 font-extrabold not-italic'>thoughts</i> and <i className='text-blue-500 font-extrabold not-italic'>ideas</i>, <i className='text-blue-500 font-extrabold not-italic'>structured</i> and <i className='text-blue-500 font-extrabold not-italic'>organised</i>, all in one place.</h2>
+           <h2 className='px-20 text-xl lg:text-3xl text-center font-semibold'>Get your <i className='text-[#114f60] font-extrabold not-italic'>thoughts</i> and <i className='text-[#114f60] font-extrabold not-italic'>ideas</i>, <i className='text-[#114f60] font-extrabold not-italic'>structured</i> and <i className='text-[#114f60] font-extrabold not-italic'>organised</i>, all in one place.</h2>
          </motion.div>
 
         <motion.button 
@@ -50,7 +52,7 @@ const SignIn = () => {
             scale: 0.95,
             backgroundColor: 'rgba(0 0 0 1)'
           }}
-          className='flex justify-center items-center px-4 py-2 rounded-lg gap-3 active:shadow-lg bg-blue-500 text-white'
+          className='flex justify-center items-center px-4 py-2 rounded-lg gap-3 active:shadow-lg bg-[#114f60] text-white'
            onClick={handleSignIn}>
             <GoogleIcon /> 
             <p>Sign in with Google</p>
