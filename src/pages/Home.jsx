@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react"
 import useCreateNote from "../hooks/useCreateNote"
 import Note from "../components/Note"
+import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import DescriptionIcon from '@mui/icons-material/Description';
@@ -8,7 +10,6 @@ import Tooltip from '@mui/material/Tooltip';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 // import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import RemoveRoundedIcon from '@mui/icons-material/RemoveRounded';
 import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
 import { useSelector } from "react-redux";
 import ColorPallete from "../components/ColorPallete";
@@ -47,9 +48,13 @@ const Home = () => {
 
   let inputRef = useRef('')
 
-  const { isLoading:userLoading, isSuccess } = useGetUser()
+  const { isSuccess } = useGetUser()
   const {mutate, isPending} = useCreateNote()
   const {mutate:updateIndexNums} = useUpdateNotes()
+  const { error, isLoading, fetchStatus} = useFetchNotes(stateUser?.id, sortValue == 'color' ? 'bg_color' 
+    : sortValue == 'content' ? 'data_value' 
+    : sortValue == 'date' ? 'created_at' 
+    : 'index_num', debouncedSearchInput)
 
   // This hook debounces the searchTerm from making a request to the api on every change. Debouncing stalls the request until searchTerm does not change for a number of time 
   useDebounce(() => {
@@ -62,10 +67,6 @@ const Home = () => {
     return containsPinned
   }
 
-  const { error, isLoading, fetchStatus} = useFetchNotes(stateUser?.id, sortValue == 'color' ? 'bg_color' 
-    : sortValue == 'content' ? 'data_value' 
-    : sortValue == 'date' ? 'created_at' 
-    : 'index_num', debouncedSearchInput)
 
     useEffect(() => {
       const timeoutId = setTimeout(() => {
@@ -170,9 +171,14 @@ const Home = () => {
     // console.log("Notes outside use effect ", notes)
   }
 
-  if(userLoading) return <div className="animate-pulse py-52 w-full  flex justify-center items-center">A moment please...</div>
+  // if (userLoading) return (
+  //   <div className="animate-pulse py-52 w-full flex justify-center items-center">
+  //     <span className="loading loading-spinner loading-lg"></span>
+  //     <p>A moment please...</p>
+  //   </div>
+  // )
 
-  if(error) return  <h3>Error: {console.log(error)}</h3>
+  if(error) return  <h3>Error: {error}</h3>
   
   if (stateUser == null) {
     return <SignIn />
@@ -200,13 +206,16 @@ const Home = () => {
                   <div className="w-full flex flex-col gap-2">
                     
                     {
-                        checkForPinned() == true && <div className={`w-full flex justify-between items-center flex-row-reverse border-b-[1px] border-gray-500/20 pb-2 z-40`}>
-                          <p onClick={() => setCloseSectionPinned(!closeSectionPinned)} className={`${!closeSectionPinned && "-rotate-180"} p-1 border-[1px] border-gray-500 text-gray-500 rounded-full cursor-pointer duration-300`}>{closeSectionPinned ? <AddRoundedIcon /> : <RemoveRoundedIcon />}</p>
-                          <h2 className="capitalize text-xs lg:text-sm tracking-tight text-gray-500 font-extrabold">pinned notes</h2>
-                        </div>
+                        checkForPinned() &&
+                        <Tooltip title={closeSectionPinned ? "Open Notes" : "Close notes"} arrow placement='top'>
+                          <button className={`w-fit flex justify-center items-center ${!closeSectionPinned ? 'bg-[#255f6f]/5 text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => setCloseSectionPinned(!closeSectionPinned)}>
+                            <p className={`${!closeSectionPinned && "-rotate-180"} cursor-pointer duration-300`}>{closeSectionPinned ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
+                            <h2 className="capitalize text-xs lg:text-sm tracking-tight font-extrabold">pinned notes</h2>
+                          </button>
+                        </Tooltip>
                     }
                     
-                    <div className={`${closeSectionPinned ? "hidden" : "block"} w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto overflow-clip`}>
+                    <div className={`${closeSectionPinned ? "hidden" : "block"} rounded-md border-[1px] border-[#255f6f]/5 bg-[#255f6f]/5 p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto overflow-clip`}>
                       {
                         notes?.map((note) => (
                               note.pinned && <React.Fragment key={note.id}>
@@ -231,13 +240,16 @@ const Home = () => {
                   <div className="w-full flex flex-col gap-2">
                     
                     {
-                        checkForPinned() == true && <div className={`w-full flex justify-between items-center flex-row-reverse border-b-[1px] border-gray-500/20 pb-2 z-40`}>
-                          <p onClick={() => setCloseSection(!closeSection)} className={`${!closeSection && "-rotate-180"} p-1 border-[1px] border-gray-500 text-gray-500 rounded-full cursor-pointer duration-300`}>{closeSection ? <AddRoundedIcon /> : <RemoveRoundedIcon/>}</p>
-                          <h2 className="capitalize text-xs lg:text-sm tracking-tight text-gray-500 font-extrabold">other notes</h2>
-                        </div>
+                        checkForPinned() &&
+                        <Tooltip title={closeSection ? "Open Notes" : "Close notes"} arrow placement='top'>
+                          <button className={`w-fit flex justify-center items-center ${!closeSection ? 'bg-[#255f6f]/5 text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => setCloseSection(!closeSection)}>
+                            <p className={`${!closeSection && "-rotate-180"} cursor-pointer duration-300`}>{closeSection ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
+                            <h2 className="capitalize text-xs lg:text-sm tracking-tight font-extrabold">other notes</h2>
+                          </button>
+                        </Tooltip>
                     }
                     
-                    <div className={`${closeSection ? "hidden" : "block"} w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto overflow-clip`}>
+                    <div className={`${closeSection ? "hidden" : "block"} rounded-md border-[1px] border-[#255f6f]/5 bg-[#255f6f]/5 p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto overflow-clip`}>
                       
                       {
                         notes?.map((note) => (

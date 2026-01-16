@@ -13,7 +13,12 @@ const SignIn = () => {
     mutate()
   }
 
-  if(isPending || isLoading) return <div className="animate-pulse py-52 w-full h-screen flex justify-center items-center">A moment please...</div>
+  if(isPending || isLoading) return (
+    <div className="animate-pulse w-full h-[100vh] flex flex-col justify-center items-center text-[#255f6f] gap-24">
+      <img src={Logo} alt="website_logo" className='w-52'/>
+      <span className="loading loading-spinner loading-lg"></span>
+    </div>
+  )
 
   if (!isLoading) return (
     <div 
