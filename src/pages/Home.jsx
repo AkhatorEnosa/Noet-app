@@ -282,7 +282,7 @@ const Home = () => {
 
 
           {/* Add Note Section */}
-          <div className={showInput ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-[60]" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
+          <div className={showInput ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-[70]" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
                 <div className={showInput && "fixed w-full h-full bg-black/70"} onClick={() => setShowInput(!showInput)}></div>
                 <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
                   <form onSubmit={handleNoteAdd} className={` relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-150 transition-all z-50`}>
