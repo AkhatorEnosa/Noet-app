@@ -238,12 +238,12 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
 
         {/* Delete modal  */}
         <div
-          className={showDeleteModal ? "fixed w-full h-full top-0 left-0 flex px-6 justify-center items-center z-50" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
+          className={showDeleteModal ? "fixed w-full h-full top-0 left-0 flex px-6 justify-center items-center z-[65]" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
 
             {/* backdrop  */}
             <div className={showDeleteModal && "w-full h-full fixed bg-black md:bg-black/75"} onClick={() => setShowDeleteModal(!showDeleteModal)}></div>
 
-            <div className={`w-full h-fit md:w-96 md:h-auto flex flex-col gap-3 px-4 py-4 ${showDeleteModal ? "opacity-100" : "opacity-0"} bg-white rounded-md transition-all duration-150 z-30`}>
+            <div className={`w-full h-fit md:w-96 md:h-auto flex flex-col gap-3 px-4 py-4 ${showDeleteModal ? "opacity-100" : "opacity-0"} bg-white rounded-md transition-all duration-150 z-[60]`}>
                 <h1 className="text-lg font-semibold">Delete</h1>
                 <hr />
                 <p className="text-sm">Are you sure you want to Delete?</p>
