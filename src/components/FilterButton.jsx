@@ -1,16 +1,14 @@
 /* eslint-disable react/prop-types */
 import SortRoundedIcon from '@mui/icons-material/SortRounded';
 import { Tooltip } from '@mui/material';
-import { useState } from 'react';
 
-const FilterButton = ({ sortValue, setSortValue, options }) => {
-    const [showSortOptions, setShowOptions] = useState(false)
+const FilterButton = ({ sortValue, setSortValue, options, showSortOptions, setShowOptions }) => {
 
 
   return (
     <div className="relative h-fit">
         <Tooltip title="Sort: all sorts are in descending order." arrow placement='top'>
-            <button className={`relative flex justify-center items-center p-3 md:p-4 shadow-md gap-2 active:shadow-lg hover:bg-blur-600 text-white hover:bg-[#255f6f] ${showSortOptions ? 'bg-[#255f6f] border-[1px] border-gray-300' : 'bg-[#114f60]'} rounded-full transition-all duration-200 z-[70]`} onClick={() => setShowOptions(!showSortOptions)}>
+            <button className={`relative flex justify-center items-center p-3 md:p-4 shadow-md gap-2 active:shadow-lg hover:bg-blur-600 text-white hover:bg-[#255f6f] ${showSortOptions ? 'bg-[#255f6f] border-[1px] border-gray-300' : 'bg-[#114f60]'} rounded-full transition-all duration-200 z-[60]`} onClick={() => setShowOptions(!showSortOptions)}>
                 <SortRoundedIcon sx={{ fontSize: "20px" }}/>
             </button>
         </Tooltip>

@@ -27,6 +27,7 @@ const Home = () => {
 
   const [uid, setUid] = useState()
   const [notes, setNotes] = useState()
+  const [noteInput, setNoteInput] = useState("")
   const [wordCount, setWordCount] = useState(0)
   const [showInput, setShowInput] = useState(false)
   const [showColorPallete, setShowColorPallete] = useState(false)
@@ -34,6 +35,7 @@ const Home = () => {
   const [activeNote, setactiveNote] = useState(null)
   const [closeSectionPinned, setCloseSectionPinned] = useState(true)
   const [closeSection, setCloseSection] = useState(false)
+  const [showSortOptions, setShowOptions] = useState(false)
 
   const [searchInput, setSearchInput] = useState("")
   const [debouncedSearchInput, setDebouncedSearchInput] = useState("")
@@ -49,9 +51,9 @@ const Home = () => {
   let inputRef = useRef('')
 
   const { isSuccess } = useGetUser()
-  const {mutate, isPending} = useCreateNote()
-  const {mutate:updateIndexNums} = useUpdateNotes()
-  const { error, isLoading, fetchStatus} = useFetchNotes(stateUser?.id, sortValue == 'color' ? 'bg_color' 
+  const { mutate, isPending } = useCreateNote()
+  const { mutate:updateIndexNums } = useUpdateNotes()
+  const { error, isLoading } = useFetchNotes(stateUser?.id, sortValue == 'color' ? 'bg_color' 
     : sortValue == 'content' ? 'data_value' 
     : sortValue == 'date' ? 'created_at' 
     : 'index_num', debouncedSearchInput)
@@ -91,7 +93,7 @@ const Home = () => {
   
   
   useEffect(() => {
-    const shouldHideScroll = showInput;
+    const shouldHideScroll = showInput || showSortOptions
   
     body.style.height = '100vh'
     body.style.overflowY = shouldHideScroll ? 'hidden' : 'scroll'
@@ -100,18 +102,26 @@ const Home = () => {
         body.style.height = ''
         body.style.overflowY = ''
     }
-  }, [showInput, body])
+  }, [showInput, showSortOptions, body])
+
+
+
+  const handleChange = (e) => {
+    setNoteInput(e.target.value)
+    setWordCount(e.target.value.length)
+  }
   
   
   const handleNoteAdd = (e) => {
     e.preventDefault()
-    if(inputRef.current.value.trim() !== "") {
-      mutate({data_value: inputRef.current.value.toString(), bg_color: colorOptionValue == "" ? "bg-white" : colorOptionValue, index_num: notes.length > 0 ? notes[0].index_num + 2 : 2, user_id: uid})
+    if(noteInput.trim() !== "") {
+      mutate({data_value: noteInput, bg_color: colorOptionValue == "" ? "bg-white" : colorOptionValue, index_num: notes.length > 0 ? notes[0].index_num + 2 : 2, user_id: uid})
       // setNotes(Notes.data)
       setTimeout(() => {
         if(!isPending) {
           setShowInput(!showInput)
-          inputRef.current.value = ''
+          // inputRef.current.value = ''
+          setNoteInput("")
           setWordCount(0)
           setShowColorPallete(false)
         }
@@ -125,17 +135,24 @@ const Home = () => {
 
   const clearInput = () => {
     setWordCount(0)
-    inputRef.current.value = ''
+    // inputRef.current.value = ''
+    setNoteInput("")
     setColorOptionValue('')
   }
 
   const closeInput = () => {
     setShowInput(false)
+    setWordCount(0)
+    setNoteInput("")
+    // inputRef.current.value = ''
+    setColorOptionValue('')
+    setShowColorPallete(false)
   }
 
   const handleColorOption = (e) => {
     const getColorValue = (e.target.className).split(" ").filter((x) => /bg-/.test(x))[0]
     setColorOptionValue(getColorValue)
+    setShowColorPallete(false)
   }
 
   const onDrop = (position) => {
@@ -195,8 +212,10 @@ const Home = () => {
                 />
                 <FilterButton 
                   options={options}
-                  setSortValue={setSortValue}
                   sortValue={sortValue}
+                  showSortOptions={showSortOptions}
+                  setSortValue={setSortValue}
+                  setShowOptions={setShowOptions}
                 />
               </div>
 
@@ -290,30 +309,35 @@ const Home = () => {
                       <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
                     </div>
 
-                    <textarea type="text" ref={inputRef} onInput={()=> inputRef.current && setWordCount(inputRef.current.value.length)}  className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} p-4 placeholder:text-black text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
+                    <textarea type="text" ref={inputRef} 
+                      // onInput={()=> inputRef.current && setWordCount(inputRef.current.value.length)}  
+                      value={noteInput}
+                      onChange={handleChange}
+                      className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} p-4 placeholder:text-black text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"
+                    />
 
                     <div className="relative w-full flex justify-center items-center py-10">
-                        <ColorPallete show={showColorPallete} addBackground={handleColorOption}/>
+                        {
+                          isPending ? <span className="loading loading-spinner loading-sm"></span> : 
                         
-                        {fetchStatus == "fetching" || isLoading ? <span className="loading loading-spinner loading-sm"></span> : 
-                        <div className={`w-full flex justify-center ${wordCount > 0 ? "gap-4" : "gap-0"} items-center px-3 md:px-5 pt-4 transition-all duration-150`}>
-                          <div className="flex gap-2 justify-center items-center">
-                            <Tooltip title="Choose color" arrow>
-                              <i className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? 'bg-warning shadow-lg border-none' : 'border-[1px] border-neutral'} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `} onClick={() => setShowColorPallete(!showColorPallete)}>
-                                <ColorLensRoundedIcon sx={{ fontSize: 18 }}/>
-                              </i>
-                            </Tooltip>
-                          </div>
+                            <div className={`w-full flex justify-center ${wordCount > 0 ? "gap-4" : "gap-0"} items-center px-3 md:px-5 pt-4 transition-all duration-150`}>
+                                <ColorPallete show={showColorPallete} colorOption={colorOptionValue} addBackground={handleColorOption}/>
+                                <Tooltip title="Choose color" arrow>
+                                  <i className={`flex justify-center items-center ${wordCount > 0 ? "w-10 h-10 rounded-full" : "w-0 h-0 opacity-0"} ${showColorPallete ? 'bg-warning shadow-lg border-none' : 'border-[1px] border-neutral'} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `} onClick={() => setShowColorPallete(!showColorPallete)}>
+                                    <ColorLensRoundedIcon sx={{ fontSize: 18 }}/>
+                                  </i>
+                                </Tooltip>
 
-                          <Tooltip title="Erase" arrow>
-                            <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-gray-500 hover:border-none transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon /></button>
-                          </Tooltip>
+                              {/* Clear all text  */}
+                              <Tooltip title="Clear Note" arrow>
+                                <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-gray-500 hover:border-none transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon /></button>
+                              </Tooltip>
 
-
-                          <Tooltip title="Add" arrow>
-                            <button type="submit" className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon/></button>
-                          </Tooltip>
-                        </div>
+                              {/* add note  */}
+                              <Tooltip title="Add Note" arrow>
+                                <button type="submit" className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full top-2 right-2 px-5 py-2 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon/></button>
+                              </Tooltip>
+                            </div>
                         }
                     </div>
                   </form>
@@ -324,7 +348,7 @@ const Home = () => {
             <Tooltip title="Add Noet" arrow placement="top"  className="fixed bottom-4 md:bottom-10 right-10 lg:right-12 z-30">
                 <button type="submit" className="cursor-pointer flex justify-center items-center rounded-full shadow-lg text-white text-sm font-bold bg-[#114f60] hover:bg-[#255f6f] px-4 py-4 transition-all duration-300 z-30" onClick={() => setShowInput(!showInput)  & inputRef.current.focus()}> 
                   <AddRoundedIcon sx={{ fontSize: 20 }}/> 
-                  Add Noet
+                  Add Note
                 </button>
             </Tooltip>
 

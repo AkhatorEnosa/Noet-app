@@ -76,8 +76,8 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
   }
 
   const closeInput = () => {
-    setGetNote(note)
-    setWordCount(note.length)
+    // setGetNote(note)
+    // setWordCount(note.length)
     setShowEditModal(!showEditModal)
     setShowColorPallete(false)
   }
@@ -91,9 +91,12 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
       }
   }
 
+  let getColorValue;
+
   const handleColorOption = (e) => {
-    const getColorValue = (e.target.className).split(" ").filter((x) => /bg-/.test(x))[0]
+    getColorValue = (e.target.className).split(" ").filter((x) => /bg-/.test(x))[0]
     setColorOptionValue(getColorValue)
+    setShowColorPallete(!showColorPallete)
   }
 
   const renderLink = ({ attributes, content }) => {
@@ -205,10 +208,11 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                   <textarea type="text" ref={editNoteRef} value={getNote} onChange={handleChange} className={`w-full h-[90%] outline-none resize-none placeholder:text-black p-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
 
                   <div className="relative w-full flex justify-center items-center py-10">
-                      <ColorPallete show={showColorPallete} addBackground={handleColorOption}/>
-                      
                       {updating || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : 
+                      
                       <div className={`w-full flex justify-center gap-4 items-center px-3 md:px-5 pt-4`}>
+                      {/* color pallete component  */}
+                      <ColorPallete show={showColorPallete} colorOption={colorOptionValue} addBackground={handleColorOption}/>
                         <div className="flex gap-2 justify-center items-center">
                           <Tooltip title="Choose color" arrow placement="top">
                             <i className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? 'bg-warning shadow-lg border-none' : 'border-[1px] border-neutral'} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `} onClick={() => setShowColorPallete(!showColorPallete)}>
@@ -216,18 +220,18 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                             </i>
                           </Tooltip>
                         </div>
-
-
+                        
+                        {/* copy text to clipboard  */}
                         <CopyToClipboard text={getNote} wordCount={wordCount} />
 
-
-                        <Tooltip title="Erase" arrow placement="top">
+                        {/* Clear input  */}
+                        <Tooltip title="Clear Note" arrow placement="top">
                           <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-gray-500 hover:border-none transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon sx={{ fontSize: 18 }}/></button>
                         </Tooltip>
 
-
+                        {/* update button */}
                         <Tooltip title="Update Note" arrow placement="top">
-                          <button type="submit" className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon sx={{ fontSize: 18 }}/></button>
+                          <button type="submit" className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full top-2 right-2 px-5 py-2 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon sx={{ fontSize: 18 }}/></button>
                         </Tooltip>
                       </div>
                       }
@@ -248,8 +252,8 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                 <hr />
                 <p className="text-sm">Are you sure you want to Delete?</p>
                 <div className="w-full flex justify-center items-center gap-5 mt-5 text-sm">
-                  {isPending || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-error rounded-md text-sm text-white" onClick={() => mutate(noteId) && setShowDeleteModal(false)}><DeleteRoundedIcon />Yes, Delete</button>
-                  <button className="flex justify-center items-center p-3 bg-neutral hover:bg-black text-white rounded-md" onClick={() => setShowDeleteModal(!showDeleteModal)}><ClearRoundedIcon/>Cancel</button></>}
+                  {isPending || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-error rounded-full text-sm text-white" onClick={() => mutate(noteId) && setShowDeleteModal(false)}><DeleteRoundedIcon />Yes, Delete</button>
+                  <button className="flex justify-center items-center p-3 bg-neutral hover:bg-black text-white rounded-full" onClick={() => setShowDeleteModal(!showDeleteModal)}><ClearRoundedIcon/>Cancel</button></>}
                 </div> 
             </div>
         </div>
