@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import Linkify from "linkify-react";
 import useDeleteNote from "../hooks/useDeleteNote"
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
@@ -19,6 +19,7 @@ import { useSelector } from "react-redux";
 import usePin from "../hooks/usePin";
 import { CircularProgress } from "@mui/material";
 import { CopyToClipboard } from "./CopyToClipboard";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 /* eslint-disable react/prop-types */
 const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handleDrop}) => {
@@ -31,6 +32,8 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
   const [colorOptionValue, setColorOptionValue] = useState(bgColor)
   const [toggleAction, setToggleAction] = useState(false)
   const [showDrop, setShowDrop] = useState(false)
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const stateLoading = useSelector((state) => state.data.isLoading)
 
@@ -40,16 +43,59 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
   const {mutate:updatePin, isPending:updatingPin, } = usePin()
   const {mutate:update, isPending:updating, } = useUpdateNote()
 
+  //  Capture the ID from the URL
+  const activeNoteId = searchParams.get("note");
+
+  // Sync 'show' state with URL param
+  useMemo(() => {
+      // If the URL param matches this specific modal's index, show it
+      if (activeNoteId === noteId.toString()) {
+        setShowEditModal(true);
+      } else {
+          setShowEditModal(false);
+      }
+  }, [activeNoteId, noteId]);
+
+  // Keyboard Listener
+  useEffect(() => {
+      const handleKeyDown = (event) => {
+          if (event.key === "Escape" && showEditModal) {
+              navigate("/");
+          }
+      };
+
+      // Only attach the listener if the modal is actually open
+      if (showEditModal) {
+          window.addEventListener("keydown", handleKeyDown);
+      }
+
+      return () => {
+          window.removeEventListener("keydown", handleKeyDown);
+      };
+  }, [showEditModal, navigate]);
+  
+  const handleNav = () => {
+      if (!showEditModal) {
+        navigate(`/?note=${noteId}`);
+      } else {
+        navigate(`/`);
+      }
+    setToggleAction(false)
+  };
+
+  // handle change for form
   const handleChange = (e) => {
     setGetNote(e.target.value)
     setWordCount(e.target.value.length)
   }
 
+  // for pinning notes 
   const handlePinUpdate = () => {
       // console.log(!draggedNote.pinned)
       updatePin({pinned: !draggedNote.pinned, id: noteId})
   }
 
+  // update note
   const handleNoteUpdate = (e) => {
     e.preventDefault()
     if(getNote.trim() !== "") {
@@ -69,20 +115,23 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
     }
   }
 
+  // clearing form 
   const clearInput = () => {
     setGetNote("")
     setWordCount(0)
     // setColorOptionValue("")
   }
 
+  // close form 
   const closeInput = () => {
     // setGetNote(note)
     // setWordCount(note.length)
-    setShowEditModal(!showEditModal)
+    setShowEditModal(false)
     setShowColorPallete(false)
+    handleNav()
   }
 
-
+  // truncating long notes to only 599 characters for Note Component rendering 
   const truncateNote = (x) => {
       if(x.length > 600) {
           return x.substring(0, 599).concat('...')
@@ -93,12 +142,14 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
 
   let getColorValue;
 
+  // handle color option
   const handleColorOption = (e) => {
     getColorValue = (e.target.className).split(" ").filter((x) => /bg-/.test(x))[0]
     setColorOptionValue(getColorValue)
     setShowColorPallete(!showColorPallete)
   }
 
+  // custom link render for linkify
   const renderLink = ({ attributes, content }) => {
     const { href, ...props } = attributes;
     return <a href={href} target="_blank" {...props} className="relative z-20 hover:underline">{content}</a>;
@@ -153,7 +204,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
         >
 
           {/* overlay to open note edit modal */}
-          <div className="absolute w-full h-full" onClick={() => setShowEditModal(!showEditModal) & setToggleAction(false)}></div>
+          <div className="absolute w-full h-full" onClick={handleNav}></div>
           
           {/* note div  */}
           <div className={`w-full ${note.length > 300 && "text-sm"} w-full leading-normal px-3 pb-4`}>
@@ -189,13 +240,13 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           </div>
         </motion.div>
 
-       <div className={toggleAction ? "fixed w-full h-full top-0 left-0 z-30" : "hidden"} onClick={() => setToggleAction(false)}></div>
+       <div className={toggleAction ? "fixed w-full h-full top-0 left-0 z-[63]" : "hidden"} onClick={() => setToggleAction(false)}></div>
 
         {/* Edit modal  */}
         <div className={showEditModal ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-[70]" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
 
               {/* backdrop  */}
-              <div className={showEditModal && "fixed w-full h-full md:bg-black/75"} onClick={() => setShowEditModal(!showEditModal)}></div>
+              <div className={showEditModal && "fixed w-full h-full md:bg-black/75"} onClick={handleNav}></div>
 
               <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
                 <form onSubmit={handleNoteUpdate} className={`${showEditModal ? "opacity-100" : "opacity-0"} relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-150 transition-all z-50`}>

@@ -1,16 +1,27 @@
-import Home from "./pages/Home"
-import Navbar from "./section/Navbar"
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Navbar from "./section/Navbar";
 
 function App() {
-
   return (
-    <div className="w-screen flex flex-col justify-between items-center relative" translate="yes">
-        <div className="fixed w-screen h-screen bg-[url(./assets/bg-img.webp)] z-0"></div>
-        <div className="fixed w-screen h-screen bg-white/95"></div>
+    <Router>
+      <div className="w-screen flex flex-col justify-between items-center relative" translate="yes">
+        {/* Persistent Background Layers */}
+        <div className="fixed inset-0 bg-[url(./assets/bg-img.webp)] bg-cover z-0"></div>
+        <div className="fixed inset-0 bg-white/95 z-0"></div>
+
+        {/* Persistent NavBar */}
         <Navbar />
-        <Home />
-    </div>
-  )
+
+        {/* Dynamic Page Content */}
+        <main className="relative z-10 w-full flex flex-col items-center">
+          <Routes>
+            <Route path="/" element={<Home />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
+  );
 }
 
-export default App
+export default App;

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import useCreateNote from "../hooks/useCreateNote"
 import Note from "../components/Note"
 import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
@@ -20,6 +20,7 @@ import Search from "../components/Search";
 import { useDebounce } from "react-use";
 import FilterButton from "../components/FilterButton";
 import useFetchNotes from "../hooks/useFetchNotes";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const options = [ 'date', 'content', 'default']
 
@@ -42,6 +43,8 @@ const Home = () => {
   const [sortValue, setSortValue] = useState("default")
   const [message, setMessage] = useState("")
   const body = document.body
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
 
   const stateNotes = useSelector((state) => state.data.notes)
@@ -63,6 +66,45 @@ const Home = () => {
     setDebouncedSearchInput(searchInput)
     }, 500, [searchInput]
   )
+  
+  //  Capture the ID from the URL
+  const queryParam = searchParams.get("note");
+
+  // Sync 'show' state with URL param
+  useMemo(() => {
+      // If the URL param matches this specific modal's index, show it
+      if (queryParam === 'true') {
+        setShowInput(true);
+      } else {
+          setShowInput(false);
+      }
+  }, [queryParam]);
+
+  // Keyboard Listener
+  useEffect(() => {
+      const handleKeyDown = (event) => {
+          if (event.key === "Escape" && showInput) {
+              navigate("/");
+          }
+      };
+
+      // Only attach the listener if the modal is actually open
+      if (showInput) {
+          window.addEventListener("keydown", handleKeyDown);
+      }
+
+      return () => {
+          window.removeEventListener("keydown", handleKeyDown);
+      };
+  }, [showInput, navigate]);
+  
+  const handleNav = () => {
+      if (!showInput) {
+        navigate(`/?note=true`);
+      } else {
+        navigate(`/`);
+      }
+  };
 
   const checkForPinned = () => {
     const containsPinned = notes.some((note) => note.pinned)
@@ -147,6 +189,7 @@ const Home = () => {
     // inputRef.current.value = ''
     setColorOptionValue('')
     setShowColorPallete(false)
+    handleNav()
   }
 
   const handleColorOption = (e) => {
@@ -302,7 +345,7 @@ const Home = () => {
 
           {/* Add Note Section */}
           <div className={showInput ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-[70]" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
-                <div className={showInput && "fixed w-full h-full bg-black/70"} onClick={() => setShowInput(!showInput)}></div>
+                <div className={showInput && "fixed w-full h-full bg-black/70"} onClick={handleNav}></div>
                 <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
                   <form onSubmit={handleNoteAdd} className={` relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-150 transition-all z-50`}>
                     <div className="flex items-center justify-end top-2 right-2 px-2 py-2">
@@ -346,7 +389,7 @@ const Home = () => {
 
           {/* Add Noet Button */}
             <Tooltip title="Add Noet" arrow placement="top"  className="fixed bottom-4 md:bottom-10 right-10 lg:right-12 z-30">
-                <button type="submit" className="cursor-pointer flex justify-center items-center rounded-full shadow-lg text-white text-sm font-bold bg-[#114f60] hover:bg-[#255f6f] px-4 py-4 transition-all duration-300 z-30" onClick={() => setShowInput(!showInput)  & inputRef.current.focus()}> 
+                <button type="submit" className="cursor-pointer flex justify-center items-center rounded-full shadow-lg text-white text-sm font-bold bg-[#114f60] hover:bg-[#255f6f] px-4 py-4 transition-all duration-300 z-30" onClick={() => handleNav()  & inputRef.current.focus()}> 
                   <AddRoundedIcon sx={{ fontSize: 20 }}/> 
                   Add Note
                 </button>
