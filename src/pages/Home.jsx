@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import useCreateNote from "../hooks/useCreateNote"
 import Note from "../components/Note"
 import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
@@ -21,6 +21,8 @@ import { useDebounce } from "react-use";
 import FilterButton from "../components/FilterButton";
 import useFetchNotes from "../hooks/useFetchNotes";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 
 const options = [ 'date', 'content', 'default']
 
@@ -30,7 +32,6 @@ const Home = () => {
   const [notes, setNotes] = useState()
   const [noteInput, setNoteInput] = useState("")
   const [wordCount, setWordCount] = useState(0)
-  const [showInput, setShowInput] = useState(false)
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState("")
   const [activeNote, setactiveNote] = useState(null)
@@ -42,7 +43,6 @@ const Home = () => {
   const [debouncedSearchInput, setDebouncedSearchInput] = useState("")
   const [sortValue, setSortValue] = useState("default")
   const [message, setMessage] = useState("")
-  const body = document.body
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -69,42 +69,32 @@ const Home = () => {
   
   //  Capture the ID from the URL
   const queryParam = searchParams.get("note");
+  const isWriting = queryParam === 'true' ? true : false;
 
-  // Sync 'show' state with URL param
-  useMemo(() => {
-      // If the URL param matches this specific modal's index, show it
-      if (queryParam === 'true') {
-        setShowInput(true);
-      } else {
-          setShowInput(false);
-      }
-  }, [queryParam]);
+   
+  // handle navigation
+  const handleNav = () => {
+    if (!isWriting) {
+      navigate(`/?note=true`, { replace: true });
+    } else {
+      navigate(`/`, { replace: true });
+    }
+  };
 
   // Keyboard Listener
   useEffect(() => {
-      const handleKeyDown = (event) => {
-          if (event.key === "Escape" && showInput) {
-              navigate("/");
-          }
-      };
-
-      // Only attach the listener if the modal is actually open
-      if (showInput) {
-          window.addEventListener("keydown", handleKeyDown);
-      }
-
+    if (isWriting) {
+      document.body.style.overflow = 'hidden';
+      const handleEsc = (e) => e.key === "Escape" && handleNav();
+      window.addEventListener("keydown", handleEsc);
+      
       return () => {
-          window.removeEventListener("keydown", handleKeyDown);
+        document.body.style.overflow = 'unset';
+        window.removeEventListener("keydown", handleEsc);
       };
-  }, [showInput, navigate]);
-  
-  const handleNav = () => {
-      if (!showInput) {
-        navigate(`/?note=true`);
-      } else {
-        navigate(`/`);
-      }
-  };
+    }
+    closeInput();
+  }, [isWriting]);
 
   const checkForPinned = () => {
     const containsPinned = notes.some((note) => note.pinned)
@@ -112,19 +102,19 @@ const Home = () => {
   }
 
 
-    useEffect(() => {
-      const timeoutId = setTimeout(() => {
-        setMessage(
-          <>
-            <DescriptionIcon  sx={{ fontSize: 200 }}/>
-            <p>No <b>Noets</b> found</p>
-          </>
-        );
-      }, 2000);
-  
-      // Cleanup function to clear the timeout
-      return () => clearTimeout(timeoutId);
-    }, []);
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setMessage(
+        <>
+          <DescriptionIcon  sx={{ fontSize: 200 }}/>
+          <p>No <b>Noets</b> found</p>
+        </>
+      );
+    }, 2000);
+
+    // Cleanup function to clear the timeout
+    return () => clearTimeout(timeoutId);
+  }, []);
   
   useEffect(() => {
     setUid(stateUser?.id)
@@ -132,19 +122,6 @@ const Home = () => {
       setNotes(stateNotes)
     }
   }, [stateNotes, stateUser?.id])
-  
-  
-  useEffect(() => {
-    const shouldHideScroll = showInput || showSortOptions
-  
-    body.style.height = '100vh'
-    body.style.overflowY = shouldHideScroll ? 'hidden' : 'scroll'
-
-    return () => {
-        body.style.height = ''
-        body.style.overflowY = ''
-    }
-  }, [showInput, showSortOptions, body])
 
 
 
@@ -157,22 +134,18 @@ const Home = () => {
   const handleNoteAdd = (e) => {
     e.preventDefault()
     if(noteInput.trim() !== "") {
-      mutate({data_value: noteInput, bg_color: colorOptionValue == "" ? "bg-white" : colorOptionValue, index_num: notes.length > 0 ? notes[0].index_num + 2 : 2, user_id: uid})
+      mutate({data_value: noteInput, bg_color: colorOptionValue == "" ? "bg-white" : colorOptionValue, index_num: notes.length > 0 ? notes[0].index_num + 2 : 2, user_id: uid}, { onSuccess: () => handleNav() })
       // setNotes(Notes.data)
-      setTimeout(() => {
         if(!isPending) {
-          setShowInput(!showInput)
           // inputRef.current.value = ''
           setNoteInput("")
           setWordCount(0)
           setShowColorPallete(false)
         }
-      }, 1000);
     } else {
       inputRef.current.focus();
       setWordCount(0)
     }
-      // setShowInput(false)
   }
 
   const clearInput = () => {
@@ -183,13 +156,11 @@ const Home = () => {
   }
 
   const closeInput = () => {
-    setShowInput(false)
     setWordCount(0)
     setNoteInput("")
     // inputRef.current.value = ''
     setColorOptionValue('')
     setShowColorPallete(false)
-    handleNav()
   }
 
   const handleColorOption = (e) => {
@@ -344,52 +315,62 @@ const Home = () => {
 
 
           {/* Add Note Section */}
-          <div className={showInput ? "fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-[70]" : "opacity-0 fixed w-full h-full top-0 left-0 flex justify-center items-center -z-50"}>
-                <div className={showInput && "fixed w-full h-full bg-black/70"} onClick={handleNav}></div>
-                <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
-                  <form onSubmit={handleNoteAdd} className={` relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-150 transition-all z-50`}>
-                    <div className="flex items-center justify-end top-2 right-2 px-2 py-2">
-                      <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closeInput}><ClearRoundedIcon /></button>
-                    </div>
+          <AnimatePresence>
+            {
+              isWriting &&
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className={"fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-[70]" }>
+                  {/* backdrop  */}
+                  <div className={"fixed w-full h-full bg-black/70"} onClick={handleNav}></div> 
+                    
+                  <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
+                    <form onSubmit={handleNoteAdd} className={` relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-150 transition-all z-50`}>
+                      <div className="flex items-center justify-end top-2 right-2 px-2 py-2">
+                        <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={handleNav}><ClearRoundedIcon /></button>
+                      </div>
 
-                    <textarea type="text" ref={inputRef} 
-                      // onInput={()=> inputRef.current && setWordCount(inputRef.current.value.length)}  
-                      value={noteInput}
-                      onChange={handleChange}
-                      className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} p-4 placeholder:text-black text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"
-                    />
+                      <textarea type="text" ref={inputRef} 
+                        autoFocus
+                        // onInput={()=> inputRef.current && setWordCount(inputRef.current.value.length)}  
+                        value={noteInput}
+                        onChange={handleChange}
+                        className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} p-4 placeholder:text-black text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"
+                      />
 
-                    <div className="relative w-full flex justify-center items-center py-10">
-                        {
-                          isPending ? <span className="loading loading-spinner loading-sm"></span> : 
-                        
-                            <div className={`w-full flex justify-center ${wordCount > 0 ? "gap-4" : "gap-0"} items-center px-3 md:px-5 pt-4 transition-all duration-150`}>
-                                <ColorPallete show={showColorPallete} colorOption={colorOptionValue} addBackground={handleColorOption}/>
-                                <Tooltip title="Choose color" arrow>
-                                  <i className={`flex justify-center items-center ${wordCount > 0 ? "w-10 h-10 rounded-full" : "w-0 h-0 opacity-0"} ${showColorPallete ? 'bg-warning shadow-lg border-none' : 'border-[1px] border-neutral'} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `} onClick={() => setShowColorPallete(!showColorPallete)}>
-                                    <ColorLensRoundedIcon sx={{ fontSize: 18 }}/>
-                                  </i>
+                      <div className="relative w-full flex justify-center items-center py-10">
+                          {
+                            isPending ? <span className="loading loading-spinner loading-sm"></span> : 
+                          
+                              <div className={`w-full flex justify-center ${wordCount > 0 ? "gap-4" : "gap-0"} items-center px-3 md:px-5 pt-4 transition-all duration-150`}>
+                                  <ColorPallete show={showColorPallete} colorOption={colorOptionValue} addBackground={handleColorOption}/>
+                                  <Tooltip title="Choose color" arrow>
+                                    <i className={`flex justify-center items-center ${wordCount > 0 ? "w-10 h-10 rounded-full" : "w-0 h-0 opacity-0"} ${showColorPallete ? 'bg-warning shadow-lg border-none' : 'border-[1px] border-neutral'} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `} onClick={() => setShowColorPallete(!showColorPallete)}>
+                                      <ColorLensRoundedIcon sx={{ fontSize: 18 }}/>
+                                    </i>
+                                  </Tooltip>
+
+                                {/* Clear all text  */}
+                                <Tooltip title="Clear Note" arrow>
+                                  <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-gray-500 hover:border-none transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon /></button>
                                 </Tooltip>
 
-                              {/* Clear all text  */}
-                              <Tooltip title="Clear Note" arrow>
-                                <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-gray-500 hover:border-none transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon /></button>
-                              </Tooltip>
-
-                              {/* add note  */}
-                              <Tooltip title="Add Note" arrow>
-                                <button type="submit" className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full top-2 right-2 px-5 py-2 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon/></button>
-                              </Tooltip>
-                            </div>
-                        }
-                    </div>
-                  </form>
-                </div>
-          </div>
+                                {/* add note  */}
+                                <Tooltip title="Add Note" arrow>
+                                  <button type="submit" className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full top-2 right-2 px-5 py-2 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon/></button>
+                                </Tooltip>
+                              </div>
+                          }
+                      </div>
+                    </form>
+                  </div>
+              </motion.div>
+            }
+          </AnimatePresence>
 
           {/* Add Noet Button */}
             <Tooltip title="Add Noet" arrow placement="top"  className="fixed bottom-4 md:bottom-10 right-10 lg:right-12 z-30">
-                <button type="submit" className="cursor-pointer flex justify-center items-center rounded-full shadow-lg text-white text-sm font-bold bg-[#114f60] hover:bg-[#255f6f] px-4 py-4 transition-all duration-300 z-30" onClick={() => handleNav()  & inputRef.current.focus()}> 
+                <button type="submit" className="cursor-pointer flex justify-center items-center rounded-full shadow-lg text-white text-sm font-bold bg-[#114f60] hover:bg-[#255f6f] px-4 py-4 transition-all duration-300 z-30" onClick={handleNav}> 
                   <AddRoundedIcon sx={{ fontSize: 20 }}/> 
                   Add Note
                 </button>

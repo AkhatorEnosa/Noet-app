@@ -13,17 +13,17 @@ const Navbar = () => {
 
   const [name, setName] = useState("")
   const [imgUrl, setImgUrl] = useState("")
-  // const [isScrolled, setIsScrolled] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
 
-  // const changeNavBarOnScroll = () => {
-  //   const scrollThreshold = 250;
+  const changeNavBarOnScroll = () => {
+    const scrollThreshold = 250;
 
-  //   if (window.scrollY >= scrollThreshold) {
-  //     setIsScrolled(true);
-  //   } else {
-  //     setIsScrolled(false)
-  //   }
-  // }
+    if (window.scrollY >= scrollThreshold) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false)
+    }
+  }
 
   useEffect(() => {
     setName(user?.identities[0].identity_data.name)
@@ -31,24 +31,22 @@ const Navbar = () => {
     // console.log(user?.identities[0].identity_data);
   }, [user?.identities])
 
-  // useEffect(() => {
-  //   window.addEventListener('scroll', changeNavBarOnScroll);
+  useEffect(() => {
+    window.addEventListener('scroll', changeNavBarOnScroll);
 
-  //   return () => {
-  //     window.removeEventListener('scroll', changeNavBarOnScroll);
-  //   };
-  // }, []);
+    return () => {
+      window.removeEventListener('scroll', changeNavBarOnScroll);
+    };
+  }, []);
   
   
 
   const handleSignOut = async() => {
       mutate()
   }
-      // ${isScrolled && 'bg-white/10 backdrop-blur-md sticky shadow z-[40]'} 
 
     if(user !== null) return (
-      <section className={`top-0 w-full flex justify-between items-center px-3 md:px-20 py-3 md:py-5 
-      text-sm z-0 transition-all duration-300 ease-in-out`}>
+      <section className={`top-0 w-full flex justify-between items-center px-3 md:px-20 py-3 md:py-5 ${isScrolled && 'bg-white/10 backdrop-blur-md sticky shadow'} text-sm z-[62] duration-150 ease-in-out`}>
         {/* <h1 className="logo-nav">my<b>Noet</b></h1> */}
         <img src={Logo} alt="website_logo" className="w-28 md:w-32"/>
 

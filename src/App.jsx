@@ -14,7 +14,7 @@ function App() {
         <Navbar />
 
         {/* Dynamic Page Content */}
-        <main className="relative z-10 w-full flex flex-col items-center">
+        <main className="relative w-full flex flex-col items-center">
           <Routes>
             <Route path="/" element={<Home />} />
           </Routes>
