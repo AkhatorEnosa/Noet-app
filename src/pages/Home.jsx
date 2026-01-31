@@ -72,7 +72,7 @@ const Home = () => {
   const isWriting = queryParam === 'true' ? true : false;
 
    
-  // handle navigation
+  // handle navigation base on query param
   const handleNav = () => {
     if (!isWriting) {
       navigate(`/?note=true`, { replace: true });
@@ -81,7 +81,7 @@ const Home = () => {
     }
   };
 
-  // Keyboard Listener
+  // Effect to handle body overflow and saving note on form close
   useEffect(() => {
     if (isWriting) {
       document.body.style.overflow = 'hidden';
@@ -93,15 +93,57 @@ const Home = () => {
         window.removeEventListener("keydown", handleEsc);
       };
     }
-    closeInput();
+
+    // Save note when closing the input form if there is content
+    // this is to ensure auto sae and avoiding data loss
+    if (!isWriting && noteInput.trim() !== "") {
+      saveNote();
+    }
   }, [isWriting]);
 
+  
+  // Function to save note
+  const saveNote = () => {
+    // Do not save empty notes
+    if (noteInput.trim() === "") {
+      setWordCount(0);
+      return;
+    }
+
+    // Proceed to save the note
+    mutate(
+      {
+        data_value: noteInput,
+        bg_color: colorOptionValue == "" ? "bg-white" : colorOptionValue,
+        index_num: notes.length > 0 ? notes[0].index_num + 2 : 2,
+        user_id: uid
+      }, {
+        onSuccess: () => {
+          isWriting && handleNav(); // Close the form only if it was opened for writing
+
+          // Reset state inside onSuccess to ensure data was sent
+          setColorOptionValue('')
+          setNoteInput("");
+          setWordCount(0);
+          setShowColorPallete(false);
+        }
+      }
+    )
+  }
+  
+  // Handle form submission
+  const handleNoteAdd = (e) => {
+    e.preventDefault();
+    saveNote();
+  }
+
+  // Check if there are pinned notes
   const checkForPinned = () => {
     const containsPinned = notes.some((note) => note.pinned)
     return containsPinned
   }
 
-
+  //  Display message if no notes found after 2 seconds
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setMessage(
@@ -116,6 +158,7 @@ const Home = () => {
     return () => clearTimeout(timeoutId);
   }, []);
   
+  // Sync local notes state with Redux store
   useEffect(() => {
     setUid(stateUser?.id)
     if(stateUser !== null) {
@@ -123,44 +166,17 @@ const Home = () => {
     }
   }, [stateNotes, stateUser?.id])
 
-
-
+  
   const handleChange = (e) => {
     setNoteInput(e.target.value)
     setWordCount(e.target.value.length)
   }
-  
-  
-  const handleNoteAdd = (e) => {
-    e.preventDefault()
-    if(noteInput.trim() !== "") {
-      mutate({data_value: noteInput, bg_color: colorOptionValue == "" ? "bg-white" : colorOptionValue, index_num: notes.length > 0 ? notes[0].index_num + 2 : 2, user_id: uid}, { onSuccess: () => handleNav() })
-      // setNotes(Notes.data)
-        if(!isPending) {
-          // inputRef.current.value = ''
-          setNoteInput("")
-          setWordCount(0)
-          setShowColorPallete(false)
-        }
-    } else {
-      inputRef.current.focus();
-      setWordCount(0)
-    }
-  }
+
 
   const clearInput = () => {
     setWordCount(0)
-    // inputRef.current.value = ''
     setNoteInput("")
     setColorOptionValue('')
-  }
-
-  const closeInput = () => {
-    setWordCount(0)
-    setNoteInput("")
-    // inputRef.current.value = ''
-    setColorOptionValue('')
-    setShowColorPallete(false)
   }
 
   const handleColorOption = (e) => {
@@ -234,7 +250,7 @@ const Home = () => {
               </div>
 
               {stateNotes !== null && !isLoading && notes?.length > 0 ?
-               <div className="w-full gap-6 flex flex-col items-center justify-center">
+               <div className="w-full gap-2 flex flex-col items-center justify-center">
 
                   <div className="w-full flex flex-col gap-2">
                     
@@ -248,7 +264,7 @@ const Home = () => {
                         </Tooltip>
                     }
                     
-                    <div className={`${closeSectionPinned ? "hidden" : "block"} rounded-md border-[1px] border-[#255f6f]/5 bg-[#255f6f]/5 p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto overflow-clip`}>
+                    <div className={`${closeSectionPinned ? "hidden" : "block"} rounded-md border-[1px] border-[#255f6f]/5 bg-[#255f6f]/5 p-1 sm:p-4 w-full gap-1 sm:gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-1 sm:space-y-2 md:space-y-4 mx-auto overflow-clip`}>
                       {
                         notes?.map((note) => (
                               note.pinned && <React.Fragment key={note.id}>
@@ -282,7 +298,7 @@ const Home = () => {
                         </Tooltip>
                     }
                     
-                    <div className={`${closeSection ? "hidden" : "block"} rounded-md border-[1px] border-[#255f6f]/5 bg-[#255f6f]/5 p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto overflow-clip`}>
+                    <div className={`${closeSection ? "hidden" : "block"} rounded-md border-[1px] border-[#255f6f]/5 bg-[#255f6f]/5 p-1 sm:p-4 w-full gap-1 sm:gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-1 sm:space-y-2 md:space-y-4 mx-auto overflow-clip`}>
                       
                       {
                         notes?.map((note) => (

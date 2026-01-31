@@ -181,7 +181,9 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           {/* date and actions  */}
           <div className={`relative w-full px-2 py-2 gap-2 ${toggleAction ? "lg:opacity-100" : "group-hover:lg:opacity-100 lg:opacity-0 "} flex justify-between md:justify-end items-center border-t-[1px] rounded-md shadow lg:shadow-none group-hover:shadow ${!showDrop && "bg-white/80 z-50"}`}>
 
-            <div className={`w-full h-fit lg:w-fit flex gap-0 lg:gap-2 flex-col lg:flex-row ${toggleAction ? "lg:opacity-100" : "group-hover:lg:opacity-100 lg:opacity-0 "} text-[12px] md:text-xs font-light transition-all duration-150`}><span className="h-fit hidden md:block">noted on</span> <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></div>
+            <div className={`w-full h-fit lg:w-fit flex gap-0 lg:gap-2 flex-col lg:flex-row ${toggleAction ? "lg:opacity-100" : "group-hover:lg:opacity-100 lg:opacity-0 "} leading-[15px] text-[10px] sm:text-[12px] md:text-xs font-light transition-all duration-150`}><span className="h-fit hidden md:block">noted on</span> <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></div>
+            
+            {/* action buttons  */}
             <div className="w-fit flex lg:gap-2">
               <Tooltip title="Pin" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50" onClick={() => handlePinUpdate()}>
                   {updatingPin ? <CircularProgress size="20px" color="inherit"/> : !draggedNote.pinned ? <PushPinOutlinedIcon/> : <PushPinRoundedIcon />}
@@ -283,7 +285,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                 <div className={"w-full h-full fixed bg-black md:bg-black/75"} onClick={() => setShowDeleteModal(!showDeleteModal)}></div>
 
                 <motion.div 
-                  layoutId={`note-${noteId}`}
+                  // layoutId={`note-${noteId}`}
                   className={`w-full h-fit md:w-96 md:h-auto flex flex-col gap-3 px-4 py-4 bg-white rounded-md transition-all duration-150 z-[60]`}>
                     <h1 className="text-lg font-semibold">Delete</h1>
                     <hr />

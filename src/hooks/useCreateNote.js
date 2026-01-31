@@ -12,8 +12,8 @@ const useCreateNote = () => {
         if(error) console.log(error)
         return data
     },
-    onSuccess: (data) => {
-      console.log("Created", data)
+    onSuccess: () => {
+      // console.log("Created", data)
         queryClient.invalidateQueries({
           queryKey: ['notes'],
         })
