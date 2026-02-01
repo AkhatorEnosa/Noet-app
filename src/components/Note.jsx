@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import Linkify from "linkify-react";
 import useDeleteNote from "../hooks/useDeleteNote"
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
@@ -20,12 +20,14 @@ import usePin from "../hooks/usePin";
 import { CircularProgress } from "@mui/material";
 import { CopyToClipboard } from "./CopyToClipboard";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useDebounce } from "react-use";
 
 /* eslint-disable react/prop-types */
 const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handleDrop}) => {
 
   const [getNote, setGetNote] = useState(note)
   const [wordCount, setWordCount] = useState(note.length)
+  const [debouncedNoteInput, setDebouncedNoteInput] = useState("")
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState(bgColor)
@@ -49,16 +51,45 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
   const isEditing = activeNoteId === noteId.toString();
   
   // handle navigation
-  const handleNav = () => {
+  const handleNav = useCallback(() => {
     if (!isEditing) {
       navigate(`/?note=${noteId}`, { replace: true });
     } else {
       navigate(`/`, { replace: true });
     }
     setToggleAction(false)
-  };
+  }, [isEditing, navigate, noteId]);
 
-  // Keyboard Listener
+  // update note function
+  const updateNote = useCallback((input, shouldNavigate = false) => {
+    if(input.trim() !== "") {
+      update(
+        { data_value: input.trim(), id: noteId, bg_color: colorOptionValue },
+        { 
+          onSuccess: () => {
+            if (shouldNavigate) handleNav();
+          } 
+        }
+      )
+
+      setShowColorPallete(false)
+    } else {
+      setGetNote('')
+      setWordCount(0)
+      setShowColorPallete(false)
+    }
+  }, [noteId, colorOptionValue, update, handleNav, setGetNote, setWordCount, setShowColorPallete])
+
+  useDebounce(() => {
+    if (getNote && isEditing) {
+      updateNote(getNote, false);
+      setDebouncedNoteInput(getNote);
+    }
+    }, 1500, [getNote, updateNote, isEditing]
+  )
+
+
+  // disable scroll when editing or deleting note
   useEffect(() => {
     if (isEditing || showDeleteModal) {
       document.body.style.overflow = 'hidden';
@@ -70,8 +101,12 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
         window.removeEventListener("keydown", handleEsc);
       };
     }
-    closeInput();
-  }, [isEditing, showDeleteModal]);
+    if (!isEditing) {
+      setShowColorPallete(false)
+      setColorOptionValue(bgColor)
+      setGetNote(note)
+    }
+  }, [isEditing, showDeleteModal, handleNav, bgColor, note]);
 
   // handle change for form
   const handleChange = (e) => {
@@ -85,21 +120,10 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
       updatePin({pinned: !draggedNote.pinned, id: noteId})
   }
 
-  // update note
+  // handke note update
   const handleNoteUpdate = (e) => {
     e.preventDefault()
-    if(getNote.trim() !== "") {
-      update(
-        { data_value: getNote.trim().toString(), id: noteId, bg_color: colorOptionValue },
-        { onSuccess: () => handleNav() }
-      )
-
-      setShowColorPallete(false)
-    } else {
-      setGetNote('')
-      setWordCount(0)
-      setShowColorPallete(false)
-    }
+    updateNote(getNote, true);
   }
 
   // clearing form 
@@ -110,14 +134,14 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
   }
 
   // close form 
-  const closeInput = () => {
-    // setGetNote(note)
-    // setWordCount(note.length)
-    // setShowEditModal(false)
-    setShowColorPallete(false)
-    setColorOptionValue(bgColor)
-    setGetNote(note)
-  }
+  // const closeInput = () => {
+  //   // setGetNote(note)
+  //   // setWordCount(note.length)
+  //   // setShowEditModal(false)
+  //   setShowColorPallete(false)
+  //   setColorOptionValue(bgColor)
+  //   setGetNote(note)
+  // }
 
   // truncating long notes to only 599 characters for Note Component rendering 
   const truncateNote = (x) => {
@@ -153,7 +177,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           viewport={{ amount: 0.2 }}
           layout
           layoutId={`note-${noteId}`}
-          className={`group flex flex-col justify-between relative break-inside-avoid pt-4 aspect-video w-full ${bgColor} rounded-md text-lg hover:lg:shadow-lg transition-all duration-200 break-words active:cursor-grab ${showDrop ? "border-[#114f60] border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-[70]" : "z-10"}`} draggable="true" 
+          className={`group flex flex-col justify-between relative break-inside-avoid pt-4 aspect-video w-full ${bgColor} rounded-md text-lg hover:lg:shadow-lg hover:lg:-translate-y-2 transition-all duration-200 break-words active:cursor-grab ${showDrop ? "border-[#114f60] border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-[70]" : "z-10"}`} draggable="true" 
 
             onDragStart={() => activeNote(draggedNote)} 
             onDragEnd={() => activeNote(null)}
@@ -225,9 +249,15 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
 
                         <div className="flex items-center justify-end gap-2 px-2 py-2">
                           <span className={`flex lg:gap-2 flex-row border-[1px] px-4 py-2 rounded-full ${colorOptionValue} text-xs font-light transition-all duration-150`}>noted on <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></span>
-                          <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={handleNav}><ClearRoundedIcon /></button>
+                          
+                          {/* close button or loading  */}
+                          {
+                            updating || stateLoading ? <span className="loading loading-spinner loading-sm"></span> :
+                            <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={handleNav}><ClearRoundedIcon /></button>
+                          }
                         </div>
 
+                        {/* textarea  */}
                         <textarea
                           autoFocus
                           type="text" 
@@ -236,19 +266,19 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                           onChange={handleChange} 
                           className={`w-full h-[90%] outline-none resize-none placeholder:text-black p-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
 
+                        {/* action buttons  */}
                         <div className="relative w-full flex justify-center items-center py-10">
-                            {updating || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : 
-                            
-                            <div className={`w-full flex justify-center gap-4 items-center px-3 md:px-5 pt-4`}>
-                            {/* color pallete component  */}
-                            <ColorPallete show={showColorPallete} colorOption={colorOptionValue} addBackground={handleColorOption}/>
-                              <div className="flex gap-2 justify-center items-center">
-                                <Tooltip title="Choose color" arrow placement="top">
-                                  <i className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? 'bg-warning shadow-lg border-none' : 'border-[1px] border-neutral'} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `} onClick={() => setShowColorPallete(!showColorPallete)}>
-                                    <ColorLensRoundedIcon sx={{ fontSize: 18 }}/>
-                                  </i>
-                                </Tooltip>
-                              </div>
+                            <div className={`relative w-full flex justify-center gap-4 items-center px-3 md:px-5 pt-4`}>
+                              {/* overlay when updating  */}
+                              {/* {updating || stateLoading && <div className="absolute bg-white/60 top-0 left-0 w-full h-full bg-red-400 z-50"></div>} */}
+                              {/* color pallete component  */}
+                              <ColorPallete show={showColorPallete} colorOption={colorOptionValue} addBackground={handleColorOption}/>
+                              
+                              <Tooltip title="Choose color" arrow placement="top">
+                                <i className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? 'bg-warning shadow-lg border-none' : 'border-[1px] border-neutral'} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `} onClick={() => setShowColorPallete(!showColorPallete)}>
+                                  <ColorLensRoundedIcon sx={{ fontSize: 18 }}/>
+                                </i>
+                              </Tooltip>
                               
                               {/* copy text to clipboard  */}
                               <CopyToClipboard text={getNote} wordCount={wordCount} />
@@ -259,11 +289,10 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                               </Tooltip>
 
                               {/* update button */}
-                              <Tooltip title="Update Note" arrow placement="top">
+                              {(getNote !== debouncedNoteInput && (!updating || !stateLoading)) && <Tooltip title="Update Note" arrow placement="top">
                                 <button type="submit" className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full top-2 right-2 px-5 py-2 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon sx={{ fontSize: 18 }}/></button>
-                              </Tooltip>
+                              </Tooltip>}
                             </div>
-                            }
                         </div>
                       </motion.form>
                     </div>
