@@ -8,6 +8,7 @@ import ColorPallete from "./ColorPallete";
 import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
 import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import useUpdateNote from "../hooks/useUpdateNote";
 import Tooltip from '@mui/material/Tooltip';
@@ -21,6 +22,7 @@ import { CircularProgress } from "@mui/material";
 import { CopyToClipboard } from "./CopyToClipboard";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDebounce } from "react-use";
+import { CheckCircle } from "@mui/icons-material";
 
 /* eslint-disable react/prop-types */
 const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handleDrop}) => {
@@ -31,6 +33,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState(bgColor)
+  const [checkedNote, setCheckedNote] = useState(false)
   const [toggleAction, setToggleAction] = useState(false)
   const [showDrop, setShowDrop] = useState(false)
   const [searchParams] = useSearchParams();
@@ -177,7 +180,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           viewport={{ amount: 0.2 }}
           layout
           layoutId={`note-${noteId}`}
-          className={`group flex flex-col justify-between relative break-inside-avoid pt-4 aspect-video w-full ${bgColor} rounded-md text-lg hover:lg:shadow-lg hover:lg:-translate-y-2 transition-all duration-200 break-words active:cursor-grab ${showDrop ? "border-[#114f60] border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-[70]" : "z-10"}`} draggable="true" 
+          className={`group flex flex-col justify-between relative break-inside-avoid pt-2 aspect-video w-full ${bgColor} rounded-md text-lg hover:lg:shadow-lg transition-all duration-300 ease-in-out break-words active:cursor-grab ${showDrop ? "border-[#114f60] border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-[70]" : "z-10"}`} draggable="true" 
 
             onDragStart={() => activeNote(draggedNote)} 
             onDragEnd={() => activeNote(null)}
@@ -194,7 +197,14 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           <div className="absolute w-full h-full" onClick={handleNav}></div>
           
           {/* note div  */}
-          <div className={`w-full ${note.length > 300 && "text-sm"} w-full leading-normal px-3 pb-4`}>
+          <div className={`w-full ${note.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
+            <Tooltip title="Mark Note" arrow placement="top">
+              <button className={"relative -top-5 right-5 opacity-0 group-hover:opacity-100 float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-300"} type="button" onClick={() => setCheckedNote(!checkedNote)}>
+                { checkedNote ? <CheckCircle sx={{ fontSize: 28, color: "#255f6f" }}/> :
+                  <CheckCircleOutlineRoundedIcon sx={{ fontSize: 28, backgroundColor: "white", borderRadius: "50%" }}/>}
+              </button>
+            </Tooltip>
+            
             <Linkify options={{ render: renderLink }}>
                 <pre className={`break-words whitespace-pre-wrap font-sans line-clamp-6 lg:line-clamp-none`}>{
                   truncateNote(note)
@@ -203,9 +213,9 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           </div>
 
           {/* date and actions  */}
-          <div className={`relative w-full px-2 py-2 gap-2 ${toggleAction ? "lg:opacity-100" : "group-hover:lg:opacity-100 lg:opacity-0 "} flex justify-between md:justify-end items-center border-t-[1px] rounded-md shadow lg:shadow-none group-hover:shadow ${!showDrop && "bg-white/80 z-50"}`}>
+          <div className={`relative w-full px-2 py-2 gap-2 ${toggleAction ? "lg:opacity-100" : "group-hover:lg:opacity-100 lg:opacity-0 "} flex justify-between items-center border-t-[1px] rounded-md shadow lg:shadow-none group-hover:shadow ${!showDrop && "bg-white/80 z-50"}`}>
 
-            <div className={`w-full h-fit lg:w-fit flex gap-0 lg:gap-2 flex-col lg:flex-row ${toggleAction ? "lg:opacity-100" : "group-hover:lg:opacity-100 lg:opacity-0 "} leading-[15px] text-[10px] sm:text-[12px] md:text-xs font-light transition-all duration-150`}><span className="h-fit hidden md:block">noted on</span> <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></div>
+            <div className={`w-full h-fit lg:w-fit ml-2 flex gap-0 lg:gap-2 flex-col lg:flex-row ${toggleAction ? "lg:opacity-100" : "group-hover:lg:opacity-100 lg:opacity-0 "} leading-[15px] text-[10px] sm:text-[12px] md:text-xs font-light transition-all duration-150`}><span className="h-fit hidden md:block">noted on</span> <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></div>
             
             {/* action buttons  */}
             <div className="w-fit flex lg:gap-2">
@@ -220,7 +230,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                   <ul>
                     <li className="flex justify-between hover:text-[#114f60] hover:bg-gray-100 p-2 cursor-pointer" onClick={handleNav}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
                     <hr className="border-[0.2px] border-black/10"/>
-                    <li className="flex justify-between hover:text-red-600 hover:bg-gray-100 p-2 cursor-pointer" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }}/></li>
+                    <li className="flex justify-between hover:text-red-600 hover:bg-red-100/50 p-2 cursor-pointer" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }}/></li>
                   </ul>
                 </div>
               }
