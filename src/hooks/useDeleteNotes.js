@@ -1,15 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import supabase from "../config/supabaseClient.config"
 
-const useDeleteNote = () => {
+const useDeleteNotes = () => {
     const queryClient = useQueryClient()
   
     return useMutation({
-        mutationFn: async(id) => {
+        mutationFn: async(ids) => {
                 const {data, error} = await supabase
                 .from('data')
                 .delete()
-                .eq('id', id)
+                .in('id', ids)
 
                 if(error) throw error
                 return data
@@ -25,4 +25,4 @@ const useDeleteNote = () => {
     })
 }
 
-export default useDeleteNote
+export default useDeleteNotes
