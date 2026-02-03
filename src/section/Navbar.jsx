@@ -4,8 +4,9 @@ import { useSelector } from "react-redux"
 import Logo from '../assets/logo.webp'
 import useSignOut from "../hooks/useSignOut"
 // import {motion} from "framer-motion"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
+import { AppContext } from "../context/AppContext";
 
 const Navbar = () => {
   const { user, isLoading } = useSelector(state => (state.data))
@@ -14,6 +15,8 @@ const Navbar = () => {
   const [name, setName] = useState("")
   const [imgUrl, setImgUrl] = useState("")
   const [isScrolled, setIsScrolled] = useState(false)
+
+  const { markedNotes } = useContext(AppContext)
 
   const changeNavBarOnScroll = () => {
     const scrollThreshold = 250;
@@ -46,7 +49,7 @@ const Navbar = () => {
   }
 
     if(user !== null) return (
-      <section className={`top-0 w-full flex justify-between items-center px-3 md:px-20 py-3 md:py-5 ${isScrolled && 'bg-white/10 backdrop-blur-md sticky shadow'} text-sm z-[62] duration-150 ease-in-out`}>
+      <section className={`${markedNotes.length > 0 && "hidden"} top-0 w-full flex justify-between items-center px-3 md:px-20 py-3 md:py-5 ${isScrolled && 'bg-white/10 backdrop-blur-md sticky shadow'} text-sm z-[62] duration-150 ease-in-out`}>
         {/* <h1 className="logo-nav">my<b>Noet</b></h1> */}
         <img src={Logo} alt="website_logo" className="w-28 md:w-32"/>
 

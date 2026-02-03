@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import Linkify from "linkify-react";
 import useDeleteNotes from "../hooks/useDeleteNotes"
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
@@ -23,6 +23,7 @@ import { CopyToClipboard } from "./CopyToClipboard";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDebounce } from "react-use";
 import { CheckCircle } from "@mui/icons-material";
+import { AppContext } from "../context/AppContext";
 
 /* eslint-disable react/prop-types */
 const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handleDrop}) => {
@@ -40,6 +41,8 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
   const navigate = useNavigate();
 
   const stateLoading = useSelector((state) => state.data.isLoading)
+  const { markedNotes, setMarkedNotes } = useContext(AppContext)
+  const findMarkedNote = markedNotes.some(id => id === noteId)
 
   // const editNoteRef = useRef()
 
@@ -83,6 +86,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
     }
   }, [noteId, colorOptionValue, update, handleNav, setGetNote, setWordCount, setShowColorPallete])
 
+  // debounce note input for auto save
   useDebounce(() => {
     if (getNote && isEditing) {
       updateNote(getNote, false);
@@ -90,7 +94,6 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
     }
     }, 1500, [getNote, updateNote, isEditing]
   )
-
 
   // disable scroll when editing or deleting note
   useEffect(() => {
@@ -110,6 +113,14 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
       setGetNote(note)
     }
   }, [isEditing, showDeleteModal, handleNav, bgColor, note]);
+
+  useEffect(() => {
+    if(findMarkedNote) {
+      setCheckedNote(true)
+    } else {
+      setCheckedNote(false)
+    }
+  }, [checkedNote, findMarkedNote])
 
   // handle change for form
   const handleChange = (e) => {
@@ -134,6 +145,17 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
     setGetNote("")
     setWordCount(0)
     // setColorOptionValue("")
+  }
+
+  // handle marking notes
+  const handleMarkNotes = () => {
+    if(!checkedNote) {
+      setCheckedNote(true)
+      setMarkedNotes(prev => [...prev, noteId])
+    } else {
+      setCheckedNote(false)
+      setMarkedNotes(prev => prev.filter(id => id !== noteId))
+    }
   }
 
   // close form 
@@ -162,6 +184,15 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
     getColorValue = (e.target.className).split(" ").filter((x) => /bg-/.test(x))[0]
     setColorOptionValue(getColorValue)
     setShowColorPallete(!showColorPallete)
+  }
+
+  // handle delete note 
+  const handleDeleteNote = () => {
+    mutate([noteId], {
+      onSuccess: () => {
+        setShowDeleteModal(false);
+      }
+    });
   }
 
   // custom link render for linkify
@@ -199,7 +230,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           {/* note div  */}
           <div className={`w-full ${note.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
             <Tooltip title="Mark Note" arrow placement="top">
-              <button className={`relative -top-5 right-5 ${checkedNote ? "opacity-100" : "opacity-0 group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-300`} type="button" onClick={() => setCheckedNote(!checkedNote)}>
+              <button className={`relative -top-5 right-5 ${checkedNote ? "opacity-100" : "opacity-0 group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-300`} type="button" onClick={handleMarkNotes}>
                 { checkedNote ? <CheckCircle sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/> :
                   <CheckCircleOutlineRoundedIcon sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/>}
               </button>
@@ -314,7 +345,6 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
         </AnimatePresence>
 
         {/* Delete modal  */}
-        
         <AnimatePresence>
           {
             showDeleteModal &&(
@@ -332,7 +362,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                     <hr />
                     <p className="text-sm">Are you sure you want to Delete?</p>
                     <div className="w-full flex justify-center items-center gap-5 mt-5 text-sm">
-                      {isPending || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-error rounded-full text-sm text-white" onClick={() => mutate([noteId]) && setShowDeleteModal(false)}><DeleteRoundedIcon />Yes, Delete</button>
+                      {isPending || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-error rounded-full text-sm text-white" onClick={handleDeleteNote}><DeleteRoundedIcon />Yes, Delete</button>
                       <button className="flex justify-center items-center p-3 bg-neutral hover:bg-black text-white rounded-full" onClick={() => setShowDeleteModal(!showDeleteModal)}><ClearRoundedIcon/>Cancel</button></>}
                     </div> 
                 </motion.div>

@@ -31,7 +31,7 @@ export const signOut = createAsyncThunk('api/signOut', async() => {
   return data
 })
 
-export const getAllNoets = createAsyncThunk('api/getAllNoets', async({ id, filter, searchInput }) => {
+export const getAllNotes = createAsyncThunk('api/getAllNotes', async({ id, filter, searchInput }) => {
   try {
     if(id)  {
       const { data, error } = await supabase.
@@ -79,15 +79,15 @@ const apiSlice = createSlice({
         state.error = "get User", action.error.message;
         state.isLoading = false;
       })
-      .addCase(getAllNoets.pending, (state) => {
+      .addCase(getAllNotes.pending, (state) => {
         // state.notes = null;
         state.isLoading = true;
       })
-      .addCase(getAllNoets.fulfilled, (state, action) => {
+      .addCase(getAllNotes.fulfilled, (state, action) => {
         state.notes = action.payload;
         state.isLoading = false;
       })
-      .addCase(getAllNoets.rejected, (state, action) => {
+      .addCase(getAllNotes.rejected, (state, action) => {
         state.notes = action.error.message;
         state.isLoading = false;
       })

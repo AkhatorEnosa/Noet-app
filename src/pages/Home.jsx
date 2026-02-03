@@ -235,22 +235,22 @@ const Home = () => {
           
           {/* Main section of Homepage  */}
           <section className="relative w-full flex flex-col gap-4 justify-center items-center">
-              <div className="flex justify-center items-center gap-2 lg:gap-6 w-full my-2 md:my-8">
-                <Search 
-                  searchInput={searchInput}
-                  setSearchInput={setSearchInput}
-                />
-                <FilterButton 
-                  options={options}
-                  sortValue={sortValue}
-                  showSortOptions={showSortOptions}
-                  setSortValue={setSortValue}
-                  setShowOptions={setShowOptions}
-                />
-              </div>
+            <div className="flex justify-center items-center gap-2 lg:gap-6 w-full my-2 md:my-8">
+              <Search 
+                searchInput={searchInput}
+                setSearchInput={setSearchInput}
+              />
+              <FilterButton 
+                options={options}
+                sortValue={sortValue}
+                showSortOptions={showSortOptions}
+                setSortValue={setSortValue}
+                setShowOptions={setShowOptions}
+              />
+            </div>
 
-              {stateNotes !== null && !isLoading && notes?.length > 0 ?
-               <div className="w-full gap-2 flex flex-col items-center justify-center">
+            {stateNotes !== null && !isLoading && notes?.length > 0 ?
+              <div className="w-full gap-2 flex flex-col items-center justify-center">
 
                   <div className="w-full flex flex-col gap-2">
                     
@@ -264,7 +264,7 @@ const Home = () => {
                         </Tooltip>
                     }
                     
-                    <div className={`${closeSectionPinned ? "hidden" : "block"} rounded-md border-[1px] border-[#255f6f]/5 bg-[#255f6f]/5 p-1 sm:p-4 w-full gap-1 sm:gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-1 sm:space-y-2 md:space-y-4 mx-auto overflow-clip`}>
+                    <div className={`${closeSectionPinned ? "hidden" : "block"} rounded-md border-[1px] border-[#255f6f]/5 bg-[#255f6f]/5 p-1 sm:p-4 w-full gap-1 sm:gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-1 sm:space-y-2 md:space-y-4 mx-auto`}>
                       {
                         notes?.map((note) => (
                               note.pinned && <React.Fragment key={note.id}>
@@ -298,7 +298,7 @@ const Home = () => {
                         </Tooltip>
                     }
                     
-                    <div className={`${closeSection ? "hidden" : "block"} rounded-md border-[1px] border-[#255f6f]/5 bg-[#255f6f]/5 p-1 sm:p-4 w-full gap-1 sm:gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-1 sm:space-y-2 md:space-y-4 mx-auto overflow-clip`}>
+                    <div className={`${closeSection ? "hidden" : "block"} rounded-md border-[1px] border-[#255f6f]/5 bg-[#255f6f]/5 p-1 sm:p-4 w-full gap-1 sm:gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-1 sm:space-y-2 md:space-y-4 mx-auto`}>
                       
                       {
                         notes?.map((note) => (
@@ -326,7 +326,7 @@ const Home = () => {
                   {message}
                 </div>
               </div>
-              }
+            }
           </section>
 
 

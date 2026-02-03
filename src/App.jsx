@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Navbar from "./section/Navbar";
+import MarkedNotesActionsBar from "./section/MarkedNotesActionsBar";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
 
         {/* Persistent NavBar */}
         <Navbar />
+        <MarkedNotesActionsBar />
 
         {/* Dynamic Page Content */}
         <main className="relative w-full flex flex-col items-center">
