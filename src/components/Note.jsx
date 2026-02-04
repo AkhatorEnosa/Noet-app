@@ -58,13 +58,13 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
   
   // handle navigation
   const handleNav = useCallback(() => {
-    if (!isEditing) {
+    if (!isEditing && !updating) {
       navigate(`/?note=${noteId}`, { replace: true });
     } else {
       navigate(`/`, { replace: true });
     }
     setToggleAction(false)
-  }, [isEditing, navigate, noteId]);
+  }, [isEditing, updating, navigate, noteId]);
 
   // update note function
   const updateNote = useCallback((input, shouldNavigate = false) => {

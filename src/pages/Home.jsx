@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 import useCreateNote from "../hooks/useCreateNote"
 import Note from "../components/Note"
 import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
@@ -23,6 +23,7 @@ import useFetchNotes from "../hooks/useFetchNotes";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
+import { AppContext } from "../context/AppContext";
 
 const options = [ 'date', 'content', 'default']
 
@@ -47,8 +48,12 @@ const Home = () => {
   const navigate = useNavigate();
 
 
+  // Accessing notes and user from Redux store
   const stateNotes = useSelector((state) => state.data.notes)
   const stateUser = useSelector((state) => state.data.user)
+
+  // Accessing marked notes from AppContext
+  const { markedNotes } = useContext(AppContext);
 
 
   let inputRef = useRef('')
@@ -74,7 +79,7 @@ const Home = () => {
    
   // handle navigation base on query param
   const handleNav = () => {
-    if (!isWriting) {
+    if (!isWriting && !isPending) {
       navigate(`/?note=true`, { replace: true });
     } else {
       navigate(`/`, { replace: true });
@@ -385,8 +390,8 @@ const Home = () => {
           </AnimatePresence>
 
           {/* Add Noet Button */}
-            <Tooltip title="Add Noet" arrow placement="top"  className="fixed bottom-4 md:bottom-10 right-10 lg:right-12 z-30">
-                <button type="submit" className="cursor-pointer flex justify-center items-center rounded-full shadow-lg text-white text-sm font-bold bg-[#114f60] hover:bg-[#255f6f] px-4 py-4 transition-all duration-300 z-30" onClick={handleNav}> 
+            <Tooltip title="Add Noet" arrow placement="top"  className={`${markedNotes.length > 0 ? "opacity-0" : "opacity-100"} fixed bottom-4 md:bottom-10 right-10 lg:right-12 duration-300 transition-all z-30`}>
+                <button type="submit" className="cursor-pointer flex justify-center items-center rounded-full shadow-lg text-white text-sm font-bold bg-[#114f60] hover:bg-[#255f6f] px-4 py-4 transition-all duration-300 z-30" onClick={handleNav} disabled={markedNotes.length > 0}> 
                   <AddRoundedIcon sx={{ fontSize: 20 }}/> 
                   Add Note
                 </button>
