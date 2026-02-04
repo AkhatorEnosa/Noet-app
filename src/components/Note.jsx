@@ -64,7 +64,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
       navigate(`/`, { replace: true });
     }
     setToggleAction(false)
-  }, [isEditing, updating, navigate, noteId]);
+  }, [isEditing, navigate, noteId]);
 
   // update note function
   const updateNote = useCallback((input, shouldNavigate = false) => {
@@ -291,7 +291,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                         className={`opacity-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-150 transition-all z-50`}>
 
                         <div className="flex items-center justify-end gap-2 px-2 py-2">
-                          <span className={`flex lg:gap-2 flex-row border-[1px] px-4 py-2 rounded-full ${colorOptionValue} text-xs font-light transition-all duration-150`}>noted on <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></span>
+                          <span className={`flex gap-2 flex-row border-[1px] px-4 py-2 rounded-full ${colorOptionValue} text-xs font-light transition-all duration-150`}>noted on <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></span>
                           
                           {/* close button or loading  */}
                           {
