@@ -390,7 +390,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                   className={`w-full h-fit md:w-96 md:h-auto flex flex-col gap-3 px-4 py-4 bg-white rounded-md transition-all duration-150 z-[60]`}>
                     <h1 className="text-lg font-semibold">Delete</h1>
                     <hr />
-                    <p className="text-sm">Are you sure you want to Delete?</p>
+                    <p className="text-sm">Are you sure you want to Delete? This can&apos;t be undone!. </p>
                     <div className="w-full flex justify-center items-center gap-5 mt-5 text-sm">
                       {isPending || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-error rounded-full text-sm text-white" onClick={handleDeleteNote}><DeleteRoundedIcon />Yes, Delete</button>
                       <button className="flex justify-center items-center p-3 bg-neutral hover:bg-black text-white rounded-full" onClick={() => setShowDeleteModal(!showDeleteModal)}><ClearRoundedIcon/>Cancel</button></>}

@@ -36,7 +36,7 @@ const MarkedNotesActionsBar = () => {
 
     return (
         <div
-            className={`fixed top-0 flex bg-white justify-between px-3 md:px-20 py-3 md:py-8 text-[#255f6f] w-full ${markedNotes.length > 0 ? "scale-100" : "scale-0"} shadow-md transition-all duration-300 ease-in-out z-[100]`}
+            className={`fixed flex bg-white justify-between px-3 md:px-20 py-3 md:py-8 text-[#255f6f] w-full ${markedNotes.length > 0 ? "top-0" : "-top-[100px]"} shadow-md transition-all duration-300 ease-in-out z-[100]`}
             // style={{ boxShadow: "0 5px 10px rgba(0, 0, 0, 0.1)" }}
         >
             <p className="text-lg font-semibold">{markedNotes.length} note{markedNotes.length > 1 ? "s" : ""} marked</p>
@@ -64,7 +64,7 @@ const MarkedNotesActionsBar = () => {
             showDeleteModal &&(
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className={"fixed w-screen h-screen top-0 left-0 flex px-6 justify-center items-center z-[100]"}>
+              className={"fixed w-screen h-screen text-black top-0 left-0 flex px-6 justify-center items-center z-[100]"}>
 
                 {/* backdrop  */}
                 <div className={"w-screen h-screen fixed bg-black md:bg-black/75"} onClick={() => setShowDeleteModal(!showDeleteModal)}></div>
@@ -72,7 +72,7 @@ const MarkedNotesActionsBar = () => {
                 <div className={`w-full h-fit md:w-96 md:h-auto flex flex-col gap-3 px-4 py-4 bg-white rounded-md transition-all duration-150 z-[60]`}>
                     <h1 className="text-lg font-semibold">Delete {markedNotes.length} Item{markedNotes.length > 1 ? "s" : ""}</h1>
                     <hr />
-                    <p className="text-sm">Are you sure you want to Delete?</p>
+                    <p className="text-sm">Are you sure you want to Delete? This can&apo;t be undone! </p>
                     <div className="w-full flex justify-center items-center gap-5 mt-5 text-sm">
                       {isPending ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-error rounded-full text-sm text-white" onClick={handleDeleteNotes}><DeleteRoundedIcon />Yes, Delete</button>
                       <button className="flex justify-center items-center p-3 bg-neutral hover:bg-black text-white rounded-full" onClick={() => setShowDeleteModal(!showDeleteModal)}><ClearRoundedIcon/>Cancel</button></>}
