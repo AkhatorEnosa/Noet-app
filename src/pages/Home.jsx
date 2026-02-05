@@ -69,6 +69,12 @@ const Home = () => {
   // This hook debounces the searchTerm from making a request to the api on every change. Debouncing stalls the request until searchTerm does not change for a number of time 
   useDebounce(() => {
     setDebouncedSearchInput(searchInput)
+    if (searchInput !== "") {
+      setCloseSectionPinned(false)
+      setCloseSection(false)
+    } else {
+      setCloseSectionPinned(true)
+    }
     }, 500, [searchInput]
   )
   
@@ -260,41 +266,43 @@ const Home = () => {
                   <div className="w-full flex flex-col gap-2">
                     
                     {
-                        checkForPinned() &&
-                        <Tooltip title={closeSectionPinned ? "Open Notes" : "Close notes"} arrow placement='top'>
+                      checkForPinned() &&
+                      <>
+                        <Tooltip title={closeSectionPinned ? "Open Pinned" : "Close Pinned"} className={ `${notes.length > 1 ? "block" : "hidden"}`} arrow placement='top'>
                           <button className={`w-fit flex justify-center items-center ${!closeSectionPinned ? 'bg-[#255f6f]/5 text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => setCloseSectionPinned(!closeSectionPinned)}>
                             <p className={`${!closeSectionPinned && "-rotate-180"} cursor-pointer duration-300`}>{closeSectionPinned ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
                             <h2 className="capitalize text-xs lg:text-sm tracking-tight font-extrabold">pinned notes</h2>
                           </button>
                         </Tooltip>
+                      
+                        <div className={`${closeSectionPinned ? "hidden" : "block"} rounded-md border-[1px] border-[#255f6f]/5 bg-[#255f6f]/5 p-1 sm:p-4 w-full gap-1 sm:gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-1 sm:space-y-2 md:space-y-4 mx-auto`}>
+                          {
+                            notes?.map((note) => (
+                                  note.pinned && <React.Fragment key={note.id}>
+                                    <Note 
+                                      noteId={note.id}
+                                      note={note.data_value}
+                                      note_date={note.created_at}
+                                      bgColor={note.bg_color}
+                                      updateId={note.id}
+                                      draggedNote={note}
+                                      activeNote={setactiveNote}
+                                      handleDrop={() => onDrop(notes.indexOf(note))}
+                                    />
+                                  </React.Fragment>
+                                )
+                              )
+                          }
+                        </div>
+                      </>
                     }
-                    
-                    <div className={`${closeSectionPinned ? "hidden" : "block"} rounded-md border-[1px] border-[#255f6f]/5 bg-[#255f6f]/5 p-1 sm:p-4 w-full gap-1 sm:gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-1 sm:space-y-2 md:space-y-4 mx-auto`}>
-                      {
-                        notes?.map((note) => (
-                              note.pinned && <React.Fragment key={note.id}>
-                                <Note 
-                                  noteId={note.id}
-                                  note={note.data_value}
-                                  note_date={note.created_at}
-                                  bgColor={note.bg_color}
-                                  updateId={note.id}
-                                  draggedNote={note}
-                                  activeNote={setactiveNote}
-                                  handleDrop={() => onDrop(notes.indexOf(note))}
-                                />
-                              </React.Fragment>
-                            )
-                          )
-                      }
-                    </div>
 
                   </div>
 
                   <div className="w-full flex flex-col gap-2">
                     
                     {
-                        checkForPinned() &&
+                        (checkForPinned() && notes.some((note) => !note.pinned)) &&
                         <Tooltip title={closeSection ? "Open Notes" : "Close notes"} arrow placement='top'>
                           <button className={`w-fit flex justify-center items-center ${!closeSection ? 'bg-[#255f6f]/5 text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => setCloseSection(!closeSection)}>
                             <p className={`${!closeSection && "-rotate-180"} cursor-pointer duration-300`}>{closeSection ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
@@ -303,26 +311,28 @@ const Home = () => {
                         </Tooltip>
                     }
                     
-                    <div className={`${closeSection ? "hidden" : "block"} rounded-md border-[1px] border-[#255f6f]/5 bg-[#255f6f]/5 p-1 sm:p-4 w-full gap-1 sm:gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-1 sm:space-y-2 md:space-y-4 mx-auto`}>
-                      
-                      {
-                        notes?.map((note) => (
-                              !note.pinned && <React.Fragment key={note.id}>
-                                <Note 
-                                noteId={note.id}
-                                note={note.data_value}
-                                note_date={note.created_at}
-                                bgColor={note.bg_color}
-                                updateId={note.id}
-                                draggedNote={note}
-                                activeNote={setactiveNote}
-                                handleDrop={() => onDrop(notes.indexOf(note))}
-                                />
-                              </React.Fragment>
+                    { notes.some((note) => !note.pinned) &&
+                      <div className={`${closeSection ? "hidden" : "block"} rounded-md border-[1px] border-[#255f6f]/5 bg-[#255f6f]/5 p-1 sm:p-4 w-full gap-1 sm:gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-1 sm:space-y-2 md:space-y-4 mx-auto`}>
+                        
+                        {
+                          notes?.map((note) => (
+                                !note.pinned && <React.Fragment key={note.id}>
+                                  <Note 
+                                  noteId={note.id}
+                                  note={note.data_value}
+                                  note_date={note.created_at}
+                                  bgColor={note.bg_color}
+                                  updateId={note.id}
+                                  draggedNote={note}
+                                  activeNote={setactiveNote}
+                                  handleDrop={() => onDrop(notes.indexOf(note))}
+                                  />
+                                </React.Fragment>
+                              )
                             )
-                          )
-                      }
-                    </div>
+                        }
+                      </div>
+                    }
 
                   </div>
                 </div> : 

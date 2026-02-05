@@ -200,6 +200,29 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
     const { href, ...props } = attributes;
     return <a href={href} target="_blank" {...props} className="relative z-20 hover:underline">{content}</a>;
   };
+
+  // All about longPress 
+  let timer;
+  const pressDuration = 500; // duration for long press in milliseconds
+
+  const start = () => {
+    // Start the timer
+    timer = setTimeout(() => {
+      handleMarkNotes();
+      // Trigger your long press logic here
+    }, pressDuration);
+
+    window.oncontextmenu = function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+    };
+  }
+
+  const cancel = () => {
+    // Stop the timer if it hasn't finished yet
+    clearTimeout(timer);
+  }
   
   return (
      <article className="note">
@@ -212,20 +235,27 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           layout
           layoutId={`note-${noteId}`}
           className={`group flex flex-col justify-between relative break-inside-avoid pt-2 aspect-video w-full ${bgColor} rounded-md text-lg ${checkedNote ? "shadow-lg border-[#255f6f] border-[2px]" : "hover:lg:shadow-lg"} transition-all duration-300 ease-in-out break-words active:cursor-grab ${showDrop ? "border-[#114f60] border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-[70]" : "z-10"}`} draggable="true" 
+          
+          // long press and mobile drag events
+          onMouseDown={start}
+          onMouseUp={cancel}
+          onTouchStart={start}
+          onTouchEnd={cancel}
 
-            onDragStart={() => activeNote(draggedNote)} 
-            onDragEnd={() => activeNote(null)}
-            onDragEnter={() => setShowDrop(true)} 
-            onDragLeave={() => setShowDrop(false)}
-            onDrop={() => {
-              handleDrop(),
-              setShowDrop(false)
-            }}
-            onDragOver={(e) => e.preventDefault()}
+          // dragging events
+          onDragStart={() => activeNote(draggedNote)} 
+          onDragEnd={() => activeNote(null)}
+          onDragEnter={() => setShowDrop(true)} 
+          onDragLeave={() => setShowDrop(false)}
+          onDrop={() => {
+            handleDrop(),
+            setShowDrop(false)
+          }}
+          onDragOver={(e) => e.preventDefault()}
         >
 
           {/* overlay to open note edit modal */}
-          <div className="absolute w-full h-full" onClick={handleNav}></div>
+          {!checkedNote && <div className="absolute  w-full h-full" onClick={handleNav}></div>}
           
           {/* note div  */}
           <div className={`w-full ${note.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
