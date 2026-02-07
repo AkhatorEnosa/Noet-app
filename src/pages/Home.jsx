@@ -158,10 +158,18 @@ const Home = () => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setMessage(
-        <>
-          <DescriptionIcon  sx={{ fontSize: 200 }}/>
-          <p>No <b>Noets</b> found</p>
-        </>
+        <div className="flex flex-col items-center justify-center py-32 text-slate-400">
+          <div className="p-6 bg-white rounded-full shadow-sm mb-4">
+            <DescriptionIcon sx={{ fontSize: 80, opacity: 0.2 }} />
+          </div>
+          <p className="text-lg font-medium">Your creative space is empty</p>
+          <button 
+            onClick={handleNav}
+            className="mt-4 text-cyan-700 font-semibold hover:underline"
+          >
+            Create your first note
+          </button>
+        </div>
       );
     }, 2000);
 
@@ -415,56 +423,3 @@ const Home = () => {
 }
 
 export default Home
-
-
-
-    // var returnFromSplicedNotes= notesCopy.splice(notes[position], 1, notes[notes.indexOf(noteToMove[0])])[0]
-    // notesCopy[notes.indexOf(noteToMove[0])] = returnFromSplicedNotes
-
-    // [notes[notes.indexOf(noteToMove[0])], notes[position]] = [notes[position], notes[notes.indexOf(noteToMove[0])]]
-    // console.log(returnFromSplicedNotes)
-    // console.log(notes)
-
-    // console.log("id_one", notesCopy[position].id)
-    // console.log("index_two", notesCopy[position].index_num)
-    // console.log("index_one", notesCopy[notes.indexOf(noteToMove[0])].index_num)
-    // console.log("id_two", notesCopy[notes.indexOf(noteToMove[0])].id )
-
-
-    // console.log("id_one", activeNote.id)
-    // console.log("index_two", getOtherNote[0].index_num)
-    // console.log("index_one", activeNote.index_num)
-    // console.log("id_two", getOtherNote[0].id)
-
-
-    // console.log(udpatedNotes)
-    // console.log(activeNote.id, getOtherNote[0].index_num)
-
-    // updatedNotes.splice(position, 0, noteToMove[0])
-    // if((notes.indexOf(noteToMove[0]) - position) > 1) {
-    //   getOtherNote = updatedNotes.slice(position + 1, position + 2)
-    // const newUpdatedNotes = updatedNotes.filter(note => note.id !== getOtherNote[0].id)
-    // const getFormerPosition = notes.indexOf(noteToMove[0])
-    // newUpdatedNotes.splice(getFormerPosition, 0, getOtherNote[0])
-    // setNotes(newUpdatedNotes)
-    // } else {
-    //   setNotes(updatedNotes)
-    // }
-
-    // setNotes(udpatedNotes)
-    // setstatus(`update card with index ${activeNote.index_num} and id ${activeNote.id} to index ${getOtherNote[0].index_num} and ${getOtherNote[0].id}`)
-
-
-
-    // console.log("id_one", notesCopy[notes.indexOf(noteToMove[0])].id)
-    // console.log("index_two", notesCopy[position].index_num)
-    // console.log("index_one", notesCopy[notes.indexOf(noteToMove[0])].index_num)
-    // console.log("id_two", notesCopy[position].id)
-
-    // // setNotes(notesCopy.sort((a,b) => b.index_num - a.index_num))
-    // updateIndexNums({
-    //   id_one: notesCopy[notes.indexOf(noteToMove[0])].id, 
-    //   index_two: notesCopy[position].index_num, 
-    //   index_one: notesCopy[notes.indexOf(noteToMove[0])].index_num,
-    //   id_two: notesCopy[position].id, 
-    // })
