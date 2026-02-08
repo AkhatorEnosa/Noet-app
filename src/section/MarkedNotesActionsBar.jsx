@@ -36,7 +36,7 @@ const MarkedNotesActionsBar = () => {
 
     return (
         <div
-            className={`fixed flex bg-white justify-between px-3 md:px-20 py-3 md:py-8 text-[#255f6f] w-full ${markedNotes.length > 0 ? "top-0" : "-top-[100px]"} shadow-md transition-all duration-300 ease-in-out z-[100]`}
+            className={`fixed flex bg-white justify-between px-3 md:px-20 py-8 text-[#255f6f] w-full ${markedNotes.length > 0 ? "top-0" : "-top-[100px]"} shadow-md transition-all duration-300 ease-in-out z-[100]`}
             // style={{ boxShadow: "0 5px 10px rgba(0, 0, 0, 0.1)" }}
         >
             <p className="text-lg font-semibold">{markedNotes.length} note{markedNotes.length > 1 ? "s" : ""} marked</p>
@@ -48,10 +48,10 @@ const MarkedNotesActionsBar = () => {
                 </Tooltip>
 
                 {/* Dropdown Menu */}
-                <div className={`absolute w-fit ${!toggleAction ? "scale-0" : "scale-100"} top-[70px] right-10 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-300 transition-all z-[70]`}>
+                <div className={`absolute w-[10%] ${!toggleAction ? "scale-0" : "scale-100"} top-[70px] right-10 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-300 transition-all z-[70]`}>
                     <ul>
                         <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer" onClick={() => setMarkedNotes([]) & setToggleAction(false)}>Deselect All <RemoveDoneIcon sx={{ fontSize: 12 }} /></li>
-                        <li className="flex justify-between hover:text-red-600 hover:bg-red-100/50 p-2 cursor-pointer" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }} /></li>
+                        <li className="flex justify-between hover:text-red-500 hover:bg-red-100/50 p-2 cursor-pointer" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }} /></li>
                     </ul>
                 </div>
             </div>
@@ -74,7 +74,7 @@ const MarkedNotesActionsBar = () => {
                     <hr />
                     <p className="text-sm">Are you sure you want to Delete? This can&apo;t be undone! </p>
                     <div className="w-full flex justify-center items-center gap-5 mt-5 text-sm">
-                      {isPending ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-error rounded-full text-sm text-white" onClick={handleDeleteNotes}><DeleteRoundedIcon />Yes, Delete</button>
+                      {isPending ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-red-500 rounded-full text-sm text-white" onClick={handleDeleteNotes}><DeleteRoundedIcon />Yes, Delete</button>
                       <button className="flex justify-center items-center p-3 bg-neutral hover:bg-black text-white rounded-full" onClick={() => setShowDeleteModal(!showDeleteModal)}><ClearRoundedIcon/>Cancel</button></>}
                     </div> 
                 </div>

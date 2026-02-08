@@ -271,7 +271,7 @@ const Home = () => {
             {stateNotes !== null && !isLoading && notes?.length > 0 ?
               <div className="w-full gap-2 flex flex-col items-center justify-center">
 
-                  <div className="w-full flex flex-col gap-2">
+                  <div className="w-full flex flex-col gap-5">
                     
                     {
                       checkForPinned() &&
@@ -279,7 +279,7 @@ const Home = () => {
                         <Tooltip title={closeSectionPinned ? "Open Pinned" : "Close Pinned"} className={ `${notes.length > 1 ? "block" : "hidden"}`} arrow placement='top'>
                           <button className={`w-fit flex justify-center items-center ${!closeSectionPinned ? 'bg-[#255f6f]/5 text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => setCloseSectionPinned(!closeSectionPinned)}>
                             <p className={`${!closeSectionPinned && "-rotate-180"} cursor-pointer duration-300`}>{closeSectionPinned ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
-                            <h2 className="capitalize text-xs lg:text-sm tracking-tight font-extrabold">pinned notes</h2>
+                            <h2 className="uppercase text-center text-xs font-medium tracking-wide">pinned notes</h2>
                           </button>
                         </Tooltip>
                       
@@ -307,14 +307,14 @@ const Home = () => {
 
                   </div>
 
-                  <div className="w-full flex flex-col gap-2">
+                  <div className="w-full flex flex-col gap-5">
                     
                     {
                         (checkForPinned() && notes.some((note) => !note.pinned)) &&
                         <Tooltip title={closeSection ? "Open Notes" : "Close notes"} arrow placement='top'>
                           <button className={`w-fit flex justify-center items-center ${!closeSection ? 'bg-[#255f6f]/5 text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => setCloseSection(!closeSection)}>
                             <p className={`${!closeSection && "-rotate-180"} cursor-pointer duration-300`}>{closeSection ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
-                            <h2 className="capitalize text-xs lg:text-sm tracking-tight font-extrabold">other notes</h2>
+                            <h2 className="uppercase text-center text-xs font-medium tracking-wide">other notes</h2>
                           </button>
                         </Tooltip>
                     }
@@ -364,7 +364,7 @@ const Home = () => {
                   <div className={"fixed w-full h-full bg-black/70"} onClick={handleNav}></div> 
                     
                   <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
-                    <form onSubmit={handleNoteAdd} className={` relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-150 transition-all z-50`}>
+                    <form onSubmit={handleNoteAdd} className={`opacity-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-[2rem] shadow-md duration-150 transition-all z-50`}>
                       <div className="flex items-center justify-end top-2 right-2 px-2 py-2">
                         <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={handleNav}><ClearRoundedIcon /></button>
                       </div>
@@ -374,7 +374,7 @@ const Home = () => {
                         // onInput={()=> inputRef.current && setWordCount(inputRef.current.value.length)}  
                         value={noteInput}
                         onChange={handleChange}
-                        className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} p-4 placeholder:text-black text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"
+                        className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} px-8 py-4 placeholder:text-black text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"
                       />
 
                       <div className="relative w-full flex justify-center items-center py-10">
@@ -382,6 +382,10 @@ const Home = () => {
                             isPending ? <span className="loading loading-spinner loading-sm"></span> : 
                           
                               <div className={`w-full flex justify-center ${wordCount > 0 ? "gap-4" : "gap-0"} items-center px-3 md:px-5 pt-4 transition-all duration-150`}>
+                                  {/* Word count  */}
+                                  <span className="absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                                    {wordCount} characters
+                                  </span>
                                   <ColorPallete show={showColorPallete} colorOption={colorOptionValue} addBackground={handleColorOption}/>
                                   <Tooltip title="Choose color" arrow>
                                     <i className={`flex justify-center items-center ${wordCount > 0 ? "w-10 h-10 rounded-full" : "w-0 h-0 opacity-0"} ${showColorPallete ? 'bg-warning shadow-lg border-none' : 'border-[1px] border-neutral'} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `} onClick={() => setShowColorPallete(!showColorPallete)}>
@@ -391,7 +395,7 @@ const Home = () => {
 
                                 {/* Clear all text  */}
                                 <Tooltip title="Clear Note" arrow>
-                                  <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-gray-500 hover:border-none transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon /></button>
+                                  <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-red-500 hover:border-none transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon /></button>
                                 </Tooltip>
 
                                 {/* add note  */}

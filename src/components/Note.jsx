@@ -234,7 +234,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           viewport={{ amount: 0.2 }}
           layout
           layoutId={`note-${noteId}`}
-          className={`group flex flex-col justify-between relative break-inside-avoid pt-2 aspect-video w-full ${bgColor} rounded-md text-lg ${checkedNote ? "shadow-lg border-[#255f6f] border-[2px]" : "hover:lg:shadow-lg"} transition-all duration-300 ease-in-out break-words active:cursor-grab ${showDrop ? "border-[#114f60] border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-[70]" : "z-10"}`} draggable="true" 
+          className={`group flex flex-col justify-between relative break-inside-avoid pt-2 aspect-video w-full ${bgColor} rounded-2xl text-lg ${checkedNote ? "shadow-lg border-[#255f6f] border-[2px]" : "hover:lg:shadow-lg"} transition-all duration-300 ease-in-out break-words active:cursor-grab ${showDrop ? "border-[#114f60] border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-[70]" : "z-10"}`} draggable="true" 
           
           // long press and mobile drag events
           onMouseDown={start}
@@ -243,7 +243,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           onTouchEnd={cancel}
 
           // dragging events
-          onDragStart={() => activeNote(draggedNote)} 
+          onDragStart={() => activeNote(draggedNote) & cancel()} 
           onDragEnd={() => activeNote(null)}
           onDragEnter={() => setShowDrop(true)} 
           onDragLeave={() => setShowDrop(false)}
@@ -275,28 +275,31 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
 
           {/* date and actions  */}
           { !checkedNote &&
-            <div className={`relative w-full px-2 py-2 gap-2 ${toggleAction ? "lg:opacity-100" : "group-hover:lg:opacity-100 lg:opacity-0 "} flex justify-between items-center border-t-[1px] rounded-md shadow lg:shadow-none group-hover:shadow ${!showDrop && "bg-white/80 z-50"}`}>
-
-              <div className={`w-full h-fit lg:w-fit ml-2 flex gap-0 lg:gap-2 flex-col lg:flex-row ${toggleAction ? "lg:opacity-100" : "group-hover:lg:opacity-100 lg:opacity-0 "} leading-[15px] text-[10px] sm:text-[12px] md:text-xs font-light transition-all duration-150`}><span className="h-fit hidden md:block">noted on</span> <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></div>
-              
-              {/* action buttons  */}
-              <div className="w-fit flex lg:gap-2">
-                <Tooltip title="Pin" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50" onClick={() => handlePinUpdate()}>
-                    {updatingPin ? <CircularProgress size="20px" color="inherit"/> : !draggedNote.pinned ? <PushPinOutlinedIcon/> : <PushPinRoundedIcon />}
-                </Tooltip>
-                <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50" onClick={() => setToggleAction(!toggleAction)}>
-                  <MoreVertIcon/>
-                </Tooltip>
-                {toggleAction && 
-                  <div className="absolute w-[50%] bottom-12 right-1 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden">
-                    <ul>
-                      <li className="flex justify-between hover:text-[#114f60] hover:bg-gray-100 p-2 cursor-pointer" onClick={handleNav}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
-                      <hr className="border-[0.2px] border-black/10"/>
-                      <li className="flex justify-between hover:text-red-600 hover:bg-red-100/50 p-2 cursor-pointer" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }}/></li>
-                    </ul>
-                  </div>
-                }
+            <div className={`flex items-center justify-between px-4 py-3 bg-black/5 rounded-b-2xl backdrop-blur-sm border-t border-black/5 transition-opacity 
+            ${toggleAction ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
+            
+              <div className="flex flex-col text-[10px] text-gray-500 font-medium">
+                <span className="uppercase tracking-tighter opacity-70">Noted</span>
+                <b className="text-gray-700">{moment(note_date).format("MMM D, YYYY")}</b>
               </div>
+              
+                {/* action buttons  */}
+                <div className="w-fit flex lg:gap-2">
+                  <Tooltip title="Pin" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50" onClick={() => handlePinUpdate()}>
+                      {updatingPin ? <CircularProgress size="20px" color="inherit"/> : !draggedNote.pinned ? <PushPinOutlinedIcon/> : <PushPinRoundedIcon />}
+                  </Tooltip>
+                  <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50" onClick={() => setToggleAction(!toggleAction)}>
+                    <MoreVertIcon/>
+                  </Tooltip>
+                  
+                  {/* Dropdown Menu */}
+                  <div className={`absolute w-[40%] ${!toggleAction ? "scale-0" : "scale-100"} bottom-14 right-2 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-300 transition-all z-[70]`}>
+                      <ul>
+                          <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer" onClick={handleNav}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
+                          <li className="flex justify-between hover:text-red-500 hover:bg-red-100/50 p-2 cursor-pointer" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }} /></li>
+                      </ul>
+                  </div>
+                </div>
 
             </div>
           }
@@ -318,10 +321,10 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                       <motion.form
                         // layoutId={`note-${noteId}`}
                         onSubmit={handleNoteUpdate} 
-                        className={`opacity-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-lg shadow-md duration-150 transition-all z-50`}>
+                        className={`opacity-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-[2rem] shadow-md duration-150 transition-all z-50`}>
 
                         <div className="flex items-center justify-end gap-2 px-2 py-2">
-                          <span className={`flex gap-2 flex-row border-[1px] px-4 py-2 rounded-full ${colorOptionValue} text-xs font-light transition-all duration-150`}>noted on <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></span>
+                          <span className={`flex gap-2 flex-row border-[1px] px-4 py-2 rounded-full ${colorOptionValue} text-[10px] uppercase tracking-wider text-gray-600 font-light transition-all duration-150`}>noted on <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></span>
                           
                           {/* close button or loading  */}
                           {
@@ -337,11 +340,15 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                           // ref={editNoteRef} 
                           value={getNote} 
                           onChange={handleChange} 
-                          className={`w-full h-[90%] outline-none resize-none placeholder:text-black p-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
+                          className={`w-full h-[90%] outline-none resize-none placeholder:text-black px-8 py-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
 
                         {/* action buttons  */}
                         <div className="relative w-full flex justify-center items-center py-10">
                             <div className={`relative w-full flex justify-center gap-4 items-center px-3 md:px-5 pt-4`}>
+                              {/* word count  */}
+                              <span className="absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                                {wordCount} characters
+                              </span>
                               {/* overlay when updating  */}
                               {/* {updating || stateLoading && <div className="absolute bg-white/60 top-0 left-0 w-full h-full bg-red-400 z-50"></div>} */}
                               {/* color pallete component  */}
@@ -358,7 +365,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
 
                               {/* Clear input  */}
                               <Tooltip title="Clear Note" arrow placement="top">
-                                <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-gray-500 hover:border-none transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon sx={{ fontSize: 18 }}/></button>
+                                <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-red-500 hover:border-none transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon sx={{ fontSize: 18 }}/></button>
                               </Tooltip>
 
                               {/* update button */}
@@ -392,7 +399,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                     <hr />
                     <p className="text-sm">Are you sure you want to Delete? This can&apos;t be undone!. </p>
                     <div className="w-full flex justify-center items-center gap-5 mt-5 text-sm">
-                      {isPending || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-error rounded-full text-sm text-white" onClick={handleDeleteNote}><DeleteRoundedIcon />Yes, Delete</button>
+                      {isPending || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-red-500 rounded-full text-sm text-white" onClick={handleDeleteNote}><DeleteRoundedIcon />Yes, Delete</button>
                       <button className="flex justify-center items-center p-3 bg-neutral hover:bg-black text-white rounded-full" onClick={() => setShowDeleteModal(!showDeleteModal)}><ClearRoundedIcon/>Cancel</button></>}
                     </div> 
                 </motion.div>
