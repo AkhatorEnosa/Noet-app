@@ -283,7 +283,7 @@ const Home = () => {
                           </button>
                         </Tooltip>
                       
-                        <div className={`${closeSectionPinned ? "hidden" : "block"} rounded-md border-[1px] border-[#255f6f]/5 bg-[#255f6f]/5 p-1 sm:p-4 w-full gap-1 sm:gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-1 sm:space-y-2 md:space-y-4 mx-auto`}>
+                        <div className={`${closeSectionPinned ? "hidden" : "block"} rounded-md p-1 sm:p-4 w-full gap-1 sm:gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-1 sm:space-y-2 md:space-y-4 mx-auto`}>
                           {
                             notes?.map((note) => (
                                   note.pinned && <React.Fragment key={note.id}>
@@ -320,7 +320,7 @@ const Home = () => {
                     }
                     
                     { notes.some((note) => !note.pinned) &&
-                      <div className={`${closeSection ? "hidden" : "block"} rounded-md border-[1px] border-[#255f6f]/5 bg-[#255f6f]/5 p-1 sm:p-4 w-full gap-1 sm:gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-1 sm:space-y-2 md:space-y-4 mx-auto`}>
+                      <div className={`${closeSection ? "hidden" : "block"} rounded-md p-1 sm:p-4 w-full gap-1 sm:gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-1 sm:space-y-2 md:space-y-4 mx-auto`}>
                         
                         {
                           notes?.map((note) => (

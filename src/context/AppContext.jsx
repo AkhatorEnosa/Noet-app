@@ -13,7 +13,7 @@ const result = lastPartOfUrl.slice(1);
 localStorage.setItem("section", result);
 
 export function AppProvider({ children }) {
-    const [markedNotes, setMarkedNotes] = useState([]);
+  const [markedNotes, setMarkedNotes] = useState([]);
 
   return (
     <AppContext.Provider value={{

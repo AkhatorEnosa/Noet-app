@@ -34,7 +34,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState(bgColor)
-  const [checkedNote, setCheckedNote] = useState(false)
+  const [noteChecked, setnoteChecked] = useState(false)
   const [toggleAction, setToggleAction] = useState(false)
   const [showDrop, setShowDrop] = useState(false)
   const [searchParams] = useSearchParams();
@@ -116,11 +116,11 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
 
   useEffect(() => {
     if(findMarkedNote) {
-      setCheckedNote(true)
+      setnoteChecked(true)
     } else {
-      setCheckedNote(false)
+      setnoteChecked(false)
     }
-  }, [checkedNote, findMarkedNote])
+  }, [noteChecked, findMarkedNote])
 
   // handle change for form
   const handleChange = (e) => {
@@ -149,24 +149,14 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
 
   // handle marking notes
   const handleMarkNotes = () => {
-    if(!checkedNote) {
-      setCheckedNote(true)
+    if(!noteChecked) {
+      setnoteChecked(true)
       setMarkedNotes(prev => [...prev, noteId])
     } else {
-      setCheckedNote(false)
+      setnoteChecked(false)
       setMarkedNotes(prev => prev.filter(id => id !== noteId))
     }
   }
-
-  // close form 
-  // const closeInput = () => {
-  //   // setGetNote(note)
-  //   // setWordCount(note.length)
-  //   // setShowEditModal(false)
-  //   setShowColorPallete(false)
-  //   setColorOptionValue(bgColor)
-  //   setGetNote(note)
-  // }
 
   // truncating long notes to only 599 characters for Note Component rendering 
   const truncateNote = (x) => {
@@ -231,14 +221,14 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ amount: 0.2 }}
-          layout
-          transition={{ 
-            duration: 0.5, 
-            ease: "easeInOut",
-            layout: { type: "tween", duration: 0.5, ease: "easeInOut" }
-          }}
+          // layout
+          // transition={{ 
+          //   duration: 0.5, 
+          //   ease: "easeInOut",
+          //   layout: { type: "tween", duration: 0.5, ease: "easeInOut" }
+          // }}
           // layoutId={`note-${noteId}`}
-          className={`group flex flex-col justify-between relative break-inside-avoid pt-2 aspect-video w-full ${bgColor} rounded-2xl text-lg ${checkedNote ? "shadow-lg border-[#255f6f] border-[2px]" : "hover:lg:shadow-lg"} transition-all duration-300 ease-in-out break-words active:cursor-grab ${showDrop ? "border-[#114f60] border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-[70]" : "z-10"}`} draggable="true" 
+          className={`group flex flex-col justify-between relative break-inside-avoid pt-2 aspect-video w-full ${bgColor} rounded-2xl text-lg ${noteChecked ? "shadow-lg border-[#255f6f] border-[2px]" : "hover:lg:shadow-lg"} transition-all duration-300 ease-in-out break-words active:cursor-grab ${showDrop ? "border-[#114f60] border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-[70]" : "z-10"}`} draggable="true"
           
           // long press and mobile drag events
           onMouseDown={start}
@@ -259,13 +249,13 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
         >
 
           {/* overlay to open note edit modal */}
-          {!checkedNote && <div className="absolute w-full h-full" onClick={handleNav}></div>}
+          {!noteChecked && <div className="absolute w-full h-full" onClick={markedNotes.length > 0 ? handleMarkNotes : handleNav}></div>}
           
           {/* note div  */}
           <div className={`w-full ${note.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
             <Tooltip title="Mark Note" arrow placement="top">
-              <button className={`relative -top-5 right-5 ${checkedNote ? "opacity-100" : "opacity-0 group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-300`} type="button" onClick={handleMarkNotes}>
-                { checkedNote ? <CheckCircle sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/> :
+              <button className={`relative -top-5 right-5 ${noteChecked ? "opacity-100" : "opacity-0 group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-300`} type="button" onClick={handleMarkNotes}>
+                { noteChecked ? <CheckCircle sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/> :
                   <CheckCircleOutlineRoundedIcon sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/>}
               </button>
             </Tooltip>
@@ -278,34 +268,35 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
           </div>
 
           {/* date and actions  */}
-          { !checkedNote &&
-            <div className={`flex items-center justify-between px-4 py-3 bg-black/5 rounded-b-2xl backdrop-blur-sm border-t border-black/5 transition-opacity ${toggleAction ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
-              {!checkedNote && <div className="absolute left-0 w-full h-full z-10" onClick={handleNav}></div>}
-              <div className="flex flex-col text-[10px] text-gray-500 font-medium">
-                <span className="uppercase tracking-tighter opacity-70">Noted</span>
-                <b className="text-gray-700">{moment(note_date).format("MMM D, YYYY")}</b>
-              </div>
-              
-                {/* action buttons  */}
-                <div className="relative w-fit flex lg:gap-2 z-[60]">
-                  <Tooltip title="Pin" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50" onClick={() => handlePinUpdate()}>
-                      {updatingPin ? <CircularProgress size="20px" color="inherit"/> : !draggedNote.pinned ? <PushPinOutlinedIcon/> : <PushPinRoundedIcon />}
-                  </Tooltip>
-                  <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50" onClick={() => setToggleAction(!toggleAction)}>
-                    <MoreVertIcon/>
-                  </Tooltip>
-                  
-                  {/* Dropdown Menu */}
-                  <div className={`absolute ${!toggleAction ? "scale-0" : "scale-100"} bottom-10 right-2 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-300 transition-all z-[70]`}>
-                      <ul>
-                          <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer duration-300 transition-all" onClick={handleNav}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
-                          <li className="flex justify-between hover:text-red-500 hover:bg-red-100/50 p-2 cursor-pointer duration-300 transition-all" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }} /></li>
-                      </ul>
-                  </div>
-                </div>
-
+          <div className={`${markedNotes.length > 0 ? "hidden" : "flex" } items-center justify-between px-4 py-3 bg-black/5 rounded-b-2xl backdrop-blur-sm border-t border-black/5 transition-opacity ${toggleAction ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
+          
+            {/* overlay to open note edit modal when actions are toggled  */}
+            <div className="absolute left-0 w-full h-full z-10" onClick={handleNav}></div>
+            
+            {/* date  */}
+            <div className="flex flex-col text-[10px] text-gray-500 font-medium">
+              <span className="uppercase tracking-tighter opacity-70">Noted</span>
+              <b className="text-gray-700">{moment(note_date).format("MMM D, YYYY")}</b>
             </div>
-          }
+            
+            {/* action buttons  */}
+            <div className="relative w-fit flex lg:gap-2 z-[60]">
+              <Tooltip title="Pin" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50" onClick={() => handlePinUpdate()}>
+                  {updatingPin ? <CircularProgress size="20px" color="inherit"/> : !draggedNote.pinned ? <PushPinOutlinedIcon/> : <PushPinRoundedIcon />}
+              </Tooltip>
+              <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50" onClick={() => setToggleAction(!toggleAction)}>
+                <MoreVertIcon/>
+              </Tooltip>
+              
+              {/* Dropdown Menu */}
+              <div className={`absolute ${!toggleAction ? "scale-0" : "scale-100"} bottom-10 right-2 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-300 transition-all z-[70]`}>
+                  <ul>
+                      <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer duration-300 transition-all" onClick={handleNav}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
+                      <li className="flex justify-between hover:text-red-500 hover:bg-red-100/50 p-2 cursor-pointer duration-300 transition-all" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }} /></li>
+                  </ul>
+              </div>
+            </div>
+          </div>
         </motion.div>
 
        <div className={toggleAction ? "fixed w-full h-full top-0 left-0 z-[65]" : "hidden"} onClick={() => setToggleAction(false)}></div>

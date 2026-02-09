@@ -28,8 +28,6 @@ const useUpdateNotes = () => {
             queryClient.invalidateQueries({
                 queryKey: ['notes'],
               })
-
-            console.log("Success")
         }
     })
 }
