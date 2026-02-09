@@ -361,7 +361,7 @@ const Home = () => {
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className={"fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-[70]" }>
                   {/* backdrop  */}
-                  <div className={"fixed w-full h-full bg-black/70"} onClick={handleNav}></div> 
+                  <div className={"fixed w-full h-full bg-black/40 backdrop-blur-sm"} onClick={handleNav}></div> 
                     
                   <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
                     <form onSubmit={handleNoteAdd} className={`opacity-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-[2rem] shadow-md duration-150 transition-all z-50`}>

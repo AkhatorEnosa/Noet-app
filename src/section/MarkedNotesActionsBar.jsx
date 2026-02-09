@@ -1,31 +1,23 @@
-import { useContext, useEffect, useState } from "react"
-import { AppContext } from "../context/AppContext"
+import { useContext, useEffect, useState } from "react";
+import { AppContext } from "../context/AppContext";
 import { Tooltip } from "@mui/material";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import RemoveDoneIcon from '@mui/icons-material/RemoveDone';
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import useDeleteNotes from "../hooks/useDeleteNotes";
 
 const MarkedNotesActionsBar = () => {
-    const { markedNotes, setMarkedNotes } = useContext(AppContext); // accessing the marked notes from context
-
-    // component's states
-    const [toggleAction, setToggleAction] = useState(false);
+    const { markedNotes, setMarkedNotes } = useContext(AppContext);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const { mutate, isPending } = useDeleteNotes();
 
-    // hooks
-    const { mutate, isPending } = useDeleteNotes()
-    
+    const isVisible = markedNotes.length > 0;
+
     useEffect(() => {
-        if (showDeleteModal) document.body.style.overflow = 'hidden';
-        return () => {
-            document.body.style.overflow = 'auto';
-        };
+        document.body.style.overflow = showDeleteModal ? 'hidden' : 'auto';
     }, [showDeleteModal]);
-    
-    const handleDeleteNotes = () => { 
+
+    const handleDeleteNotes = () => {
         mutate(markedNotes, {
             onSuccess: () => {
                 setMarkedNotes([]);
@@ -35,53 +27,86 @@ const MarkedNotesActionsBar = () => {
     }
 
     return (
-        <div
-            className={`fixed flex bg-white justify-between px-3 md:px-20 py-8 text-[#255f6f] w-full ${markedNotes.length > 0 ? "top-0" : "-top-[100px]"} shadow-md transition-all duration-300 ease-in-out z-[100]`}
-            // style={{ boxShadow: "0 5px 10px rgba(0, 0, 0, 0.1)" }}
-        >
-            <p className="text-lg font-semibold">{markedNotes.length} note{markedNotes.length > 1 ? "s" : ""} marked</p>
+        <>
+            {/* action dock */}
+            <AnimatePresence>
+                {isVisible && (
+                    <motion.div
+                        initial={{ y: 100, x: "-50%", opacity: 0 }}
+                        animate={{ y: 20, x: "-50%", opacity: 1 }}
+                        exit={{ y: -100, x: "-50%", opacity: 0 }}
+                        className="fixed bottom-10 left-1/2 z-[100] flex items-center gap-6 px-6 py-3 bg-white/80 backdrop-blur-md border border-gray-200 shadow-2xl rounded-full"
+                    >
+                        <div className="flex items-center gap-2 border-r border-gray-300 pr-4">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#255f6f] text-[10px] font-bold text-white">
+                                {markedNotes.length}
+                            </span>
+                            <p className="text-sm font-medium text-[#255f6f]">Selected</p>
+                        </div>
 
-            {/* Action Button and Dropdown Menu */}
-            <div className="flex gap-3">
-                <Tooltip title="Actions" arrow className={`flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full ${toggleAction && "bg-[#114f60]/20"} lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50`} onClick={() => setToggleAction(!toggleAction)}>
-                  <MoreVertIcon sx={{ fontSize: 28 }}/>
-                </Tooltip>
+                        <div className="flex items-center gap-2">
+                            <Tooltip title="Deselect All" arrow>
+                                <button 
+                                    onClick={() => setMarkedNotes([])}
+                                    className="p-2 hover:bg-gray-100 rounded-full text-gray-600 transition-colors"
+                                >
+                                    <RemoveDoneIcon fontSize="small" />
+                                </button>
+                            </Tooltip>
 
-                {/* Dropdown Menu */}
-                <div className={`absolute w-[10%] ${!toggleAction ? "scale-0" : "scale-100"} top-[70px] right-10 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-300 transition-all z-[70]`}>
-                    <ul>
-                        <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer" onClick={() => setMarkedNotes([]) & setToggleAction(false)}>Deselect All <RemoveDoneIcon sx={{ fontSize: 12 }} /></li>
-                        <li className="flex justify-between hover:text-red-500 hover:bg-red-100/50 p-2 cursor-pointer" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }} /></li>
-                    </ul>
-                </div>
-            </div>
+                            <Tooltip title="Delete" arrow>
+                                <button 
+                                    onClick={() => setShowDeleteModal(true)}
+                                    className="p-2 hover:bg-red-50 text-red-500 rounded-full transition-colors"
+                                >
+                                    <DeleteRoundedIcon fontSize="small" />
+                                </button>
+                            </Tooltip>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-            <div className={toggleAction ? "fixed w-screen h-screen top-0 left-0 z-[65]" : "hidden"} onClick={() => setToggleAction(false)}></div>
-            
+            {/* delete modal */}
+            <AnimatePresence>
+                {showDeleteModal && (
+                    <motion.div 
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="w-full max-w-sm bg-white rounded-2xl p-6 shadow-xl"
+                        >
+                            <h2 className="text-xl font-bold text-gray-900">Confirm Delete</h2>
+                            <p className="mt-2 text-gray-500 text-sm">
+                                You are about to delete {markedNotes.length} note(s). This action is permanent.
+                            </p>
 
-            {/* Delete modal  */}
-          {
-            showDeleteModal &&(
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className={"fixed w-screen h-screen text-black top-0 left-0 flex px-6 justify-center items-center z-[100]"}>
-
-                {/* backdrop  */}
-                <div className={"w-screen h-screen fixed bg-black md:bg-black/75"} onClick={() => setShowDeleteModal(!showDeleteModal)}></div>
-
-                <div className={`w-full h-fit md:w-96 md:h-auto flex flex-col gap-3 px-4 py-4 bg-white rounded-md transition-all duration-150 z-[60]`}>
-                    <h1 className="text-lg font-semibold">Delete {markedNotes.length} Item{markedNotes.length > 1 ? "s" : ""}</h1>
-                    <hr />
-                    <p className="text-sm">Are you sure you want to Delete? This can&apo;t be undone! </p>
-                    <div className="w-full flex justify-center items-center gap-5 mt-5 text-sm">
-                      {isPending ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-red-500 rounded-full text-sm text-white" onClick={handleDeleteNotes}><DeleteRoundedIcon />Yes, Delete</button>
-                      <button className="flex justify-center items-center p-3 bg-neutral hover:bg-black text-white rounded-full" onClick={() => setShowDeleteModal(!showDeleteModal)}><ClearRoundedIcon/>Cancel</button></>}
-                    </div> 
-                </div>
-            </motion.div>)
-          }
-        </div>
-    )
+                            <div className="mt-6 flex gap-3">
+                                <button 
+                                    disabled={isPending}
+                                    onClick={() => setShowDeleteModal(false)}
+                                    className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    disabled={isPending}
+                                    onClick={handleDeleteNotes}
+                                    className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-xl hover:bg-red-600 transition-colors flex justify-center items-center gap-2"
+                                >
+                                    {isPending ? <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Delete"}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </>
+    );
 }
 
-export default MarkedNotesActionsBar
+export default MarkedNotesActionsBar;

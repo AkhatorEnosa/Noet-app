@@ -230,10 +230,14 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
           viewport={{ amount: 0.2 }}
           layout
-          layoutId={`note-${noteId}`}
+          transition={{ 
+            duration: 0.5, 
+            ease: "easeInOut",
+            layout: { type: "tween", duration: 0.5, ease: "easeInOut" }
+          }}
+          // layoutId={`note-${noteId}`}
           className={`group flex flex-col justify-between relative break-inside-avoid pt-2 aspect-video w-full ${bgColor} rounded-2xl text-lg ${checkedNote ? "shadow-lg border-[#255f6f] border-[2px]" : "hover:lg:shadow-lg"} transition-all duration-300 ease-in-out break-words active:cursor-grab ${showDrop ? "border-[#114f60] border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-[70]" : "z-10"}`} draggable="true" 
           
           // long press and mobile drag events
@@ -255,7 +259,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
         >
 
           {/* overlay to open note edit modal */}
-          {!checkedNote && <div className="absolute  w-full h-full" onClick={handleNav}></div>}
+          {!checkedNote && <div className="absolute w-full h-full" onClick={handleNav}></div>}
           
           {/* note div  */}
           <div className={`w-full ${note.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
@@ -275,16 +279,15 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
 
           {/* date and actions  */}
           { !checkedNote &&
-            <div className={`flex items-center justify-between px-4 py-3 bg-black/5 rounded-b-2xl backdrop-blur-sm border-t border-black/5 transition-opacity 
-            ${toggleAction ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
-            
+            <div className={`flex items-center justify-between px-4 py-3 bg-black/5 rounded-b-2xl backdrop-blur-sm border-t border-black/5 transition-opacity ${toggleAction ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
+              {!checkedNote && <div className="absolute left-0 w-full h-full z-10" onClick={handleNav}></div>}
               <div className="flex flex-col text-[10px] text-gray-500 font-medium">
                 <span className="uppercase tracking-tighter opacity-70">Noted</span>
                 <b className="text-gray-700">{moment(note_date).format("MMM D, YYYY")}</b>
               </div>
               
                 {/* action buttons  */}
-                <div className="w-fit flex lg:gap-2">
+                <div className="relative w-fit flex lg:gap-2 z-[60]">
                   <Tooltip title="Pin" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50" onClick={() => handlePinUpdate()}>
                       {updatingPin ? <CircularProgress size="20px" color="inherit"/> : !draggedNote.pinned ? <PushPinOutlinedIcon/> : <PushPinRoundedIcon />}
                   </Tooltip>
@@ -293,10 +296,10 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                   </Tooltip>
                   
                   {/* Dropdown Menu */}
-                  <div className={`absolute w-[40%] ${!toggleAction ? "scale-0" : "scale-100"} bottom-14 right-2 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-300 transition-all z-[70]`}>
+                  <div className={`absolute ${!toggleAction ? "scale-0" : "scale-100"} bottom-10 right-2 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-300 transition-all z-[70]`}>
                       <ul>
-                          <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer" onClick={handleNav}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
-                          <li className="flex justify-between hover:text-red-500 hover:bg-red-100/50 p-2 cursor-pointer" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }} /></li>
+                          <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer duration-300 transition-all" onClick={handleNav}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
+                          <li className="flex justify-between hover:text-red-500 hover:bg-red-100/50 p-2 cursor-pointer duration-300 transition-all" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }} /></li>
                       </ul>
                   </div>
                 </div>
@@ -315,7 +318,7 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
                 className={"fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-[70]"}>
 
                     {/* backdrop  */}
-                    <div className={"fixed w-full h-full md:bg-black/70"} onClick={handleNav}></div>
+                    <div className={"fixed w-full h-full bg-black/40 backdrop-blur-sm"} onClick={handleNav}></div>
 
                     <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
                       <motion.form
@@ -382,29 +385,42 @@ const Note = ({note, noteId, note_date, bgColor, draggedNote, activeNote, handle
         </AnimatePresence>
 
         {/* Delete modal  */}
-        <AnimatePresence>
-          {
-            showDeleteModal &&(
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className={"fixed w-full h-full top-0 left-0 flex px-6 justify-center items-center z-[65]"}>
+       <AnimatePresence>
+          {showDeleteModal && (
+              <motion.div 
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+              >
+                  <motion.div 
+                      initial={{ scale: 0.9, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.9, opacity: 0 }}
+                      className="w-full max-w-sm bg-white rounded-2xl p-6 shadow-xl"
+                  >
+                      <h2 className="text-xl font-bold text-gray-900">Confirm Delete</h2>
+                      <p className="mt-2 text-gray-500 text-sm">
+                          You are about to delete this note. This action is permanent.
+                      </p>
 
-                {/* backdrop  */}
-                <div className={"w-full h-full fixed bg-black md:bg-black/75"} onClick={() => setShowDeleteModal(!showDeleteModal)}></div>
-
-                <motion.div 
-                  // layoutId={`note-${noteId}`}
-                  className={`w-full h-fit md:w-96 md:h-auto flex flex-col gap-3 px-4 py-4 bg-white rounded-md transition-all duration-150 z-[60]`}>
-                    <h1 className="text-lg font-semibold">Delete</h1>
-                    <hr />
-                    <p className="text-sm">Are you sure you want to Delete? This can&apos;t be undone!. </p>
-                    <div className="w-full flex justify-center items-center gap-5 mt-5 text-sm">
-                      {isPending || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : <><button className="flex justify-center items-center p-3 hover:bg-[#ff2222] bg-red-500 rounded-full text-sm text-white" onClick={handleDeleteNote}><DeleteRoundedIcon />Yes, Delete</button>
-                      <button className="flex justify-center items-center p-3 bg-neutral hover:bg-black text-white rounded-full" onClick={() => setShowDeleteModal(!showDeleteModal)}><ClearRoundedIcon/>Cancel</button></>}
-                    </div> 
-                </motion.div>
-            </motion.div>)
-          }
+                      <div className="mt-6 flex gap-3">
+                          <button 
+                              disabled={isPending}
+                              onClick={() => setShowDeleteModal(false)}
+                              className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+                          >
+                              Cancel
+                          </button>
+                          <button 
+                              disabled={isPending}
+                              onClick={handleDeleteNote}
+                              className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-xl hover:bg-red-600 transition-colors flex justify-center items-center gap-2"
+                          >
+                              {isPending ? <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Delete"}
+                          </button>
+                      </div>
+                  </motion.div>
+              </motion.div>
+          )}
         </AnimatePresence>
     </article>
   )
