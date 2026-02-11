@@ -24,9 +24,9 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
 import { AppContext } from "../context/AppContext";
-import useNotes from "../hooks/useNotes";
 import moment from "moment";
 import { CopyToClipboard } from "../components/CopyToClipboard";
+import usePublicNote from "../hooks/usePublicNote";
 
 const options = ['privacy', 'date', 'content', 'default']
 
@@ -34,6 +34,7 @@ const Home = () => {
 
   const [uid, setUid] = useState()
   const [notes, setNotes] = useState()
+  const [publicNote, setPublicNote] = useState()
   const [noteInput, setNoteInput] = useState("")
   const [wordCount, setWordCount] = useState(0)
   const [showColorPallete, setShowColorPallete] = useState(false)
@@ -53,16 +54,16 @@ const Home = () => {
 
 
   // Accessing notes and user from Redux store
-  const stateUser = useSelector((state) => state.data.user)
-  const stateNotes = useSelector((state) => state.data.notes)
-  const statePublicNote = useSelector((state) => state.data.publicNotes)
+  const stateUser = useSelector((state) => state.app.user)
+  const stateNotes = useSelector((state) => state.privateNotes.notes)
+  const statePublicNote = useSelector((state) => state.publicNote.publicNotes)
 
   // Accessing marked notes from AppContext
   const { markedNotes } = useContext(AppContext);
 
   //  Capture the ID from the URL
   const queryParam = searchParams.get("note");
-  const isPublicNote = Array.isArray(statePublicNote) ? statePublicNote?.some((note) => note.id == queryParam) : null
+  const isPublicNote = Array.isArray(statePublicNote) ? statePublicNote?.some((note) => note.id == queryParam && note.user_id !== uid) : null
   const isWriting = queryParam === 'true' && !isPublicNote ? true : false;
 
   let inputRef = useRef('')
@@ -77,7 +78,7 @@ const Home = () => {
     : 'index_num', debouncedSearchInput)
   
 
-  const { isLoading:loadingPublicNote } = useNotes(stateUser?.id, queryParam)
+  const { loadingPublicNote } = usePublicNote(queryParam)
 
   // This hook debounces the searchTerm from making a request to the api on every change. Debouncing stalls the request until searchTerm does not change for a number of time 
   useDebounce(() => {
@@ -93,11 +94,7 @@ const Home = () => {
   
   // close public modal based on isPublicNote
   const closePublicNote = () => {
-    if (uid) {
-       navigate(`/`, { replace: true });
-    } else {
-     navigate(`/signin`, { replace: true });
-    }
+    navigate(`/`, { replace: true });
   }
    
   // handle navigation base on query param
@@ -200,7 +197,15 @@ const Home = () => {
     if(stateUser !== null) {
       setNotes(stateNotes)
     }
+
+    // if (isPublicNote) {
+    //   setPublicNote(statePublicNote)
+    // }
+    
+    // console.log("public note via param", statePublicNote)
   }, [stateNotes, stateUser?.id])
+
+  //
 
   
   const handleChange = (e) => {
@@ -256,6 +261,63 @@ const Home = () => {
   
   if (stateUser == null && !isPublicNote) {
     return <SignIn />
+  } else if (isPublicNote) {
+    return (
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          className={"fixed w-full h-full top-0 left-0 p-5 md:py-10 flex justify-center items-center z-[70]"}>
+
+          {/* backdrop  */}
+          <div className={"fixed w-full h-full bg-black/40 backdrop-blur-sm"} onClick={closePublicNote}></div>
+
+          <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
+            <motion.form
+              // layoutId={`note-${noteId}`}
+              // onSubmit={handleNoteUpdate} 
+              className={`opacity-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-[2rem] shadow-md duration-150 transition-all z-50`}>
+
+              <div className="flex items-center justify-end gap-2 px-2 py-2">
+                <span className={`flex gap-2 flex-row border-[1px] px-4 py-2 rounded-full ${statePublicNote[0].bg_color} text-[10px] uppercase tracking-wider text-gray-600 font-light transition-all duration-150`}>noted on <b className="font-bold">{moment(statePublicNote[0].created_at).format("Do MMMM, YYYY")}</b></span>
+                
+                {/* close button or loading  */}
+                {
+                  loadingPublicNote ? <span className="loading loading-spinner loading-sm"></span> :
+                  <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closePublicNote}><ClearRoundedIcon /></button>
+                }
+              </div>
+
+              {/* textarea  */}
+              <textarea
+                autoFocus
+                type="text" 
+                value={statePublicNote[0].data_value}
+                disabled
+                className={`w-full h-[90%] outline-none resize-none placeholder:text-black px-8 py-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
+
+              {/* action buttons  */}
+              <div className="relative w-full md:flex justify-center items-center py-10">
+                  <div className={`relative w-full flex justify-center gap-4 items-center px-3 md:px-5 pt-4`}>
+                    
+                    {/* copy text to clipboard  */}
+                    <CopyToClipboard text={statePublicNote[0]?.data_value} wordCount={statePublicNote[0]?.data_value.length} />
+                  
+                    {/* word count  */}
+                    <span className="hidden md:block md:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                      {statePublicNote[0].data_value.length} characters
+                    </span>
+                  </div>
+                        
+                      {/* word count  */}
+                      <span className="w-full md:hidden absolute text-center bottom-[4px] text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                        {statePublicNote[0].data_value.length} characters
+                      </span>
+              </div>
+            </motion.form>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    )
   } else {
     if (stateNotes !== null && isSuccess) return (
       <div className="relative w-full flex flex-col gap-5 px-3 py-5 md:px-10 lg:px-20 md:py-10 justify-center items-center overflow-scroll">
@@ -362,66 +424,6 @@ const Home = () => {
               </div>
             }
           </section>
-          
-          {/* public note modal */ }
-          {uid !== null && isPublicNote && 
-
-            <AnimatePresence>
-              <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className={"fixed w-full h-full top-0 left-0 p-5 md:py-10 flex justify-center items-center z-[70]"}>
-
-                {/* backdrop  */}
-                <div className={"fixed w-full h-full bg-black/40 backdrop-blur-sm"} onClick={closePublicNote}></div>
-
-                <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
-                  <motion.form
-                    // layoutId={`note-${noteId}`}
-                    // onSubmit={handleNoteUpdate} 
-                    className={`opacity-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-[2rem] shadow-md duration-150 transition-all z-50`}>
-
-                    <div className="flex items-center justify-end gap-2 px-2 py-2">
-                      <span className={`flex gap-2 flex-row border-[1px] px-4 py-2 rounded-full ${statePublicNote[0].bg_color} text-[10px] uppercase tracking-wider text-gray-600 font-light transition-all duration-150`}>noted on <b className="font-bold">{moment(statePublicNote[0].created_at).format("Do MMMM, YYYY")}</b></span>
-                      
-                      {/* close button or loading  */}
-                      {
-                        loadingPublicNote ? <span className="loading loading-spinner loading-sm"></span> :
-                        <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closePublicNote}><ClearRoundedIcon /></button>
-                      }
-                    </div>
-
-                    {/* textarea  */}
-                    <textarea
-                      autoFocus
-                      type="text" 
-                      value={statePublicNote[0].data_value}
-                      disabled
-                      className={`w-full h-[90%] outline-none resize-none placeholder:text-black px-8 py-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
-
-                    {/* action buttons  */}
-                    <div className="relative w-full md:flex justify-center items-center py-10">
-                        <div className={`relative w-full flex justify-center gap-4 items-center px-3 md:px-5 pt-4`}>
-                          
-                          {/* copy text to clipboard  */}
-                          <CopyToClipboard text={statePublicNote[0]?.data_value} wordCount={statePublicNote[0]?.data_value.length} />
-                        
-                          {/* word count  */}
-                          <span className="hidden md:block md:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
-                            {statePublicNote[0].data_value.length} characters
-                          </span>
-                        </div>
-                              
-                            {/* word count  */}
-                            <span className="w-full md:hidden absolute text-center bottom-[4px] text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
-                              {statePublicNote[0].data_value.length} characters
-                            </span>
-                    </div>
-                  </motion.form>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          }
-
 
           {/* Add Note Section */}
           <AnimatePresence>
@@ -498,7 +500,7 @@ const Home = () => {
             </Tooltip>
 
       </div>
-    )
+    ) 
   }
   
 

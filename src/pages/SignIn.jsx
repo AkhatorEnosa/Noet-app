@@ -16,7 +16,7 @@ const snippets = [
 
 const SignIn = () => {
   const { mutate, isPending } = useLogin();
-  const { isLoading } = useSelector((state) => state.data);
+  const { isLoading } = useSelector((state) => state.app);
 
   const handleSignIn = () => mutate();
 

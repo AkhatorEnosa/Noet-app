@@ -43,7 +43,7 @@ const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, acti
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const stateLoading = useSelector((state) => state.data.isLoading)
+  const stateLoading = useSelector((state) => state.app.isLoading)
   const { markedNotes, setMarkedNotes } = useContext(AppContext)
   const findMarkedNote = markedNotes.some(id => id === noteId)
 

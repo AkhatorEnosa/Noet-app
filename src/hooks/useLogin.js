@@ -1,6 +1,6 @@
 import { useMutation} from "@tanstack/react-query"
 import { useDispatch } from "react-redux"
-import { signIn } from "../reducers/apiSlice"
+import { signIn } from "../reducers/appSlice"
 
 const useLogin = () => {
     const dispatch = useDispatch()

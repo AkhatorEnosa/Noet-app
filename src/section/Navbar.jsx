@@ -3,12 +3,11 @@
 import { useSelector } from "react-redux"
 import Logo from '../assets/logo.webp'
 import useSignOut from "../hooks/useSignOut"
-// import {motion} from "framer-motion"
 import { useEffect, useState } from "react"
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 
 const Navbar = () => {
-  const { user, isLoading } = useSelector(state => (state.data))
+  const { user, isLoading } = useSelector(state => (state.app))
   const {mutate} = useSignOut()
 
   const [name, setName] = useState("")

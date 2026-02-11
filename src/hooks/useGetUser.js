@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { useDispatch } from "react-redux";
-import { getUser } from "../reducers/apiSlice";
+import { getUser } from "../reducers/appSlice";
 
 const useGetUser = () => {
     const dispatch = useDispatch();

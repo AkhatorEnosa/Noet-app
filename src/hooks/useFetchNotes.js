@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query"
 import { useDispatch, useSelector } from "react-redux";
-import { getAllNotes } from "../reducers/apiSlice";
+import { getAllNotes } from "../reducers/privateNoteSlice";
 
 const useFetchNotes = (id, filter, searchInput) => {
     const dispatch = useDispatch();
-    const user = useSelector((state) => state.data.user)
+    const user = useSelector((state) => state.app.user)
 
     return useQuery({
         queryKey: ['notes', user, id, filter, searchInput],

@@ -1,9 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import apiReducer from "./reducers/apiSlice"
+import appReducer from "./reducers/appSlice"
+import privateNoteReducer from "./reducers/privateNoteSlice"
+import publicNoteReducer from "./reducers/publicNoteSlice"
 
 export const store = configureStore({
     reducer: {
-        data: apiReducer
+        app: appReducer,
+        privateNotes: privateNoteReducer,
+        publicNote: publicNoteReducer 
     },
     devTools: true
 })

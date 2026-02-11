@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Navbar from "./section/Navbar";
 import MarkedNotesActionsBar from "./section/MarkedNotesActionsBar";
-import { SignIn } from "@supabase/auth-ui-react";
 
 function App() {
   return (
@@ -20,7 +19,6 @@ function App() {
         <main className="relative w-full flex flex-col items-center">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/signin" element={<SignIn />} />
           </Routes>
         </main>
       </div>

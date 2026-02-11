@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { signOut } from "../reducers/apiSlice"
 import { useDispatch } from "react-redux"
+import { signOut } from "../reducers/appSlice"
 
 const useSignOut = () => {
     const queryClient = useQueryClient()
