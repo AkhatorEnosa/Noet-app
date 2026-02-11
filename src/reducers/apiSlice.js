@@ -4,6 +4,7 @@ import supabase from '../config/supabaseClient.config';
 const initialState = {
   user: null,
   notes: null,
+  publicNotes: null,
   error: null,
   isLoading: false,
 };
@@ -52,6 +53,25 @@ export const getAllNotes = createAsyncThunk('api/getAllNotes', async({ id, filte
 })
 
 
+export const getPublicNoteViaParam = createAsyncThunk('api/getPublicNoteViaParam', async({ userId, param }) => {
+  try {
+    if(userId && param)  {
+      const { data, error } = await supabase.
+        from('data')
+        .select()
+        .eq('id', param)
+        .eq('privacy', false)
+        .neq('user_id', userId)
+      
+      if(error) return error
+      if (data) return data;
+    }
+  } catch (error) {
+    return error
+  }
+})
+
+
 const apiSlice = createSlice({
   name: 'api',
   initialState,
@@ -89,6 +109,18 @@ const apiSlice = createSlice({
       })
       .addCase(getAllNotes.rejected, (state, action) => {
         state.notes = action.error.message;
+        state.isLoading = false;
+      })
+      .addCase(getPublicNoteViaParam.pending, (state) => {
+        // state.notes = null;
+        state.isLoading = true;
+      })
+      .addCase(getPublicNoteViaParam.fulfilled, (state, action) => {
+        state.publicNotes = action.payload;
+        state.isLoading = false;
+      })
+      .addCase(getPublicNoteViaParam.rejected, (state, action) => {
+        state.publicNotes = action.error.message;
         state.isLoading = false;
       })
       .addCase(signOut.pending, (state) => {

@@ -24,8 +24,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
 import { AppContext } from "../context/AppContext";
+import useNotes from "../hooks/useNotes";
+import moment from "moment";
+import { CopyToClipboard } from "../components/CopyToClipboard";
 
-const options = [ 'date', 'content', 'default']
+const options = ['privacy', 'date', 'content', 'default']
 
 const Home = () => {
 
@@ -44,17 +47,23 @@ const Home = () => {
   const [debouncedSearchInput, setDebouncedSearchInput] = useState("")
   const [sortValue, setSortValue] = useState("default")
   const [message, setMessage] = useState("")
+
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
 
   // Accessing notes and user from Redux store
-  const stateNotes = useSelector((state) => state.data.notes)
   const stateUser = useSelector((state) => state.data.user)
+  const stateNotes = useSelector((state) => state.data.notes)
+  const statePublicNote = useSelector((state) => state.data.publicNotes)
 
   // Accessing marked notes from AppContext
   const { markedNotes } = useContext(AppContext);
 
+  //  Capture the ID from the URL
+  const queryParam = searchParams.get("note");
+  const isPublicNote = Array.isArray(statePublicNote) ? statePublicNote?.some((note) => note.id == queryParam) : null
+  const isWriting = queryParam === 'true' && !isPublicNote ? true : false;
 
   let inputRef = useRef('')
 
@@ -64,7 +73,11 @@ const Home = () => {
   const { error, isLoading } = useFetchNotes(stateUser?.id, sortValue == 'color' ? 'bg_color' 
     : sortValue == 'content' ? 'data_value' 
     : sortValue == 'date' ? 'created_at' 
+    : sortValue == 'privacy' ? 'privacy'
     : 'index_num', debouncedSearchInput)
+  
+
+  const { isLoading:loadingPublicNote } = useNotes(stateUser?.id, queryParam)
 
   // This hook debounces the searchTerm from making a request to the api on every change. Debouncing stalls the request until searchTerm does not change for a number of time 
   useDebounce(() => {
@@ -78,10 +91,14 @@ const Home = () => {
     }, 500, [searchInput]
   )
   
-  //  Capture the ID from the URL
-  const queryParam = searchParams.get("note");
-  const isWriting = queryParam === 'true' ? true : false;
-
+  // close public modal based on isPublicNote
+  const closePublicNote = () => {
+    if (uid) {
+       navigate(`/`, { replace: true });
+    } else {
+     navigate(`/signin`, { replace: true });
+    }
+  }
    
   // handle navigation base on query param
   const handleNav = () => {
@@ -94,7 +111,7 @@ const Home = () => {
 
   // Effect to handle body overflow and saving note on form close
   useEffect(() => {
-    if (isWriting) {
+    if (isWriting || isPublicNote) {
       document.body.style.overflow = 'hidden';
       const handleEsc = (e) => e.key === "Escape" && handleNav();
       window.addEventListener("keydown", handleEsc);
@@ -110,7 +127,7 @@ const Home = () => {
     if (!isWriting && noteInput.trim() !== "") {
       saveNote();
     }
-  }, [isWriting]);
+  }, [isPublicNote, isWriting]);
 
   
   // Function to save note
@@ -171,7 +188,7 @@ const Home = () => {
           </button>
         </div>
       );
-    }, 2000);
+    }, 5000);
 
     // Cleanup function to clear the timeout
     return () => clearTimeout(timeoutId);
@@ -233,20 +250,11 @@ const Home = () => {
       index_one: notesCopy[notes.indexOf(noteToMove[0])].index_num,
       id_two: notesCopy[notes.indexOf(noteToMove[0])].id, 
     })
-
-    // console.log("Notes outside use effect ", notes)
   }
-
-  // if (userLoading) return (
-  //   <div className="animate-pulse py-52 w-full flex justify-center items-center">
-  //     <span className="loading loading-spinner loading-lg"></span>
-  //     <p>A moment please...</p>
-  //   </div>
-  // )
 
   if(error) return  <h3>Error: {error}</h3>
   
-  if (stateUser == null) {
+  if (stateUser == null && queryParam == null) {
     return <SignIn />
   } else {
     if (stateNotes !== null && isSuccess) return (
@@ -291,6 +299,7 @@ const Home = () => {
                                       noteId={note.id}
                                       note={note.data_value}
                                       note_date={note.created_at}
+                                      note_privacy={note.privacy}
                                       bgColor={note.bg_color}
                                       updateId={note.id}
                                       draggedNote={note}
@@ -324,20 +333,22 @@ const Home = () => {
                         
                         {
                           notes?.map((note) => (
-                                !note.pinned && <React.Fragment key={note.id}>
-                                  <Note 
+                            !note.pinned &&
+                              <React.Fragment key={note.id}>
+                                <Note 
                                   noteId={note.id}
                                   note={note.data_value}
                                   note_date={note.created_at}
+                                  note_privacy={note.privacy}
                                   bgColor={note.bg_color}
                                   updateId={note.id}
                                   draggedNote={note}
                                   activeNote={setactiveNote}
                                   handleDrop={() => onDrop(notes.indexOf(note))}
-                                  />
+                                />
                                 </React.Fragment>
-                              )
                             )
+                          )
                         }
                       </div>
                     }
@@ -351,15 +362,74 @@ const Home = () => {
               </div>
             }
           </section>
+          
+          {/* public note modal */ }
+          {isPublicNote && 
+
+            <AnimatePresence>
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className={"fixed w-full h-full top-0 left-0 p-5 md:py-10 flex justify-center items-center z-[70]"}>
+
+                {/* backdrop  */}
+                <div className={"fixed w-full h-full bg-black/40 backdrop-blur-sm"} onClick={closePublicNote}></div>
+
+                <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
+                  <motion.form
+                    // layoutId={`note-${noteId}`}
+                    // onSubmit={handleNoteUpdate} 
+                    className={`opacity-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-[2rem] shadow-md duration-150 transition-all z-50`}>
+
+                    <div className="flex items-center justify-end gap-2 px-2 py-2">
+                      <span className={`flex gap-2 flex-row border-[1px] px-4 py-2 rounded-full ${statePublicNote[0].bg_color} text-[10px] uppercase tracking-wider text-gray-600 font-light transition-all duration-150`}>noted on <b className="font-bold">{moment(statePublicNote[0].created_at).format("Do MMMM, YYYY")}</b></span>
+                      
+                      {/* close button or loading  */}
+                      {
+                        loadingPublicNote ? <span className="loading loading-spinner loading-sm"></span> :
+                        <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closePublicNote}><ClearRoundedIcon /></button>
+                      }
+                    </div>
+
+                    {/* textarea  */}
+                    <textarea
+                      autoFocus
+                      type="text" 
+                      value={statePublicNote[0].data_value}
+                      disabled
+                      className={`w-full h-[90%] outline-none resize-none placeholder:text-black px-8 py-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
+
+                    {/* action buttons  */}
+                    <div className="relative w-full md:flex justify-center items-center py-10">
+                        <div className={`relative w-full flex justify-center gap-4 items-center px-3 md:px-5 pt-4`}>
+                          
+                          {/* copy text to clipboard  */}
+                          <CopyToClipboard text={statePublicNote[0]?.data_value} wordCount={statePublicNote[0]?.data_value.length} />
+                        
+                          {/* word count  */}
+                          <span className="hidden md:block md:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                            {statePublicNote[0].data_value.length} characters
+                          </span>
+                        </div>
+                              
+                            {/* word count  */}
+                            <span className="w-full md:hidden absolute text-center bottom-[4px] text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                              {statePublicNote[0].data_value.length} characters
+                            </span>
+                    </div>
+                  </motion.form>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          }
 
 
           {/* Add Note Section */}
           <AnimatePresence>
             {
-              isWriting &&
+              isWriting && !isPublicNote &&
               <motion.div
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className={"fixed w-full h-full top-0 left-0 md:py-10 flex justify-center items-center z-[70]" }>
+                className={"fixed w-full h-full top-0 left-0 p-5 md:py-10 flex justify-center items-center z-[70]" }>
                   {/* backdrop  */}
                   <div className={"fixed w-full h-full bg-black/40 backdrop-blur-sm"} onClick={handleNav}></div> 
                     
@@ -377,15 +447,13 @@ const Home = () => {
                         className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} px-8 py-4 placeholder:text-black text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"
                       />
 
-                      <div className="relative w-full flex justify-center items-center py-10">
+                      <div className="relative w-full md:flex justify-center items-center py-10">
                           {
                             isPending ? <span className="loading loading-spinner loading-sm"></span> : 
                           
                               <div className={`w-full flex justify-center ${wordCount > 0 ? "gap-4" : "gap-0"} items-center px-3 md:px-5 pt-4 transition-all duration-150`}>
-                                  {/* Word count  */}
-                                  <span className="absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
-                                    {wordCount} characters
-                                  </span>
+                              
+                                  {/* color pallete */}
                                   <ColorPallete show={showColorPallete} colorOption={colorOptionValue} addBackground={handleColorOption}/>
                                   <Tooltip title="Choose color" arrow>
                                     <i className={`flex justify-center items-center ${wordCount > 0 ? "w-10 h-10 rounded-full" : "w-0 h-0 opacity-0"} ${showColorPallete ? 'bg-warning shadow-lg border-none' : 'border-[1px] border-neutral'} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `} onClick={() => setShowColorPallete(!showColorPallete)}>
@@ -402,8 +470,18 @@ const Home = () => {
                                 <Tooltip title="Add Note" arrow>
                                   <button type="submit" className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full top-2 right-2 px-5 py-2 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon/></button>
                                 </Tooltip>
+                                
+                                {/* Word count  */}
+                                <span className="hidden md:block md:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                                  {wordCount} characters
+                                </span>
                               </div>
                           }
+                              
+                          {/* word count for small screens*/}
+                          <span className="w-full md:hidden absolute text-center bottom-[4px] text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                            {wordCount} characters
+                          </span>
                       </div>
                     </form>
                   </div>

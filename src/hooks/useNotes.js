@@ -1,30 +1,26 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { shuffleNoets } from "../reducers/apiSlice";
-import { useDispatch } from "react-redux";
+import { useQuery } from "@tanstack/react-query";
+import { useDispatch, useSelector } from "react-redux";
+import { getPublicNoteViaParam } from "../reducers/apiSlice";
 
 
-const useNotes = () => {
+const useNotes = (id, param) => {
     const dispatch = useDispatch();
-    // const user = useSelector((state) => state.data.user)
+    const user = useSelector((state) => state.data.user)
 
-    const queryClient = useQueryClient()
-
-    return useMutation({
-        mutationFn: async ({id, sortValue, searchInput}) => {
-            const result = dispatch(shuffleNoets({id: id, filter: sortValue, searchInput}))
-
-            return result
+    return useQuery({
+        queryKey: ['notes', user, id, param],
+        queryFn: async() => {
+            if(user !== null){
+                const result = await dispatch(getPublicNoteViaParam({userId: user?.id, param}));
+                return result;
+            } else {
+                return null
+            }
         },
-        onSuccess: (result) => {
-            console.log("Notes loaded", result)
-            queryClient.invalidateQueries({
-                queryKey: ['notes'],
-              })
-        },
-        onError: (error) => {
-            console.log("Notes Mutation Failed", error)
-        }
-    })
+        initialData: [],
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: true
+    });
 }
 
 export default useNotes
