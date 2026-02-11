@@ -254,7 +254,7 @@ const Home = () => {
 
   if(error) return  <h3>Error: {error}</h3>
   
-  if (stateUser == null && queryParam == null) {
+  if (stateUser == null && !isPublicNote) {
     return <SignIn />
   } else {
     if (stateNotes !== null && isSuccess) return (
@@ -364,7 +364,7 @@ const Home = () => {
           </section>
           
           {/* public note modal */ }
-          {isPublicNote && 
+          {uid !== null && isPublicNote && 
 
             <AnimatePresence>
               <motion.div

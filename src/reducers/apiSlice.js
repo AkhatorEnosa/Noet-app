@@ -85,7 +85,7 @@ const apiSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(signIn.rejected, (state, action) => {
-        state.error = "signIn", action.error.message;
+        state.error = action.error.message;
         state.isLoading = false;
       })
       .addCase(getUser.pending, (state) => {
@@ -96,7 +96,7 @@ const apiSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(getUser.rejected, (state, action) => {
-        state.error = "get User", action.error.message;
+        state.error = action.error.message;
         state.isLoading = false;
       })
       .addCase(getAllNotes.pending, (state) => {

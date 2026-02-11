@@ -26,6 +26,7 @@ import { CheckCircle } from "@mui/icons-material";
 import LockRoundedIcon from '@mui/icons-material/LockRounded';
 import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
 import { AppContext } from "../context/AppContext";
+import { ShareNote } from "./ShareNote";
 
 /* eslint-disable react/prop-types */
 const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, activeNote, handleDrop}) => {
@@ -363,6 +364,10 @@ const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, acti
                               <Tooltip title="Clear Note" arrow placement="top">
                                 <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-red-500 hover:border-none transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon sx={{ fontSize: 18 }}/></button>
                               </Tooltip>
+                              
+                              {!note_privacy && 
+                                <ShareNote text={getNote} wordCount={wordCount}/>
+                              }
 
                               {/* update button */}
                               {(getNote !== debouncedNoteInput && (!updating || !stateLoading)) && <Tooltip title="Update Note" arrow placement="top">
