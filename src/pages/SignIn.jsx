@@ -51,7 +51,7 @@ const SignIn = () => {
             key={note.id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ 
-              opacity: [0.1, 0.25, 0.1], 
+              opacity: [0.5, 0.25, 0.5], 
               y: [0, -15, 0],
               x: [0, 5, 0]
             }}
