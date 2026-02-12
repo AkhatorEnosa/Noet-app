@@ -11,7 +11,7 @@ export const getPublicNoteViaParam = createAsyncThunk('api/getPublicNoteViaParam
   try {
     if(param)  {
       const { data, error } = await supabase.
-        from('data')
+        from('notes')
         .select()
         .eq('id', param)
         .eq('privacy', false)

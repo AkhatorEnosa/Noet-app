@@ -11,7 +11,7 @@ export const getAllNotes = createAsyncThunk('api/getAllNotes', async({ id, filte
   try {
     if(id)  {
       const { data, error } = await supabase.
-        from('data')
+        from('notes')
         .select()
         .eq('user_id', id)
         .ilike('data_value', `%${searchInput}%`)

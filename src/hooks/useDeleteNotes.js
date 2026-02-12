@@ -7,7 +7,7 @@ const useDeleteNotes = () => {
     return useMutation({
         mutationFn: async(ids) => {
                 const {data, error} = await supabase
-                .from('data')
+                .from('notes')
                 .delete()
                 .in('id', ids)
 

@@ -6,7 +6,7 @@ const usePin = () => {
 
     return useMutation({
         mutationFn: async (updatePin) => {
-            const {data, error} = await supabase.from('data')
+            const {data, error} = await supabase.from('notes')
             .update(updatePin)
             .eq('id', updatePin.id)
 

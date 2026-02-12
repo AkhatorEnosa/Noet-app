@@ -1,6 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react"
 import Linkify from "linkify-react";
 import useDeleteNotes from "../hooks/useDeleteNotes"
+import useUpdateNote from "../hooks/useUpdateNote"
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import CheckRoundedIcon from'@mui/icons-material/CheckRounded';
@@ -10,7 +11,6 @@ import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
 import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import useUpdateNote from "../hooks/useUpdateNote";
 import Tooltip from '@mui/material/Tooltip';
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import PushPinRoundedIcon from '@mui/icons-material/PushPinRounded';
@@ -38,6 +38,7 @@ const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, acti
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState(bgColor)
   const [noteChecked, setnoteChecked] = useState(false)
+  const [notePrivacy, setNotePrivacy] = useState(note_privacy)
   const [toggleAction, setToggleAction] = useState(false)
   const [showDrop, setShowDrop] = useState(false)
   const [searchParams] = useSearchParams();
@@ -70,10 +71,10 @@ const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, acti
   }, [isEditing, navigate, noteId]);
 
   // update note function
-  const updateNote = useCallback((input, shouldNavigate = false) => {
+  const updateNote = useCallback((input, color, notePrivacy, shouldNavigate = false) => {
     if(input.trim() !== "") {
       update(
-        { data_value: input.trim(), id: noteId, bg_color: colorOptionValue },
+        { id: noteId, data_value: input.trim(), bg_color: color, privacy: notePrivacy },
         { 
           onSuccess: () => {
             if (shouldNavigate) handleNav();
@@ -86,13 +87,14 @@ const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, acti
       setGetNote('')
       setWordCount(0)
       setShowColorPallete(false)
+      setNotePrivacy(true)
     }
-  }, [noteId, colorOptionValue, update, handleNav, setGetNote, setWordCount, setShowColorPallete])
+  }, [noteId, colorOptionValue, notePrivacy, update, handleNav, setGetNote, setWordCount, setShowColorPallete])
 
   // debounce note input for auto save
   useDebounce(() => {
     if (getNote && isEditing) {
-      updateNote(getNote, false);
+      updateNote(getNote, colorOptionValue, notePrivacy, false);
       setDebouncedNoteInput(getNote);
     }
     }, 1500, [getNote, updateNote, isEditing]
@@ -140,7 +142,7 @@ const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, acti
   // handke note update
   const handleNoteUpdate = (e) => {
     e.preventDefault()
-    updateNote(getNote, true);
+    updateNote(getNote, colorOptionValue, notePrivacy, true);
   }
 
   // clearing form 
@@ -284,8 +286,8 @@ const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, acti
             
             {/* action buttons  */}
             <div className="relative w-fit flex lg:gap-2 z-[60]">
-              <Tooltip title={!note_privacy ? "Public" : "Private"} placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50">
-                {note_privacy ? <LockRoundedIcon /> : <LockOpenRoundedIcon />}
+              <Tooltip title={!notePrivacy ? "Public" : "Private"} placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50">
+                {notePrivacy ? <LockRoundedIcon /> : <LockOpenRoundedIcon />}
               </Tooltip>
               <Tooltip title="Pin" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50" onClick={() => handlePinUpdate()}>
                   {updatingPin ? <CircularProgress size="20px" color="inherit"/> : !draggedNote.pinned ? <PushPinOutlinedIcon/> : <PushPinRoundedIcon />}
@@ -364,8 +366,13 @@ const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, acti
                               <Tooltip title="Clear Note" arrow placement="top">
                                 <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-red-500 hover:border-none transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon sx={{ fontSize: 18 }}/></button>
                               </Tooltip>
+
+                              {/* Toggle privacy  */}
+                              <Tooltip title={notePrivacy ? "Make Note Public" : "Make Note privacy"} arrow placement="top">
+                                <button className={`${wordCount > 0 ? "w-10 h-10 rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-black hover:border-none " : "w-0 h-0 opacity-0"} ${notePrivacy && "bg-black text-white"} flex justify-center items-center transition-all duration-300`} type="button" onClick={() => setNotePrivacy(!notePrivacy)}>{notePrivacy ? <LockRoundedIcon  sx={{ fontSize: 18 }}/> : <LockOpenRoundedIcon  sx={{ fontSize: 18 }}/>}</button>
+                              </Tooltip>
                               
-                              {!note_privacy && 
+                              {!notePrivacy && 
                                 <ShareNote text={getNote} wordCount={wordCount}/>
                               }
 

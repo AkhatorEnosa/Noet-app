@@ -8,7 +8,7 @@ const useUpdateNotes = () => {
         mutationFn: async ({id_one, index_two, id_two, index_one}) => {
 
             const { data, error } = await supabase
-            .from('data')
+            .from('notes')
             .upsert([
                 {id: id_one, index_num: index_two}, 
                 {id: id_two, index_num: index_one}

@@ -7,7 +7,7 @@ const useCreateNote = () => {
 
   return useMutation({
     mutationFn: async (newNote) => {
-        const {data, error} = await supabase.from('data').insert(newNote)
+        const {data, error} = await supabase.from('notes').insert(newNote)
 
         if(error) console.log(error)
         return data

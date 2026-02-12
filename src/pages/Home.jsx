@@ -9,7 +9,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import Tooltip from '@mui/material/Tooltip';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
-// import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
 import { useSelector } from "react-redux";
 import ColorPallete from "../components/ColorPallete";
@@ -34,7 +34,6 @@ const Home = () => {
 
   const [uid, setUid] = useState()
   const [notes, setNotes] = useState()
-  const [publicNote, setPublicNote] = useState()
   const [noteInput, setNoteInput] = useState("")
   const [wordCount, setWordCount] = useState(0)
   const [showColorPallete, setShowColorPallete] = useState(false)
@@ -78,7 +77,7 @@ const Home = () => {
     : 'index_num', debouncedSearchInput)
   
 
-  const { loadingPublicNote } = usePublicNote(queryParam)
+  const { isLoading:loadingPublicNote } = usePublicNote(queryParam)
 
   // This hook debounces the searchTerm from making a request to the api on every change. Debouncing stalls the request until searchTerm does not change for a number of time 
   useDebounce(() => {
@@ -170,9 +169,9 @@ const Home = () => {
 
   //  Display message if no notes found after 2 seconds
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
+    if (!isLoading && !loadingPublicNote && !error) {
       setMessage(
-        <div className="flex flex-col items-center justify-center py-32 text-slate-400">
+        <div className="flex flex-col items-center justify-center text-slate-400">
           <div className="p-6 bg-white rounded-full shadow-sm mb-4">
             <DescriptionIcon sx={{ fontSize: 80, opacity: 0.2 }} />
           </div>
@@ -185,10 +184,30 @@ const Home = () => {
           </button>
         </div>
       );
-    }, 5000);
-
-    // Cleanup function to clear the timeout
-    return () => clearTimeout(timeoutId);
+    } else if (isLoading || loadingPublicNote) {
+      setMessage(
+        // loading 
+        <div className="flex flex-col items-center justify-center text-slate-400">
+          <span className="loading loading-spinner loading-lg"></span>
+          <p className="text-lg font-medium">Loading notes</p>
+        </div>
+      )
+    } else if (error) {
+      setMessage(
+        <div className="flex flex-col items-center justify-center text-red-400">
+          <div className="p-6 bg-red-50 rounded-full mb-4">
+            <ErrorOutlineRoundedIcon sx={{ fontSize: 80, opacity: 0.5 }} />
+          </div>
+          <p className="text-lg font-medium text-slate-600">Failed to load notes</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-medium transition-colors"
+          >
+            Try again
+          </button>
+        </div>
+      );
+    }
   }, []);
   
   // Sync local notes state with Redux store
@@ -417,10 +436,8 @@ const Home = () => {
 
                   </div>
                 </div> : 
-              <div className="py-40 w-full  flex justify-center items-center">
-                <div className="flex flex-col w-full md:w-96 text-neutral-500 justify-center items-center text-center">
-                  {message}
-                </div>
+              <div className="py-20 w-full flex justify-center items-center">
+                {message}
               </div>
             }
           </section>

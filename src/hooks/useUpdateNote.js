@@ -6,7 +6,7 @@ const useUpdateNote = () => {
 
     return useMutation({
         mutationFn: async (updateNote) => {
-            const {data, error} = await supabase.from('data')
+            const {data, error} = await supabase.from('notes')
             .update(updateNote)
             .eq('id', updateNote.id)
 
@@ -23,4 +23,4 @@ const useUpdateNote = () => {
     })
 }
 
-export default useUpdateNote
+export default useUpdateNote;
