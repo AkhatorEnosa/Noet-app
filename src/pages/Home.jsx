@@ -11,6 +11,7 @@ import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
+import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
 import { useSelector } from "react-redux";
 import ColorPallete from "../components/ColorPallete";
 import useUpdateNotes from "../hooks/useUpdateNotes";
@@ -27,6 +28,7 @@ import { AppContext } from "../context/AppContext";
 import moment from "moment";
 import { CopyToClipboard } from "../components/CopyToClipboard";
 import usePublicNote from "../hooks/usePublicNote";
+import useRequestCollab from "../hooks/useRequestCollab";
 
 const options = ['privacy', 'date', 'content', 'default']
 
@@ -54,7 +56,7 @@ const Home = () => {
 
   // Accessing notes and user from Redux store
   const stateUser = useSelector((state) => state.app.user)
-  const stateNotes = useSelector((state) => state.privateNotes.notes)
+  const { notes:userNotes, loadingNotes } = useSelector((state) => state.notes)
   const statePublicNote = useSelector((state) => state.publicNote.publicNotes)
 
   // Accessing marked notes from AppContext
@@ -77,7 +79,8 @@ const Home = () => {
     : 'index_num', debouncedSearchInput)
   
 
-  const { isLoading:loadingPublicNote } = usePublicNote(queryParam)
+  const { isLoading: loadingPublicNote } = usePublicNote(queryParam)
+  const { mutate: requestCollab, isPending:processingRequest } = useRequestCollab()
 
   // This hook debounces the searchTerm from making a request to the api on every change. Debouncing stalls the request until searchTerm does not change for a number of time 
   useDebounce(() => {
@@ -154,6 +157,14 @@ const Home = () => {
       }
     )
   }
+
+  const handleRequestCollab = () => {
+    requestCollab({ userId: uid, noteId: queryParam, ownerId: statePublicNote[0].user_id}, {
+      onSuccess: () => {
+        console.log("requested")
+      }
+    })
+  }
   
   // Handle form submission
   const handleNoteAdd = (e) => {
@@ -184,14 +195,6 @@ const Home = () => {
           </button>
         </div>
       );
-    } else if (isLoading || loadingPublicNote) {
-      setMessage(
-        // loading 
-        <div className="flex flex-col items-center justify-center text-slate-400">
-          <span className="loading loading-spinner loading-lg"></span>
-          <p className="text-lg font-medium">Loading notes</p>
-        </div>
-      )
     } else if (error) {
       setMessage(
         <div className="flex flex-col items-center justify-center text-red-400">
@@ -214,15 +217,9 @@ const Home = () => {
   useEffect(() => {
     setUid(stateUser?.id)
     if(stateUser !== null) {
-      setNotes(stateNotes)
+      setNotes(userNotes)
     }
-
-    // if (isPublicNote) {
-    //   setPublicNote(statePublicNote)
-    // }
-    
-    // console.log("public note via param", statePublicNote)
-  }, [stateNotes, stateUser?.id])
+  }, [userNotes, stateUser?.id])
 
   //
 
@@ -317,9 +314,22 @@ const Home = () => {
               {/* action buttons  */}
               <div className="relative w-full md:flex justify-center items-center py-10">
                   <div className={`relative w-full flex justify-center gap-4 items-center px-3 md:px-5 pt-4`}>
-                    
-                    {/* copy text to clipboard  */}
-                    <CopyToClipboard text={statePublicNote[0]?.data_value} wordCount={statePublicNote[0]?.data_value.length} />
+                    {
+                      uid && 
+                      <>
+                        {/* copy text to clipboard  */}
+                        <CopyToClipboard text={statePublicNote[0]?.data_value} wordCount={statePublicNote[0]?.data_value.length} />
+
+                        {
+                          processingRequest ?
+                              <span className="loading loading-spinner loading-sm"></span>
+                          :
+                            <Tooltip title="request collab" arrow placement="top">
+                              <button className={"w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-[#FF8C00] hover:border-none transition-all duration-300"} type="button" onClick={handleRequestCollab}><GroupAddRoundedIcon sx={{ fontSize: 18 }}/></button>
+                            </Tooltip>
+                        }
+                      </>
+                    }
                   
                     {/* word count  */}
                     <span className="hidden md:block md:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
@@ -338,7 +348,7 @@ const Home = () => {
       </AnimatePresence>
     )
   } else {
-    if (stateNotes !== null && isSuccess) return (
+    if (userNotes !== null && isSuccess) return (
       <div className="relative w-full flex flex-col gap-5 px-3 py-5 md:px-10 lg:px-20 md:py-10 justify-center items-center overflow-scroll">
           
           {/* Main section of Homepage  */}
@@ -357,7 +367,7 @@ const Home = () => {
               />
             </div>
 
-            {stateNotes !== null && !isLoading && notes?.length > 0 ?
+            {userNotes !== null && !isLoading && notes?.length > 0 ?
               <div className="w-full gap-2 flex flex-col items-center justify-center">
 
                   <div className="w-full flex flex-col gap-5">
@@ -437,7 +447,13 @@ const Home = () => {
                   </div>
                 </div> : 
               <div className="py-20 w-full flex justify-center items-center">
-                {message}
+                { isLoading || loadingNotes ? 
+                  // loading 
+                  <div className="flex flex-col py-20 items-center justify-center text-[#255f6f]">
+                    <span className="loading loading-spinner loading-lg"></span>
+                    <p className="text-lg font-medium">Loading notes</p>
+                  </div> : message
+                }
               </div>
             }
           </section>
@@ -468,7 +484,9 @@ const Home = () => {
 
                       <div className="relative w-full md:flex justify-center items-center py-10">
                           {
-                            isPending ? <span className="loading loading-spinner loading-sm"></span> : 
+                            isPending ? <div className={`w-full flex justify-center items-center px-3 md:px-5 pt-4 transition-all duration-150`}>
+                              <span className="loading loading-spinner loading-sm"></span>
+                            </div> : 
                           
                               <div className={`w-full flex justify-center ${wordCount > 0 ? "gap-4" : "gap-0"} items-center px-3 md:px-5 pt-4 transition-all duration-150`}>
                               

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { useDispatch, useSelector } from "react-redux";
-import { getAllNotes } from "../reducers/privateNoteSlice";
+import { getAllNotes } from "../reducers/notesSlice";
 
 const useFetchNotes = (id, filter, searchInput) => {
     const dispatch = useDispatch();

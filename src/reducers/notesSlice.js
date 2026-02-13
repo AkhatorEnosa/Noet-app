@@ -2,9 +2,9 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import supabase from '../config/supabaseClient.config';
 
 const initialState = {
-  notes: null,
+  notes: [],
   error: null,
-  loadingPrivateNotes: false,
+  loadingNotes: false,
 };
 
 export const getAllNotes = createAsyncThunk('api/getAllNotes', async({ id, filter, searchInput }) => {
@@ -28,25 +28,25 @@ export const getAllNotes = createAsyncThunk('api/getAllNotes', async({ id, filte
 })
 
 
-const privateNoteSlice = createSlice({
+const notesSlice = createSlice({
   name: 'api',
   initialState,
   extraReducers: (builder) => {
     builder
       .addCase(getAllNotes.pending, (state) => {
         // state.notes = null;
-        state.loadingPrivateNotes = true;
+        state.loadingNotes = true;
       })
       .addCase(getAllNotes.fulfilled, (state, action) => {
         state.notes = action.payload;
-        state.loadingPrivateNotes = false;
+        state.loadingNotes = false;
       })
       .addCase(getAllNotes.rejected, (state, action) => {
         state.notes = action.error.message;
-        state.loadingPrivateNotes = false;
+        state.loadingNotes = false;
       })
   },
 });
 
-// export const { shuffleNoets } = privateNoteSlice.actions;
-export default privateNoteSlice.reducer;
+// export const { shuffleNoets } = notesSlice.actions;
+export default notesSlice.reducer;
