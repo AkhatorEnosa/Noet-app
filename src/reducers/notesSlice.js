@@ -34,7 +34,6 @@ const notesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getAllNotes.pending, (state) => {
-        // state.notes = null;
         state.loadingNotes = true;
       })
       .addCase(getAllNotes.fulfilled, (state, action) => {
@@ -48,5 +47,4 @@ const notesSlice = createSlice({
   },
 });
 
-// export const { shuffleNoets } = notesSlice.actions;
 export default notesSlice.reducer;

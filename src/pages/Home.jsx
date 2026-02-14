@@ -29,6 +29,7 @@ import moment from "moment";
 import { CopyToClipboard } from "../components/CopyToClipboard";
 import usePublicNote from "../hooks/usePublicNote";
 import useRequestCollab from "../hooks/useRequestCollab";
+import useFetchCollabs from "../hooks/useFetchCollabs";
 
 const options = ['privacy', 'date', 'content', 'default']
 
@@ -58,6 +59,7 @@ const Home = () => {
   const stateUser = useSelector((state) => state.app.user)
   const { notes:userNotes, loadingNotes } = useSelector((state) => state.notes)
   const statePublicNote = useSelector((state) => state.publicNote.publicNotes)
+  const { collaboration } = useSelector((state) => state.publicNote)
 
   // Accessing marked notes from AppContext
   const { markedNotes } = useContext(AppContext);
@@ -80,7 +82,9 @@ const Home = () => {
   
 
   const { isLoading: loadingPublicNote } = usePublicNote(queryParam)
+  const { isPending: loadingCollabs } = useFetchCollabs(uid, queryParam)
   const { mutate: requestCollab, isPending:processingRequest } = useRequestCollab()
+  
 
   // This hook debounces the searchTerm from making a request to the api on every change. Debouncing stalls the request until searchTerm does not change for a number of time 
   useDebounce(() => {
@@ -128,56 +132,6 @@ const Home = () => {
     }
   }, [isPublicNote, isWriting]);
 
-  
-  // Function to save note
-  const saveNote = () => {
-    // Do not save empty notes
-    if (noteInput.trim() === "") {
-      setWordCount(0);
-      return;
-    }
-
-    // Proceed to save the note
-    mutate(
-      {
-        data_value: noteInput,
-        bg_color: colorOptionValue == "" ? "bg-white" : colorOptionValue,
-        index_num: notes.length > 0 ? notes[0].index_num + 2 : 2,
-        user_id: uid
-      }, {
-        onSuccess: () => {
-          isWriting && handleNav(); // Close the form only if it was opened for writing
-
-          // Reset state inside onSuccess to ensure data was sent
-          setColorOptionValue('')
-          setNoteInput("");
-          setWordCount(0);
-          setShowColorPallete(false);
-        }
-      }
-    )
-  }
-
-  const handleRequestCollab = () => {
-    requestCollab({ userId: uid, noteId: queryParam, ownerId: statePublicNote[0].user_id}, {
-      onSuccess: () => {
-        console.log("requested")
-      }
-    })
-  }
-  
-  // Handle form submission
-  const handleNoteAdd = (e) => {
-    e.preventDefault();
-    saveNote();
-  }
-
-  // Check if there are pinned notes
-  const checkForPinned = () => {
-    const containsPinned = notes.some((note) => note.pinned)
-    return containsPinned
-  }
-
   //  Display message if no notes found after 2 seconds
   useEffect(() => {
     if (!isLoading && !loadingPublicNote && !error) {
@@ -221,7 +175,56 @@ const Home = () => {
     }
   }, [userNotes, stateUser?.id])
 
-  //
+  
+  // Function to save note
+  const saveNote = () => {
+    // Do not save empty notes
+    if (noteInput.trim() === "") {
+      setWordCount(0);
+      return;
+    }
+
+    // Proceed to save the note
+    mutate(
+      {
+        data_value: noteInput,
+        bg_color: colorOptionValue == "" ? "bg-white" : colorOptionValue,
+        index_num: notes.length > 0 ? notes[0].index_num + 2 : 2,
+        user_id: uid
+      }, {
+        onSuccess: () => {
+          isWriting && handleNav(); // Close the form only if it was opened for writing
+
+          // Reset state inside onSuccess to ensure data was sent
+          setColorOptionValue('')
+          setNoteInput("");
+          setWordCount(0);
+          setShowColorPallete(false);
+        }
+      }
+    )
+  }
+
+  // request collab handler
+  const handleRequestCollab = () => {
+    requestCollab({ userId: uid, noteId: queryParam, ownerId: statePublicNote[0].user_id}, {
+      onSuccess: (data) => {
+        console.log("requested", data)
+      }
+    })
+  }
+  
+  // Handle form submission
+  const handleNoteAdd = (e) => {
+    e.preventDefault();
+    saveNote();
+  }
+
+  // Check if there are pinned notes
+  const checkForPinned = () => {
+    const containsPinned = notes.some((note) => note.pinned)
+    return containsPinned
+  }
 
   
   const handleChange = (e) => {
@@ -314,18 +317,19 @@ const Home = () => {
               {/* action buttons  */}
               <div className="relative w-full md:flex justify-center items-center py-10">
                   <div className={`relative w-full flex justify-center gap-4 items-center px-3 md:px-5 pt-4`}>
+                    {/* copy text to clipboard  */}
+                    <CopyToClipboard text={statePublicNote[0]?.data_value} wordCount={statePublicNote[0]?.data_value.length} />
+                    
                     {
                       uid && 
                       <>
-                        {/* copy text to clipboard  */}
-                        <CopyToClipboard text={statePublicNote[0]?.data_value} wordCount={statePublicNote[0]?.data_value.length} />
 
                         {
-                          processingRequest ?
+                          processingRequest || loadingCollabs ?
                               <span className="loading loading-spinner loading-sm"></span>
                           :
-                            <Tooltip title="request collab" arrow placement="top">
-                              <button className={"w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-[#FF8C00] hover:border-none transition-all duration-300"} type="button" onClick={handleRequestCollab}><GroupAddRoundedIcon sx={{ fontSize: 18 }}/></button>
+                            <Tooltip title={ collaboration !== null ? "Cancel Request" : "Request Collaboration" } arrow placement="top">
+                              <button className={`w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg ${collaboration ? "bg-[#FF8C00] text-white border-none" : "hover:bg-[#FF8C00] hover:text-white hover:border-none"} transition-all duration-300`} type="button" onClick={handleRequestCollab}><GroupAddRoundedIcon sx={{ fontSize: 18 }}/></button>
                             </Tooltip>
                         }
                       </>
@@ -451,7 +455,7 @@ const Home = () => {
                   // loading 
                   <div className="flex flex-col py-20 items-center justify-center text-[#255f6f]">
                     <span className="loading loading-spinner loading-lg"></span>
-                    <p className="text-lg font-medium">Loading notes</p>
+                    <p className="text-lg font-light">Loading notes</p>
                   </div> : message
                 }
               </div>
