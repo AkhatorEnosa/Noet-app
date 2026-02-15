@@ -46,7 +46,6 @@ const Navbar = () => {
 
     if(user !== null) return (
       <section className={`top-0 w-full flex justify-between items-center px-3 md:px-20 py-3 md:py-5 ${isScrolled && 'bg-white/10 backdrop-blur-md sticky shadow'} text-sm z-[62] duration-150 ease-in-out`}>
-        {/* <h1 className="logo-nav">my<b>Noet</b></h1> */}
         <img src={Logo} alt="website_logo" className="w-28 md:w-32"/>
 
         <div className="flex gap-3">
