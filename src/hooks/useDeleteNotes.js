@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import supabase from "../config/supabaseClient.config"
+import { toast } from "react-toastify"
 
 const useDeleteNotes = () => {
     const queryClient = useQueryClient()
@@ -21,6 +22,9 @@ const useDeleteNotes = () => {
         },
         onError: (error) => {
             console.log("Mutation Failed", error)
+            toast.error("Oops! Could not delete note.", {
+                className: "text-xs w-fit pr-24"
+            })
         }
     })
 }

@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import supabase from "../config/supabaseClient.config"
+import { toast } from "react-toastify"
 
 const useUpdateNotes = () => {
    const queryClient = useQueryClient()
@@ -27,7 +28,12 @@ const useUpdateNotes = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['notes'],
-              })
+            })
+        },
+        onError: () => {
+            toast.error("Oops! Problem update notes.", {
+                className: "text-xs w-fit pr-24"
+            })
         }
     })
 }

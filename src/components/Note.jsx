@@ -27,6 +27,7 @@ import LockRoundedIcon from '@mui/icons-material/LockRounded';
 import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
 import { AppContext } from "../context/AppContext";
 import { ShareNote } from "./ShareNote";
+import { toast } from "react-toastify";
 
 /* eslint-disable react/prop-types */
 const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, activeNote, handleDrop}) => {
@@ -78,6 +79,9 @@ const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, acti
         { 
           onSuccess: () => {
             if (shouldNavigate) handleNav();
+            toast.success("Note updated!", {
+              className: "text-xs w-fit pr-24"
+            })
           } 
         }
       )
@@ -136,7 +140,7 @@ const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, acti
   // for pinning notes 
   const handlePinUpdate = () => {
       // console.log(!draggedNote.pinned)
-      updatePin({pinned: !draggedNote.pinned, id: noteId})
+    updatePin({ pinned: !draggedNote.pinned, id: noteId })
   }
 
   // handke note update
@@ -273,7 +277,7 @@ const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, acti
           </div>
 
           {/* date and actions  */}
-          <div className={`${markedNotes.length > 0 ? "hidden" : "flex" } items-center justify-between px-4 py-3 bg-black/5 rounded-b-2xl backdrop-blur-sm border-t border-black/5 transition-opacity ${toggleAction ? "opacity-100" : "opacity-100 lg:opacity-0 lg:group-hover:opacity-100"} z-[70]`}>
+          <div className={`flex items-center justify-between px-4 py-3 bg-black/5 rounded-b-2xl backdrop-blur-sm border-t border-black/5 transition-opacity ${toggleAction ? "opacity-100" : "opacity-100 lg:opacity-0 lg:group-hover:opacity-100"} ${markedNotes.length > 0 ? "opacity-0 lg:group-hover:opacity-0" : "opacity-100" } z-[70]`}>
           
             {/* overlay to open note edit modal when actions are toggled  */}
             <div className="absolute left-0 w-full h-full z-10" onClick={handleNav}></div>
@@ -285,7 +289,7 @@ const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, acti
             </div>
             
             {/* action buttons  */}
-            <div className="relative w-fit flex lg:gap-2 z-[60]">
+            <div className={`relative w-fit ${markedNotes.length > 0 ? "hidden" : "flex"} lg:gap-2 z-[60]`}>
               <Tooltip title={!notePrivacy ? "Public" : "Private"} placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50">
                 {notePrivacy ? <LockRoundedIcon /> : <LockOpenRoundedIcon />}
               </Tooltip>

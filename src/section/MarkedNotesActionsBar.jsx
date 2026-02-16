@@ -5,6 +5,7 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import RemoveDoneIcon from '@mui/icons-material/RemoveDone';
 import { motion, AnimatePresence } from "framer-motion";
 import useDeleteNotes from "../hooks/useDeleteNotes";
+import { toast } from "react-toastify";
 
 const MarkedNotesActionsBar = () => {
     const { markedNotes, setMarkedNotes } = useContext(AppContext);
@@ -22,6 +23,9 @@ const MarkedNotesActionsBar = () => {
             onSuccess: () => {
                 setMarkedNotes([]);
                 setShowDeleteModal(false);
+                toast.success(markedNotes.length > 1 ? "Notes Deleted Succesfully" : "Note Deleted Succesfully", {
+                    className: "text-xs w-fit pr-24"
+                })
             }
         });
     }

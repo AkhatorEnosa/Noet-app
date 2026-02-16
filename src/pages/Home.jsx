@@ -31,6 +31,7 @@ import usePublicNote from "../hooks/usePublicNote";
 import useRequestCollab from "../hooks/useRequestCollab";
 import useFetchCollabs from "../hooks/useFetchCollabs";
 import Sidebar from "../section/Sidebar";
+import { toast } from "react-toastify";
 
 const options = ['privacy', 'date', 'content', 'default']
 
@@ -201,6 +202,9 @@ const Home = () => {
           setNoteInput("");
           setWordCount(0);
           setShowColorPallete(false);
+          toast.success("Note Added Succefully", {
+            className: "text-xs w-fit pr-24"
+          })
         }
       }
     )
@@ -211,6 +215,9 @@ const Home = () => {
     requestCollab({ userId: uid, noteId: queryParam, ownerId: statePublicNote[0].user_id}, {
       onSuccess: (data) => {
         console.log("requested", data)
+        toast.success(collaboration == null ? "Requested" : "Canceled", {
+          className: "text-xs w-fit pr-24"
+        })
       }
     })
   }
@@ -228,24 +235,28 @@ const Home = () => {
   }
 
   
+  // onChange for input field
   const handleChange = (e) => {
     setNoteInput(e.target.value)
     setWordCount(e.target.value.length)
   }
 
 
+  // Clear input field function
   const clearInput = () => {
     setWordCount(0)
     setNoteInput("")
     setColorOptionValue('')
   }
 
+  // handle colour change
   const handleColorOption = (e) => {
     const getColorValue = (e.target.className).split(" ").filter((x) => /bg-/.test(x))[0]
     setColorOptionValue(getColorValue)
     setShowColorPallete(false)
   }
 
+  // drop function
   const onDrop = (position) => {
 
     if(activeNote == null || activeNote == undefined) return

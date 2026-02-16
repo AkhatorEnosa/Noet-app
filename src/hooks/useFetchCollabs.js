@@ -9,7 +9,7 @@ const useFetchCollabs = (userId, noteId) => {
     return useQuery({
         queryKey: ['publicNote', userId, noteId],
         queryFn: async() => {
-            if(userId !== null){
+            if(userId !== null && noteId !== null){
                 const result = await dispatch(checkCollabStatus({ userId: user?.id, noteId }));
                 return result;
             } else {
