@@ -394,7 +394,7 @@ const Home = () => {
                     checkForPinned() &&
                     <>
                       <Tooltip title={closeSectionPinned ? "Open Pinned" : "Close Pinned"} className={ `${notes.length > 1 ? "block" : "hidden"}`} arrow placement='top'>
-                        <button className={`w-fit flex justify-center items-center ${!closeSectionPinned ? 'bg-[#255f6f]/5 text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => setCloseSectionPinned(!closeSectionPinned)}>
+                        <button className={`w-fit flex justify-center items-center ${!closeSectionPinned ? 'bg-[#f4f7f8] text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => setCloseSectionPinned(!closeSectionPinned)}>
                           <p className={`${!closeSectionPinned && "-rotate-180"} cursor-pointer duration-300`}>{closeSectionPinned ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
                           <h2 className="uppercase text-center text-xs font-medium tracking-wide">pinned notes</h2>
                         </button>
@@ -430,7 +430,7 @@ const Home = () => {
                   {
                       (checkForPinned() && notes.some((note) => !note.pinned)) &&
                       <Tooltip title={closeSection ? "Open Notes" : "Close notes"} arrow placement='top'>
-                        <button className={`w-fit flex justify-center items-center ${!closeSection ? 'bg-[#255f6f]/5 text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => setCloseSection(!closeSection)}>
+                        <button className={`w-fit flex justify-center items-center ${!closeSection ? 'bg-[#f4f7f8] text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => setCloseSection(!closeSection)}>
                           <p className={`${!closeSection && "-rotate-180"} cursor-pointer duration-300`}>{closeSection ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
                           <h2 className="uppercase text-center text-xs font-medium tracking-wide">other notes</h2>
                         </button>

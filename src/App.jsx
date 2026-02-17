@@ -65,7 +65,7 @@ function App() {
         </main>
       </div>
       <ToastContainer
-        position="top-right"
+        position="bottom-left"
         autoClose="2000"
         pauseOnHover
         transition={Zoom}
