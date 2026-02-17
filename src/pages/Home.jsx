@@ -40,6 +40,7 @@ const Home = () => {
   const [uid, setUid] = useState()
   const [notes, setNotes] = useState()
   const [noteInput, setNoteInput] = useState("")
+  const [noteTitle, setNoteTitle] = useState("")
   const [wordCount, setWordCount] = useState(0)
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState("")
@@ -189,6 +190,7 @@ const Home = () => {
     // Proceed to save the note
     mutate(
       {
+        title: noteTitle,
         data_value: noteInput,
         bg_color: colorOptionValue == "" ? "bg-white" : colorOptionValue,
         index_num: notes.length > 0 ? notes[0].index_num + 2 : 2,
@@ -232,6 +234,11 @@ const Home = () => {
   const checkForPinned = () => {
     const containsPinned = notes.some((note) => note.pinned)
     return containsPinned
+  }
+
+  // handle notetile field change
+  const handleTitleChange = (e) => {
+    setNoteTitle(e.target.value)
   }
 
   
@@ -405,6 +412,7 @@ const Home = () => {
                           notes?.map((note) => (
                                 note.pinned && <React.Fragment key={note.id}>
                                   <Note 
+                                    title={note.title}
                                     noteId={note.id}
                                     note={note.data_value}
                                     note_date={note.created_at}
@@ -445,6 +453,7 @@ const Home = () => {
                           !note.pinned &&
                             <React.Fragment key={note.id}>
                               <Note 
+                                title={note.title}
                                 noteId={note.id}
                                 note={note.data_value}
                                 note_date={note.created_at}
@@ -477,71 +486,135 @@ const Home = () => {
           </section>
 
           {/* Add Note Section */}
+
           <AnimatePresence>
-            {
-              isWriting && !isPublicNote &&
+            {isWriting && !isPublicNote && (
               <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className={"fixed w-full h-full top-0 left-0 p-5 md:py-10 flex justify-center items-center z-[70]" }>
-                  {/* backdrop  */}
-                  <div className={"fixed w-full h-full bg-black/40 backdrop-blur-sm"} onClick={handleNav}></div> 
-                    
-                  <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
-                    <form onSubmit={handleNoteAdd} className={`opacity-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-[2rem] shadow-md duration-150 transition-all z-50`}>
-                      <div className="flex items-center justify-end top-2 right-2 px-2 py-2">
-                        <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={handleNav}><ClearRoundedIcon /></button>
-                      </div>
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed w-full h-full top-0 left-0 p-5 md:py-10 flex justify-center items-center z-[70]"
+              >
+                {/* backdrop */}
+                <div className="fixed w-full h-full bg-black/40 backdrop-blur-sm" onClick={handleNav}></div>
 
-                      <textarea type="text" ref={inputRef} 
-                        autoFocus
-                        // onInput={()=> inputRef.current && setWordCount(inputRef.current.value.length)}  
-                        value={noteInput}
-                        onChange={handleChange}
-                        className={`w-full h-[90%] outline-none resize-none ${colorOptionValue} px-8 py-4 placeholder:text-black text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"
+                <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
+                  <form
+                    onSubmit={handleNoteAdd}
+                    className={`opacity-100 relative flex flex-col w-full h-full bg-white border rounded-[2rem] shadow-md duration-150 transition-all z-50 overflow-hidden`}
+                  >
+                    {/* Header Actions */}
+                    <div className="flex items-center justify-end p-4">
+                      <button
+                        className="w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"
+                        type="button"
+                        onClick={handleNav}
+                      >
+                        <ClearRoundedIcon />
+                      </button>
+                    </div>
+
+                    {/* Title Field */}
+                    <div className="px-8">
+                      <input
+                        type="text"
+                        name="title"
+                        value={noteTitle} // Ensure this state exists
+                        onChange={handleTitleChange} // Ensure this handler exists
+                        placeholder="Title"
+                        maxLength="100"
+                        className={`w-full outline-none font-bold text-xl md:text-2xl pb-2 ${colorOptionValue} placeholder:text-gray-400 transition-all duration-300`}
                       />
+                    </div>
 
-                      <div className="relative w-full md:flex justify-center items-center py-10">
-                          {
-                            isPending ? <div className={`w-full flex justify-center items-center px-3 md:px-5 pt-4 transition-all duration-150`}>
-                              <span className="loading loading-spinner loading-sm"></span>
-                            </div> : 
-                          
-                              <div className={`w-full flex justify-center ${wordCount > 0 ? "gap-4" : "gap-0"} items-center px-3 md:px-5 pt-4 transition-all duration-150`}>
-                              
-                                  {/* color pallete */}
-                                  <ColorPallete show={showColorPallete} colorOption={colorOptionValue} addBackground={handleColorOption}/>
-                                  <Tooltip title="Choose color" arrow>
-                                    <i className={`flex justify-center items-center ${wordCount > 0 ? "w-10 h-10 rounded-full" : "w-0 h-0 opacity-0"} ${showColorPallete ? 'bg-warning shadow-lg border-none' : 'border-[1px] border-neutral'} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `} onClick={() => setShowColorPallete(!showColorPallete)}>
-                                      <ColorLensRoundedIcon sx={{ fontSize: 18 }}/>
-                                    </i>
-                                  </Tooltip>
+                    {/* Note Body Field */}
+                    <textarea
+                      ref={inputRef}
+                      autoFocus
+                      value={noteInput}
+                      onChange={handleChange}
+                      className={`w-full flex-grow outline-none resize-none ${colorOptionValue} px-8 py-4 placeholder:text-gray-400 text-base z-30 transition-all duration-300`}
+                      placeholder="Write Note"
+                    />
 
-                                {/* Clear all text  */}
-                                <Tooltip title="Clear Note" arrow>
-                                  <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-red-500 hover:border-none transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon /></button>
-                                </Tooltip>
+                    {/* Footer Actions */}
+                    <div className="relative w-full md:flex justify-center items-center py-6">
+                      {isPending ? (
+                        <div className="w-full flex justify-center items-center px-3 md:px-5 pt-4 transition-all duration-150">
+                          <span className="loading loading-spinner loading-sm"></span>
+                        </div>
+                      ) : (
+                        <div
+                          className={`w-full flex justify-center ${
+                            wordCount > 0 ? "gap-4" : "gap-0"
+                          } items-center px-3 md:px-5 transition-all duration-150`}
+                        >
+                          {/* color palette */}
+                          <ColorPallete
+                            show={showColorPallete}
+                            colorOption={colorOptionValue}
+                            addBackground={handleColorOption}
+                          />
+                          <Tooltip title="Choose color" arrow>
+                            <i
+                              className={`flex justify-center items-center ${
+                                wordCount > 0 ? "w-10 h-10 rounded-full" : "w-0 h-0 opacity-0"
+                              } ${
+                                showColorPallete
+                                  ? "bg-warning shadow-lg border-none"
+                                  : "border-[1px] border-neutral"
+                              } hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer`}
+                              onClick={() => setShowColorPallete(!showColorPallete)}
+                            >
+                              <ColorLensRoundedIcon sx={{ fontSize: 18 }} />
+                            </i>
+                          </Tooltip>
 
-                                {/* add note  */}
-                                <Tooltip title="Add Note" arrow>
-                                  <button type="submit" className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full top-2 right-2 px-5 py-2 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon/></button>
-                                </Tooltip>
-                                
-                                {/* Word count  */}
-                                <span className="hidden md:block md:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
-                                  {wordCount} characters
-                                </span>
-                              </div>
-                          }
-                              
-                          {/* word count for small screens*/}
-                          <span className="w-full md:hidden absolute text-center bottom-[4px] text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                          {/* Clear all text */}
+                          <Tooltip title="Clear Note" arrow>
+                            <button
+                              className={
+                                wordCount > 0
+                                  ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-red-500 hover:border-none transition-all duration-300"
+                                  : "w-0 h-0 opacity-0 transition-all duration-200"
+                              }
+                              type="button"
+                              onClick={clearInput}
+                            >
+                              <ClearAllRoundedIcon />
+                            </button>
+                          </Tooltip>
+
+                          {/* add note */}
+                          <Tooltip title="Add Note" arrow>
+                            <button
+                              type="submit"
+                              className={
+                                wordCount > 0
+                                  ? "h-10 flex justify-center items-center rounded-full px-5 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300"
+                                  : "w-0 h-0 opacity-0 transition-all duration-200"
+                              }
+                            >
+                              <CheckRoundedIcon />
+                            </button>
+                          </Tooltip>
+
+                          {/* Word count desktop */}
+                          <span className="hidden md:block md:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
                             {wordCount} characters
                           </span>
-                      </div>
-                    </form>
-                  </div>
+                        </div>
+                      )}
+
+                      {/* word count mobile */}
+                      <span className="w-full md:hidden absolute text-center bottom-[4px] text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                        {wordCount} characters
+                      </span>
+                    </div>
+                  </form>
+                </div>
               </motion.div>
-            }
+            )}
           </AnimatePresence>
 
           {/* Add Noet Button */}

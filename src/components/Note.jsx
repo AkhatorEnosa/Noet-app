@@ -31,10 +31,12 @@ import { toast } from "react-toastify";
 import ConfirmModal from "./ConfirmModal";
 
 /* eslint-disable react/prop-types */
-const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, activeNote, handleDrop}) => {
+const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNote, activeNote, handleDrop}) => {
 
   const [getNote, setGetNote] = useState(note)
+  const [getNoteTitle, setGetNoteTitle] = useState(title)
   const [wordCount, setWordCount] = useState(note.length)
+  const [debouncedTitleInput, setDebouncedTitleInput] = useState("")
   const [debouncedNoteInput, setDebouncedNoteInput] = useState("")
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showColorPallete, setShowColorPallete] = useState(false)
@@ -73,10 +75,10 @@ const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, acti
   }, [isEditing, navigate, noteId]);
 
   // update note function
-  const updateNote = useCallback((input, color, notePrivacy, shouldNavigate = false) => {
+  const updateNote = useCallback((title, input, color, notePrivacy, shouldNavigate = false) => {
     if(input.trim() !== "") {
       update(
-        { id: noteId, data_value: input.trim(), bg_color: color, privacy: notePrivacy },
+        { id: noteId, title, data_value: input.trim(), bg_color: color, privacy: notePrivacy },
         { 
           onSuccess: () => {
             if (shouldNavigate) handleNav();
@@ -94,15 +96,16 @@ const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, acti
       setShowColorPallete(false)
       setNotePrivacy(true)
     }
-  }, [noteId, colorOptionValue, notePrivacy, update, handleNav, setGetNote, setWordCount, setShowColorPallete])
+  }, [noteId, title, colorOptionValue, notePrivacy, update, handleNav, setGetNote, setWordCount, setShowColorPallete])
 
   // debounce note input for auto save
   useDebounce(() => {
     if (getNote && isEditing) {
-      updateNote(getNote, colorOptionValue, notePrivacy, false);
+      updateNote(getNoteTitle, getNote, colorOptionValue, notePrivacy, false);
+      setDebouncedTitleInput(getNoteTitle);
       setDebouncedNoteInput(getNote);
     }
-    }, 1500, [getNote, updateNote, isEditing]
+    }, 1500, [getNoteTitle, getNote, updateNote, isEditing]
   )
 
   // disable scroll when editing or deleting note
@@ -131,6 +134,12 @@ const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, acti
       setnoteChecked(false)
     }
   }, [noteChecked, findMarkedNote])
+
+  
+  // handle change for title input
+  const handleTitleChange = (e) => {
+    setGetNoteTitle(e.target.value)
+  }
 
   // handle change for form
   const handleChange = (e) => {
@@ -315,94 +324,134 @@ const Note = ({note, noteId, note_date, note_privacy, bgColor, draggedNote, acti
        <div className={toggleAction ? "fixed w-full h-full top-0 left-0 z-[65]" : "hidden"} onClick={() => setToggleAction(false)}></div>
 
         {/* Edit modal  */}
-        <AnimatePresence>
-          {isEditing && (
-              <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className={"fixed w-full h-full top-0 left-0 p-5 md:py-10 flex justify-center items-center z-[70]"}>
+       <AnimatePresence>
+        {isEditing && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed w-full h-full top-0 left-0 p-5 md:py-10 flex justify-center items-center z-[70]"
+          >
+            {/* backdrop */}
+            <div className="fixed w-full h-full bg-black/40 backdrop-blur-sm" onClick={handleNav}></div>
 
-                    {/* backdrop  */}
-                    <div className={"fixed w-full h-full bg-black/40 backdrop-blur-sm"} onClick={handleNav}></div>
+            <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
+              <motion.form
+                onSubmit={handleNoteUpdate}
+                className="opacity-100 relative flex flex-col w-full h-full bg-white border rounded-[2rem] shadow-md duration-150 transition-all z-50 overflow-hidden"
+              >
+                {/* Header Section */}
+                <div className="flex items-center justify-between px-6 py-4">
+                  <span className={`flex gap-2 flex-row border-[1px] px-4 py-2 rounded-full ${colorOptionValue} text-[10px] uppercase tracking-wider text-gray-600 font-light transition-all duration-150`}>
+                    noted on <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b>
+                  </span>
 
-                    <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
-                      <motion.form
-                        // layoutId={`note-${noteId}`}
-                        onSubmit={handleNoteUpdate} 
-                        className={`opacity-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-[2rem] shadow-md duration-150 transition-all z-50`}>
+                  {/* close button or loading */}
+                  {updating || stateLoading ? (
+                    <span className="loading loading-spinner loading-sm"></span>
+                  ) : (
+                    <button
+                      className="w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"
+                      type="button"
+                      onClick={handleNav}
+                    >
+                      <ClearRoundedIcon />
+                    </button>
+                  )}
+                </div>
 
-                        <div className="flex items-center justify-end gap-2 px-2 py-2">
-                          <span className={`flex gap-2 flex-row border-[1px] px-4 py-2 rounded-full ${colorOptionValue} text-[10px] uppercase tracking-wider text-gray-600 font-light transition-all duration-150`}>noted on <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b></span>
-                          
-                          {/* close button or loading  */}
-                          {
-                            updating || stateLoading ? <span className="loading loading-spinner loading-sm"></span> :
-                            <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={handleNav}><ClearRoundedIcon /></button>
-                          }
-                        </div>
+                {/* Title Field */}
+                <div className="px-8 mb-2">
+                  <input
+                    type="text"
+                    name="title"
+                    value={getNoteTitle} // Ensure you have a state for the title (e.g., getNoteTitle)
+                    onChange={handleTitleChange} // Your title change handler
+                    placeholder="Title"
+                    className={`w-full outline-none font-bold text-xl md:text-2xl py-2 ${colorOptionValue} placeholder:text-gray-400 transition-all duration-300`}
+                  />
+                </div>
 
-                        {/* textarea  */}
-                        <textarea
-                          autoFocus
-                          type="text" 
-                          // ref={editNoteRef} 
-                          value={getNote} 
-                          onChange={handleChange} 
-                          className={`w-full h-[90%] outline-none resize-none placeholder:text-black px-8 py-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
+                {/* Textarea (Note Body) */}
+                <textarea
+                  autoFocus
+                  value={getNote}
+                  onChange={handleChange}
+                  className={`w-full flex-grow outline-none resize-none placeholder:text-black px-8 py-4 text-base z-30 transition-all duration-300 ${colorOptionValue}`}
+                  placeholder="Write Note"
+                />
 
-                        {/* action buttons  */}
-                        <div className="relative w-full md:flex justify-center items-center py-10">
-                            <div className={`relative w-full flex justify-center gap-4 items-center px-3 md:px-5 pt-4`}>
-                              {/* overlay when updating  */}
-                              {/* {updating || stateLoading && <div className="absolute bg-white/60 top-0 left-0 w-full h-full bg-red-400 z-50"></div>} */}
-                              
-                              {/* color pallete component  */}
-                              <ColorPallete show={showColorPallete} colorOption={colorOptionValue} addBackground={handleColorOption}/>
-                              
-                              <Tooltip title="Choose color" arrow placement="top">
-                                <i className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? 'bg-warning shadow-lg border-none' : 'border-[1px] border-neutral'} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `} onClick={() => setShowColorPallete(!showColorPallete)}>
-                                  <ColorLensRoundedIcon sx={{ fontSize: 18 }}/>
-                                </i>
-                              </Tooltip>
-                              
-                              {/* copy text to clipboard  */}
-                              <CopyToClipboard text={getNote} wordCount={wordCount} />
+                {/* Action Buttons Footer */}
+                <div className="relative w-full md:flex justify-center items-center py-8">
+                  <div className="relative w-full flex justify-center gap-4 items-center px-3 md:px-5">
+                    
+                    {/* color pallete component */}
+                    <ColorPallete show={showColorPallete} colorOption={colorOptionValue} addBackground={handleColorOption} />
 
-                              {/* Clear input  */}
-                              <Tooltip title="Clear Note" arrow placement="top">
-                                <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-red-500 hover:border-none transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={clearInput}><ClearAllRoundedIcon sx={{ fontSize: 18 }}/></button>
-                              </Tooltip>
+                    <Tooltip title="Choose color" arrow placement="top">
+                      <i
+                        className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? "bg-warning shadow-lg border-none" : "border-[1px] border-neutral"} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `}
+                        onClick={() => setShowColorPallete(!showColorPallete)}
+                      >
+                        <ColorLensRoundedIcon sx={{ fontSize: 18 }} />
+                      </i>
+                    </Tooltip>
 
-                              {/* Toggle privacy  */}
-                              <Tooltip title={notePrivacy ? "Make Note Public" : "Make Note privacy"} arrow placement="top">
-                                <button className={`${wordCount > 0 ? "w-10 h-10 rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg hover:text-white hover:bg-black hover:border-none " : "w-0 h-0 opacity-0"} ${notePrivacy && "bg-black text-white"} flex justify-center items-center transition-all duration-300`} type="button" onClick={() => setNotePrivacy(!notePrivacy)}>{notePrivacy ? <LockRoundedIcon  sx={{ fontSize: 18 }}/> : <LockOpenRoundedIcon  sx={{ fontSize: 18 }}/>}</button>
-                              </Tooltip>
-                              
-                              {!notePrivacy && 
-                                <ShareNote text={getNote} wordCount={wordCount}/>
-                              }
+                    {/* copy text to clipboard */}
+                    <CopyToClipboard text={getNote} wordCount={wordCount} />
 
-                              {/* update button */}
-                              {(getNote !== debouncedNoteInput && (!updating || !stateLoading)) && <Tooltip title="Update Note" arrow placement="top">
-                                <button type="submit" className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full top-2 right-2 px-5 py-2 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300" : "cursor-pointer bg-neutral/70 text-white rounded-full w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"}> <CheckRoundedIcon sx={{ fontSize: 18 }}/></button>
-                              </Tooltip>}
-                              
-                              {/* word count  */}
-                              <span className="hidden md:block md:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
-                                {wordCount} characters
-                              </span>
-                            </div>
-                              
-                            {/* word count on small screens */}
-                            <span className="w-full md:hidden absolute text-center bottom-[4px] text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
-                              {wordCount} characters
-                            </span>
-                        </div>
-                      </motion.form>
-                    </div>
-              </motion.div>
-            )
-          }
-        </AnimatePresence>
+                    {/* Clear input */}
+                    <Tooltip title="Clear Note" arrow placement="top">
+                      <button
+                        className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-red-500 hover:border-none transition-all duration-300" : "w-0 h-0 opacity-0 transition-all duration-200"}
+                        type="button"
+                        onClick={clearInput}
+                      >
+                        <ClearAllRoundedIcon sx={{ fontSize: 18 }} />
+                      </button>
+                    </Tooltip>
+
+                    {/* Toggle privacy */}
+                    <Tooltip title={notePrivacy ? "Make Note Public" : "Make Note Private"} arrow placement="top">
+                      <button
+                        className={`${wordCount > 0 ? "w-10 h-10 rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-black hover:border-none " : "w-0 h-0 opacity-0"} ${notePrivacy && "bg-black text-white"} flex justify-center items-center transition-all duration-300`}
+                        type="button"
+                        onClick={() => setNotePrivacy(!notePrivacy)}
+                      >
+                        {notePrivacy ? <LockRoundedIcon sx={{ fontSize: 18 }} /> : <LockOpenRoundedIcon sx={{ fontSize: 18 }} />}
+                      </button>
+                    </Tooltip>
+
+                    {!notePrivacy && <ShareNote text={getNote} wordCount={wordCount} />}
+
+                    {/* update button */}
+                    {(getNote !== debouncedNoteInput || getNoteTitle !== debouncedTitleInput) && (!updating || !stateLoading) && (
+                      <Tooltip title="Update Note" arrow placement="top">
+                        <button
+                          type="submit"
+                          className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full px-5 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300" : "w-0 h-0 opacity-0 transition-all duration-200"}
+                        >
+                          <CheckRoundedIcon sx={{ fontSize: 18 }} />
+                        </button>
+                      </Tooltip>
+                    )}
+
+                    {/* word count desktop */}
+                    <span className="hidden md:block md:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                      {wordCount} characters
+                    </span>
+                  </div>
+
+                  {/* word count mobile */}
+                  <span className="w-full md:hidden absolute text-center bottom-[4px] text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                    {wordCount} characters
+                  </span>
+                </div>
+              </motion.form>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
         {/* Delete modal  */}
         <AnimatePresence>
