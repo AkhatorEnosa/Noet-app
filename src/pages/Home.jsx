@@ -182,7 +182,7 @@ const Home = () => {
   // Display toast notification on successful sign in
   useEffect(() => {
     if (stateLoggedIn && stateUser !== null) {
-        toast.success("Signed In Successfull!!", {
+        toast.success("Signed In Successfully!", {
           className: "text-xs w-fit pr-24"
         })
     }
@@ -524,7 +524,6 @@ const Home = () => {
                     </div>
 
                     {/* Title Field */}
-                    <div className="px-8">
                       <input
                         type="text"
                         name="title"
@@ -532,9 +531,8 @@ const Home = () => {
                         onChange={handleTitleChange} // Ensure this handler exists
                         placeholder="Title"
                         maxLength="100"
-                        className={`w-full outline-none font-bold text-xl md:text-2xl pb-2 ${colorOptionValue} placeholder:text-gray-400 transition-all duration-300`}
+                        className={`w-full outline-none font-bold text-xl md:text-2xl px-4 lg:px-8 py-4 ${colorOptionValue} placeholder:text-gray-400 transition-all duration-300`}
                       />
-                    </div>
 
                     {/* Note Body Field */}
                     <textarea
@@ -542,21 +540,21 @@ const Home = () => {
                       autoFocus
                       value={noteInput}
                       onChange={handleChange}
-                      className={`w-full flex-grow outline-none resize-none ${colorOptionValue} px-8 py-4 placeholder:text-gray-400 text-base z-30 transition-all duration-300`}
+                      className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 text-base z-30 transition-all duration-300 ${colorOptionValue}`}
                       placeholder="Write Note"
                     />
 
                     {/* Footer Actions */}
-                    <div className="relative w-full md:flex justify-center items-center py-6">
+                    <div className="relative w-full md:flex justify-center items-center py-8">
                       {isPending ? (
                         <div className="w-full flex justify-center items-center px-3 md:px-5 pt-4 transition-all duration-150">
                           <span className="loading loading-spinner loading-sm"></span>
                         </div>
                       ) : (
                         <div
-                          className={`w-full flex justify-center ${
+                          className={`relative w-full flex justify-center gap-4 items-center px-3 md:px-5 ${
                             wordCount > 0 ? "gap-4" : "gap-0"
-                          } items-center px-3 md:px-5 transition-all duration-150`}
+                          } transition-all duration-150`}
                         >
                           {/* color palette */}
                           <ColorPallete

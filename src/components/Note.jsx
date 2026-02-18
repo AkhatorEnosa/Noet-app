@@ -25,6 +25,7 @@ import { useDebounce } from "react-use";
 import { CheckCircle } from "@mui/icons-material";
 import LockRoundedIcon from '@mui/icons-material/LockRounded';
 import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
+import UpdateRoundedIcon from '@mui/icons-material/UpdateRounded';
 import { AppContext } from "../context/AppContext";
 import { ShareNote } from "./ShareNote";
 import { toast } from "react-toastify";
@@ -45,6 +46,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
   const [notePrivacy, setNotePrivacy] = useState(note_privacy)
   const [toggleAction, setToggleAction] = useState(false)
   const [showDrop, setShowDrop] = useState(false)
+  const [autoSave, setAutoSave] = useState(false)
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -100,7 +102,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
 
   // debounce note input for auto save
   useDebounce(() => {
-    if (getNote && isEditing) {
+    if (getNote && isEditing && (getNote !== debouncedNoteInput || getNoteTitle !== debouncedTitleInput) && autoSave && !updating && !stateLoading) {
       updateNote(getNoteTitle, getNote, colorOptionValue, notePrivacy, false);
       setDebouncedTitleInput(getNoteTitle);
       setDebouncedNoteInput(getNote);
@@ -136,6 +138,23 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
   }, [noteChecked, findMarkedNote])
 
   
+  // handle autosave toggle 
+  const handleAutoSaveToggle = () => {
+    setAutoSave(prev => !prev)
+
+    // if auto save is being enabled, show success toast, if disabled show info toast
+    if (autoSave) {
+      toast.info("Auto-save enabled. Your changes will be saved automatically.", {
+        className: "text-xs w-fit pr-24"
+      })
+    } else {
+      toast.info("Auto-save disabled. Remember to save your changes manually.", {
+        className: "text-xs w-fit pr-24"
+      })
+    }
+  }
+
+  
   // handle change for title input
   const handleTitleChange = (e) => {
     setGetNoteTitle(e.target.value)
@@ -156,7 +175,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
   // handke note update
   const handleNoteUpdate = (e) => {
     e.preventDefault()
-    updateNote(getNote, colorOptionValue, notePrivacy, true);
+    updateNote(getNoteTitle, getNote, colorOptionValue, notePrivacy, true);
   }
 
   // clearing form 
@@ -346,38 +365,42 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
                     noted on <b className="font-bold">{moment(note_date).format("Do MMMM, YYYY")}</b>
                   </span>
 
-                  {/* close button or loading */}
-                  {updating || stateLoading ? (
-                    <span className="loading loading-spinner loading-sm"></span>
-                  ) : (
+                  <div className="flex gap-2 items-center z-20">
+                    <Tooltip title={autoSave ? "Undo Auto-Save" : "Enable Auto-Save"} placement="bottom" arrow>
+                      <button className={`w-8 h-8 flex justify-center items-center border-[1px] ${autoSave ? "text-blue-600 bg-blue-500/10" : "hover:bg-blue-500/10"} rounded-full cursor-pointer transition-all duration-300`} type="button" onClick={handleAutoSaveToggle} disabled={updating || stateLoading}>
+                        {updating || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : < UpdateRoundedIcon />}
+                      </button>
+                    </Tooltip>
+
+                    {/* close button or loading */}
                     <button
-                      className="w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"
+                      className="w-8 h-8 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"
                       type="button"
                       onClick={handleNav}
+                      disabled={updating || stateLoading}
                     >
                       <ClearRoundedIcon />
                     </button>
-                  )}
+                  </div>
+
                 </div>
 
                 {/* Title Field */}
-                <div className="px-8 mb-2">
-                  <input
-                    type="text"
-                    name="title"
-                    value={getNoteTitle} // Ensure you have a state for the title (e.g., getNoteTitle)
-                    onChange={handleTitleChange} // Your title change handler
-                    placeholder="Title"
-                    className={`w-full outline-none font-bold text-xl md:text-2xl py-2 ${colorOptionValue} placeholder:text-gray-400 transition-all duration-300`}
-                  />
-                </div>
+                <input
+                  type="text"
+                  name="title"
+                  value={getNoteTitle} // Ensure you have a state for the title (e.g., getNoteTitle)
+                  onChange={handleTitleChange} // Your title change handler
+                  placeholder="Title"
+                  className={`w-full outline-none font-bold text-xl md:text-2xl px-4 lg:px-8 py-4 ${colorOptionValue} placeholder:text-gray-400 transition-all duration-300`}
+                />
 
                 {/* Textarea (Note Body) */}
                 <textarea
                   autoFocus
                   value={getNote}
                   onChange={handleChange}
-                  className={`w-full flex-grow outline-none resize-none placeholder:text-black px-8 py-4 text-base z-30 transition-all duration-300 ${colorOptionValue}`}
+                  className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 text-base z-30 transition-all duration-300 ${colorOptionValue}`}
                   placeholder="Write Note"
                 />
 
@@ -390,7 +413,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
 
                     <Tooltip title="Choose color" arrow placement="top">
                       <i
-                        className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? "bg-warning shadow-lg border-none" : "border-[1px] border-neutral"} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `}
+                        className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? "bg-warning border-none" : "border-[1px] border-neutral"} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `}
                         onClick={() => setShowColorPallete(!showColorPallete)}
                       >
                         <ColorLensRoundedIcon sx={{ fontSize: 18 }} />
@@ -403,7 +426,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
                     {/* Clear input */}
                     <Tooltip title="Clear Note" arrow placement="top">
                       <button
-                        className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-red-500 hover:border-none transition-all duration-300" : "w-0 h-0 opacity-0 transition-all duration-200"}
+                        className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black hover:text-white hover:bg-red-500 hover:border-none transition-all duration-300" : "w-0 h-0 opacity-0 transition-all duration-200"}
                         type="button"
                         onClick={clearInput}
                       >
@@ -431,7 +454,10 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
                           type="submit"
                           className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full px-5 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300" : "w-0 h-0 opacity-0 transition-all duration-200"}
                         >
-                          <CheckRoundedIcon sx={{ fontSize: 18 }} />
+                          {
+                            updating || stateLoading ? <span className="loading loading-spinner loading-sm"></span> :
+                            <CheckRoundedIcon sx={{ fontSize: 18 }} />
+                          }
                         </button>
                       </Tooltip>
                     )}
