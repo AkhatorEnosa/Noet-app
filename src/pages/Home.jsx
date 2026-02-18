@@ -60,6 +60,7 @@ const Home = () => {
 
   // Accessing notes and user from Redux store
   const stateUser = useSelector((state) => state.app.user)
+  const stateLoggedIn = useSelector((state) => state.app.loggedIn)
   const { notes:userNotes, loadingNotes } = useSelector((state) => state.notes)
   const statePublicNote = useSelector((state) => state.publicNote.publicNotes)
   const { collaboration } = useSelector((state) => state.publicNote)
@@ -178,6 +179,14 @@ const Home = () => {
     }
   }, [userNotes, stateUser?.id])
 
+  // Display toast notification on successful sign in
+  useEffect(() => {
+    if (stateLoggedIn && stateUser !== null) {
+        toast.success("Signed In Successfull!!", {
+          className: "text-xs w-fit pr-24"
+        })
+    }
+  }, [stateLoggedIn, stateUser])
   
   // Function to save note
   const saveNote = () => {

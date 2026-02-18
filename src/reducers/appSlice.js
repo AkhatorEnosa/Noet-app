@@ -3,6 +3,7 @@ import supabase from '../config/supabaseClient.config';
 
 const initialState = {
   user: null,
+  loggedIn: false,
   error: null,
   isLoading: false,
 };
@@ -40,8 +41,8 @@ const appSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(signIn.fulfilled, (state) => {
-        state.user = null; 
-        state.isLoading = true;
+        state.loggedIn = true;
+        state.isLoading = false;
       })
       .addCase(signIn.rejected, (state, action) => {
         state.error = action.error.message;
@@ -52,6 +53,7 @@ const appSlice = createSlice({
       })
       .addCase(getUser.fulfilled, (state, action) => {
         state.user = action.payload;
+        state.loggedIn = true;
         state.isLoading = false;
       })
       .addCase(getUser.rejected, (state, action) => {

@@ -12,10 +12,7 @@ const useLogin = () => {
             return result.payload;
         },
         onSuccess: () => {
-           console.log("Signed In")
-           toast.success("Signed In Successfull!!", {
-            className: "text-xs w-fit pr-24"
-           })
+           console.log("Signing In")
         },
         onError: (error) => {
             console.error("Error signing in", error)
