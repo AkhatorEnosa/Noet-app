@@ -437,13 +437,13 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
                     )}
 
                     {/* word count desktop */}
-                    <span className="hidden md:block md:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                    <span className="hidden lg:block lg:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
                       {wordCount} characters
                     </span>
                   </div>
 
                   {/* word count mobile */}
-                  <span className="w-full md:hidden absolute text-center bottom-[4px] text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                  <span className="w-full lg:hidden absolute text-center bottom-[4px] text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
                     {wordCount} characters
                   </span>
                 </div>

@@ -52,16 +52,16 @@ const Navbar = () => {
         <div className="flex gap-3">
           {user !== null && 
           <div className="relative w-fit flex justify-end items-center gap-5">
-            <div className="flex w-[50%] md:w-full gap-2 justify-center items-center bg-gray-200 pl-2 pr-5 py-2 rounded-full cursor-pointer z-50" onClick={() => setShowLogout(prev => !prev)}>
+            <div className="flex w-[70%] sm:w-full gap-2 justify-center items-center bg-gray-200 pl-2 pr-5 py-2 rounded-full cursor-pointer z-50" onClick={() => setShowLogout(prev => !prev)}>
               <img src={imgUrl} alt={"Your username profile pic"} className={`w-8 h-8 rounded-full border-gray-300 border-[1px] ${isLoading && "animate-spin"}`}/>
               <p className="line-clamp-1">{name}</p>
             </div>
-            <button className={`absolute left-0 ${showLogout ? "top-14 opacity-100 scale-100" : "top-0 opacity-0 scale-0"} w-full flex justify-center items-center px-4 py-3 rounded-full gap-3 active:shadow-lg bg-[#114f60] hover:bg-[#255f6f] text-white transition-all duration-200`} onClick={handleSignOut} disabled={isLoading}>
+            <button className={`absolute right-0 sm:left-0 ${showLogout ? "top-14 opacity-100 scale-100" : "top-0 opacity-0 scale-0"} w-fit sm:w-full flex justify-center items-center px-4 py-3 rounded-full gap-3 active:shadow-lg bg-[#114f60] hover:bg-[#255f6f] text-white transition-all duration-200`} onClick={handleSignOut} disabled={isLoading}>
               {isLoading ? 
                 <div className="flex gap-2">
                   <span className="loading loading-spinner loading-sm"></span>
                 </div> : 
-                <p className="flex gap-2 items-center justify-center text-xs"><LogoutRoundedIcon sx={{ fontSize: "18px" }}/><span className="hidden lg:block">Logout</span></p>
+                <p className="flex gap-2 items-center justify-center text-xs"><LogoutRoundedIcon sx={{ fontSize: "18px" }}/><span className="block">Logout</span></p>
               }
            </button>
           </div>}

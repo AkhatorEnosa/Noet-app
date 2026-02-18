@@ -379,7 +379,7 @@ const Home = () => {
         
           {/* Main section of Homepage  */}
           <section className="relative w-full flex flex-col gap-4 justify-center items-center">
-            <div className="flex justify-center items-center gap-2 lg:gap-6 w-full my-2 md:my-8">
+            <div className="flex justify-center items-center flex-row-reverse gap-2 lg:gap-6 w-full my-2 md:my-8">
               <Search 
                 searchInput={searchInput}
                 setSearchInput={setSearchInput}
@@ -600,14 +600,14 @@ const Home = () => {
                           </Tooltip>
 
                           {/* Word count desktop */}
-                          <span className="hidden md:block md:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                          <span className="hidden lg:block lg:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
                             {wordCount} characters
                           </span>
                         </div>
                       )}
 
                       {/* word count mobile */}
-                      <span className="w-full md:hidden absolute text-center bottom-[4px] text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                      <span className="w-full lg:hidden absolute text-center bottom-[4px] text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
                         {wordCount} characters
                       </span>
                     </div>
