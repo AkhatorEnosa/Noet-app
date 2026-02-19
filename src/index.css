@@ -11,6 +11,18 @@
   font-family: "Nunito", sans-serif;
 }
 
+/* Change highlight for the whole site */
+::selection {
+  background-color: #255f6f;
+  color: #ffffff;
+}
+
+/* For Firefox support */
+::-moz-selection {
+  background-color: #255f6f;
+  color: #ffffff;
+}
+
 .logo-nav {
   @apply text-2xl lg:text-4xl
 }

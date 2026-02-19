@@ -46,12 +46,11 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
   const [notePrivacy, setNotePrivacy] = useState(note_privacy)
   const [toggleAction, setToggleAction] = useState(false)
   const [showDrop, setShowDrop] = useState(false)
-  const [autoSave, setAutoSave] = useState(false)
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const stateLoading = useSelector((state) => state.app.isLoading)
-  const { markedNotes, setMarkedNotes } = useContext(AppContext)
+  const { markedNotes, setMarkedNotes, autoSave, setAutoSave } = useContext(AppContext)
   const findMarkedNote = markedNotes.some(id => id === noteId)
 
   // const editNoteRef = useRef()
@@ -102,7 +101,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
 
   // debounce note input for auto save
   useDebounce(() => {
-    if (getNote && isEditing && (getNote !== debouncedNoteInput || getNoteTitle !== debouncedTitleInput) && autoSave && !updating && !stateLoading) {
+    if (getNote && isEditing && (getNote !== debouncedNoteInput || getNoteTitle !== debouncedTitleInput) && autoSave == "true" && !updating && !stateLoading) {
       updateNote(getNoteTitle, getNote, colorOptionValue, notePrivacy, false);
       setDebouncedTitleInput(getNoteTitle);
       setDebouncedNoteInput(getNote);
@@ -140,14 +139,16 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
   
   // handle autosave toggle 
   const handleAutoSaveToggle = () => {
-    setAutoSave(prev => !prev)
 
-    // if auto save is being enabled, show success toast, if disabled show info toast
-    if (autoSave) {
+    if (autoSave !== "true") {
+      setAutoSave("true")
+      localStorage.setItem("autoSave", "true")
       toast.info("Auto-save enabled. Your changes will be saved automatically.", {
         className: "text-xs w-fit pr-24"
       })
     } else {
+      setAutoSave("false")
+      localStorage.setItem("autoSave", "false")
       toast.info("Auto-save disabled. Remember to save your changes manually.", {
         className: "text-xs w-fit pr-24"
       })
@@ -258,7 +259,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ amount: 0.2 }}
+          viewport={{ once: true, amount: 0.2 }}
           // layout
           // transition={{ 
           //   duration: 0.5, 
@@ -366,8 +367,8 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
                   </span>
 
                   <div className="flex gap-2 items-center z-20">
-                    <Tooltip title={autoSave ? "Undo Auto-Save" : "Enable Auto-Save"} placement="bottom" arrow>
-                      <button className={`w-8 h-8 flex justify-center items-center border-[1px] ${autoSave ? "text-blue-600 bg-blue-500/10" : "hover:bg-blue-500/10"} rounded-full cursor-pointer transition-all duration-300`} type="button" onClick={handleAutoSaveToggle} disabled={updating || stateLoading}>
+                     <Tooltip title={autoSave == "true" ? "Undo Auto-Save" : "Enable Auto-Save"} placement="bottom" arrow>
+                      <button className={`w-8 h-8 flex justify-center items-center border-[1px] ${autoSave == "true" ? "text-blue-600 bg-blue-500/10" : "hover:bg-blue-500/10"} rounded-full cursor-pointer transition-all duration-300`} type="button" onClick={handleAutoSaveToggle} disabled={updating || stateLoading}>
                         {updating || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : < UpdateRoundedIcon />}
                       </button>
                     </Tooltip>

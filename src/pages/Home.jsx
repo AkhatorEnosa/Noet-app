@@ -334,6 +334,16 @@ const Home = () => {
                 }
               </div>
 
+                {/* Title Field */}
+                {statePublicNote[0].title !== null && <input
+                  type="text"
+                  name="title"
+                  value={statePublicNote[0].title}
+                  className={`w-full outline-none font-bold text-xl md:text-2xl px-4 lg:px-8 py-4 ${colorOptionValue} placeholder:text-gray-400 transition-all duration-300`}
+                  disabled
+                  readOnly
+                />}
+
               {/* textarea  */}
               <textarea
                 autoFocus
@@ -343,8 +353,8 @@ const Home = () => {
                 className={`w-full h-[90%] outline-none resize-none placeholder:text-black px-8 py-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
 
               {/* action buttons  */}
-              <div className="relative w-full md:flex justify-center items-center py-10">
-                  <div className={`relative w-full flex justify-center gap-4 items-center px-3 md:px-5 pt-4`}>
+              <div className="relative w-full md:flex justify-center items-center pt-4 pb-10">
+                  <div className={`relative w-full flex justify-center gap-4 items-center px-3 md:px-5`}>
                     {/* copy text to clipboard  */}
                     <CopyToClipboard text={statePublicNote[0]?.data_value} wordCount={statePublicNote[0]?.data_value.length} />
                     
@@ -485,10 +495,16 @@ const Home = () => {
               <div className="py-20 w-full flex justify-center items-center">
                 { isLoading || loadingNotes ? 
                   // loading 
-                  <div className="flex flex-col py-20 items-center justify-center text-[#255f6f]">
-                    <span className="loading loading-spinner loading-lg"></span>
+                  <div className="h-[1px] w-32 bg-slate-200 relative overflow-hidden">
                     <p className="text-lg font-light">Loading notes</p>
-                  </div> : message
+                    <motion.div 
+                      initial={{ left: "-100%" }}
+                      animate={{ left: "100%" }}
+                      transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                      className="absolute top-0 h-full w-1/2 bg-[#255f6f]"
+                    />
+                  </div>
+                   : message
                 }
               </div>
             }

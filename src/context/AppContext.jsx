@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 
 // Initialize context
 export const AppContext = createContext(null);
@@ -12,13 +12,23 @@ const lastPartOfUrl = splitUrl[splitUrl.length - 1];
 const result = lastPartOfUrl.slice(1);
 localStorage.setItem("section", result);
 
+const getAutoSave = localStorage.getItem("autoSave");
+
 export function AppProvider({ children }) {
   const [markedNotes, setMarkedNotes] = useState([]);
+  const [autoSave, setAutoSave] = useState(getAutoSave ? getAutoSave : "true");
+
+  // set localeStorage initially
+  useEffect(() => {
+    localStorage.setItem("autoSave", autoSave);
+  }, [autoSave]);
 
   return (
     <AppContext.Provider value={{
         markedNotes,
-        setMarkedNotes
+        setMarkedNotes,
+        autoSave,
+        setAutoSave
     }}>
       {children}
     </AppContext.Provider>

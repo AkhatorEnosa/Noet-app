@@ -17,15 +17,21 @@ const snippets = [
   { id: 3, text: "Grocery: Oat milk, Kale, Apples", top: "70%", left: "20%", delay: 2 },
   { id: 4, text: "Project Alpha - Phase 1", top: "65%", left: "80%", delay: 0.5 },
   { id: 5, text: "Don't forget the dream journal", top: "10%", left: "60%", delay: 1.5 },
+  { id: 6, text: "Project Osa: Phase 1", top: "80%", left: "50%", rotate: 4 },
 ];
 
 function App() {
   return (
     <Router>
       <div className="w-screen flex flex-col justify-between items-center relative" translate="yes">
-        {/* Persistent Background Layers */}
-        <div className="fixed inset-0 bg-[url(./assets/bg-img.webp)] bg-cover opacity-50 z-0"></div>
-        <div className="fixed inset-0 bg-white/95 z-0"></div>
+        {/* Refined Blueprint Grid */}
+        <div className="absolute h-screen inset-0 z-0 opacity-[0.15]" 
+          style={{ 
+            backgroundImage: `linear-gradient(#255f6f 1px, transparent 1px), linear-gradient(90deg, #255f6f 1px, transparent 1px)`, 
+            backgroundSize: '40px 40px' 
+          }} 
+        />
+        {/* <div className="fixed inset-0 bg-white/95 z-0"></div> */}
 
         {/* Floating note snippets */}
         <div className="fixed inset-0 pointer-events-none z-0">
