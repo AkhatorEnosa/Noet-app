@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import Linkify from "linkify-react";
 import useDeleteNotes from "../hooks/useDeleteNotes"
 import useUpdateNote from "../hooks/useUpdateNote"
@@ -8,7 +8,7 @@ import CheckRoundedIcon from'@mui/icons-material/CheckRounded';
 import ColorPallete from "./ColorPallete";
 import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
-import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
+// import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Tooltip from '@mui/material/Tooltip';
@@ -65,6 +65,32 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
   // check is editing by comparing noteId with activeNoteId from url
   const isEditing = activeNoteId === noteId.toString();
   
+  // get textArea DOM by ref
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    // check if editing 
+    if (isEditing && textareaRef.current) {
+      const el = textareaRef.current;
+
+      // timeout to move cursor caret 
+      const timeoutId = setTimeout(() => {
+        el.focus();
+        
+        // get textarea value length 
+        const valueLen = el.value.length;
+
+        // move cursorr
+        el.setSelectionRange(valueLen, valueLen);
+        
+        // scroll to the end of textare value
+        el.scrollTop = valueLen;
+      }, 0);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isEditing]);
+  
   // handle navigation
   const handleNav = useCallback(() => {
     if (!isEditing && !updating) {
@@ -106,7 +132,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
       setDebouncedTitleInput(getNoteTitle);
       setDebouncedNoteInput(getNote);
     }
-    }, 1500, [getNoteTitle, getNote, updateNote, isEditing]
+    }, 1500, [getNoteTitle, getNote, updateNote, isEditing, autoSave]
   )
 
   // disable scroll when editing or deleting note
@@ -180,11 +206,11 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
   }
 
   // clearing form 
-  const clearInput = () => {
-    setGetNote("")
-    setWordCount(0)
-    // setColorOptionValue("")
-  }
+  // const clearInput = () => {
+  //   setGetNote("")
+  //   setWordCount(0)
+  //   // setColorOptionValue("")
+  // }
 
   // handle marking notes
   const handleMarkNotes = () => {
@@ -257,7 +283,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
           exit={{ opacity: 0, x: 100 }}
           transition={{ duration: 0.3 }}
           layoutId={`note-${noteId}`}
-          className={`group flex flex-col justify-between relative break-inside-avoid pt-2 aspect-video w-full ${bgColor} rounded-2xl text-lg break-words active:cursor-grab ${noteChecked ? "ring-black ring-[1px]" : showDrop ? "ring-[#114f60] ring-2 z-50" : "ring-[1px] ring-black/10"} ${toggleAction ? "z-[70]" : "z-10"} transition-all duration-300 ease-in-out `} 
+          className={`group flex flex-col justify-between relative break-inside-avoid pt-2 aspect-video w-full ${bgColor} rounded-2xl text-lg break-words active:cursor-grab ${noteChecked ? "ring-black ring-[1px]" : showDrop ? "ring-[#114f60] ring-2 z-50" : "ring-[1px] ring-black/10"} ${toggleAction ? "z-[70]" : "z-10"} ${isEditing && (noteId == activeNoteId) ? "scale-0" : "scale-100"} transition-all duration-300 ease-in-out `} 
           draggable={!noteChecked ? true : false}
           
           // long press and mobile drag events
@@ -305,7 +331,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
           </div>
 
           {/* date and actions  */}
-          <div className={`${markedNotes.length > 0 ? "opacity-0 group-hover:opacity-0" : "opacity-100" } flex items-center justify-between px-4 py-3 bg-black/5 rounded-b-2xl backdrop-blur-sm border-t border-black/5 transition-opacity ${!toggleAction && !markedNotes.length > 0 && "opacity-100 lg:opacity-0 lg:group-hover:opacity-100"} z-[70]`}>
+          <div className={`${markedNotes.length > 0 ? "opacity-0 group-hover:opacity-0" : "opacity-100" } flex items-center justify-between px-4 py-3 bg-black/5 rounded-b-2xl border-t border-black/5 transition-opacity ${!toggleAction && !markedNotes.length > 0 && "opacity-100 lg:opacity-0 lg:group-hover:opacity-100"} z-[70]`}>
           
             {/* overlay to open note edit modal when actions are toggled  */}
             {!markedNotes.length > 0 && <div className="absolute left-0 w-full h-full z-10" onClick={handleNav}></div>}
@@ -352,7 +378,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
             className="fixed w-full h-full top-0 left-0 p-5 md:py-10 flex justify-center items-center z-[70]"
           >
             {/* backdrop */}
-            <div className="fixed w-full h-full bg-black/40 backdrop-blur-sm" onClick={handleNav}></div>
+            <div className="fixed w-full h-full bg-black/80" onClick={handleNav}></div>
 
             <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
               <motion.form
@@ -385,24 +411,27 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
 
                 </div>
 
-                {/* Title Field */}
-                <input
-                  type="text"
-                  name="title"
-                  value={getNoteTitle} // Ensure you have a state for the title (e.g., getNoteTitle)
-                  onChange={handleTitleChange} // Your title change handler
-                  placeholder="Title"
-                  className={`w-full outline-none font-bold text-xl md:text-2xl px-4 lg:px-8 py-4 ${colorOptionValue} placeholder:text-gray-400 transition-all duration-300`}
-                />
+                {/* input fields Section */}
+                <div className={`relative w-full h-full flex flex-col ${colorOptionValue}`}>
+                  {/* Title Field */}
+                  <input
+                    type="text"
+                    name="title"
+                    value={getNoteTitle} // Ensure you have a state for the title (e.g., getNoteTitle)
+                    onChange={handleTitleChange} // Your title change handler
+                    placeholder="Title"
+                    className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent lg:px-8 py-4 placeholder:text-gray-400 transition-all duration-300`}
+                  />
 
-                {/* Textarea (Note Body) */}
-                <textarea
-                  autoFocus
-                  value={getNote}
-                  onChange={handleChange}
-                  className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 text-base z-30 transition-all duration-300 ${colorOptionValue}`}
-                  placeholder="Write Note"
-                />
+                  {/* Textarea (Note Body) */}
+                  <textarea
+                    ref={textareaRef}
+                    value={getNote}
+                    onChange={handleChange}
+                    className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 text-base z-30 transition-all duration-300 bg-transparent`}
+                    placeholder="Write Note"
+                  />
+                </div>
 
                 {/* Action Buttons Footer */}
                 <div className="relative w-full md:flex justify-center items-center py-8">
@@ -424,7 +453,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
                     <CopyToClipboard text={getNote} wordCount={wordCount} />
 
                     {/* Clear input */}
-                    <Tooltip title="Clear Note" arrow placement="top">
+                    {/* <Tooltip title="Clear Note" arrow placement="top">
                       <button
                         className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black hover:text-white hover:bg-red-500 hover:border-none transition-all duration-300" : "w-0 h-0 opacity-0 transition-all duration-200"}
                         type="button"
@@ -432,7 +461,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
                       >
                         <ClearAllRoundedIcon sx={{ fontSize: 18 }} />
                       </button>
-                    </Tooltip>
+                    </Tooltip> */}
 
                     {/* Toggle privacy */}
                     <Tooltip title={notePrivacy ? "Make Note Public" : "Make Note Private"} arrow placement="top">

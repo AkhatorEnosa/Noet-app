@@ -10,7 +10,7 @@ import Tooltip from '@mui/material/Tooltip';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
-import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
+// import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
 import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
 import { useSelector } from "react-redux";
 import ColorPallete from "../components/ColorPallete";
@@ -259,11 +259,11 @@ const Home = () => {
 
 
   // Clear input field function
-  const clearInput = () => {
-    setWordCount(0)
-    setNoteInput("")
-    setColorOptionValue('')
-  }
+  // const clearInput = () => {
+  //   setWordCount(0)
+  //   setNoteInput("")
+  //   setColorOptionValue('')
+  // }
 
   // handle colour change
   const handleColorOption = (e) => {
@@ -316,7 +316,7 @@ const Home = () => {
           className={"fixed w-full h-full top-0 left-0 p-5 md:py-10 flex justify-center items-center z-[70]"}>
 
           {/* backdrop  */}
-          <div className={"fixed w-full h-full bg-black/40 backdrop-blur-sm"} onClick={closePublicNote}></div>
+          <div className={"fixed w-full h-full bg-black/80"} onClick={closePublicNote}></div>
 
           <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
             <motion.form
@@ -521,7 +521,7 @@ const Home = () => {
                 className="fixed w-full h-full top-0 left-0 p-5 md:py-10 flex justify-center items-center z-[70]"
               >
                 {/* backdrop */}
-                <div className="fixed w-full h-full bg-black/40 backdrop-blur-sm" onClick={handleNav}></div>
+                <div className="fixed w-full h-full bg-black/80" onClick={handleNav}></div>
 
                 <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
                   <form
@@ -594,7 +594,7 @@ const Home = () => {
                           </Tooltip>
 
                           {/* Clear all text */}
-                          <Tooltip title="Clear Note" arrow>
+                          {/* <Tooltip title="Clear Note" arrow>
                             <button
                               className={
                                 wordCount > 0
@@ -606,7 +606,7 @@ const Home = () => {
                             >
                               <ClearAllRoundedIcon />
                             </button>
-                          </Tooltip>
+                          </Tooltip> */}
 
                           {/* add note */}
                           <Tooltip title="Add Note" arrow>
