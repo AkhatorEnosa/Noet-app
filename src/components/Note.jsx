@@ -240,12 +240,6 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
       handleMarkNotes();
       // Trigger your long press logic here
     }, pressDuration);
-
-    window.oncontextmenu = function(event) {
-        event.preventDefault();
-        event.stopPropagation();
-        return false;
-    };
   }
 
   const cancel = () => {
@@ -255,19 +249,15 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
   
   return (
      <article className="note">
- 
+      <AnimatePresence>
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, amount: 0.2 }}
-          // layout
-          // transition={{ 
-          //   duration: 0.5, 
-          //   ease: "easeInOut",
-          //   layout: { type: "tween", duration: 0.5, ease: "easeInOut" }
-          // }}
-          // layoutId={`note-${noteId}`}
-          className={`group flex flex-col justify-between relative break-inside-avoid pt-2 aspect-video w-full ${bgColor} rounded-2xl text-lg ${noteChecked ? "shadow-lg border-[#255f6f] border-[2px]" : "hover:lg:shadow-lg"} transition-all duration-300 ease-in-out break-words active:cursor-grab ${showDrop ? "border-[#114f60] border-2 z-50" : "border-[1px] border-black/10"} ${toggleAction ? "z-[70]" : "z-10"}`} draggable="true"
+          layout
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 100 }}
+          transition={{ duration: 0.3 }}
+          layoutId={`note-${noteId}`}
+          className={`group flex flex-col justify-between relative break-inside-avoid pt-2 aspect-video w-full ${bgColor} rounded-2xl text-lg break-words active:cursor-grab ${noteChecked ? "ring-black ring-[1px]" : showDrop ? "ring-[#114f60] ring-2 z-50" : "ring-[1px] ring-black/10"} ${toggleAction ? "z-[70]" : "z-10"} transition-all duration-300 ease-in-out `} draggable={!noteChecked ? true : false}
           
           // long press and mobile drag events
           onMouseDown={start}
@@ -288,12 +278,15 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
         >
 
           {/* overlay to open note edit modal */}
-          {!noteChecked && <div className="absolute w-full h-full" onClick={markedNotes.length > 0 ? handleMarkNotes : handleNav}></div>}
+          {noteChecked
+          ? <div className="absolute top-0 left-0 w-full h-full rounded-2xl z-[71]" onClick={handleMarkNotes}></div> :
+           !noteChecked && markedNotes.length > 0 ? <div className="absolute top-0 left-0 w-full h-full rounded-2xl z-[71]" onClick={markedNotes.length > 0 ? handleMarkNotes : handleNav}></div> : ""
+          }
           
           {/* note div  */}
           <div className={`w-full ${note.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
             <Tooltip title="Mark Note" arrow placement="top">
-              <button className={`relative -top-5 right-5 ${noteChecked ? "opacity-100" : "opacity-0 group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-300`} type="button" onClick={handleMarkNotes}>
+              <button className={`relative -top-5 right-5 ${noteChecked ? "opacity-100" : "opacity-0 group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-300 z-[71]`} type="button" onClick={handleMarkNotes}>
                 { noteChecked ? <CheckCircle sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/> :
                   <CheckCircleOutlineRoundedIcon sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/>}
               </button>
@@ -340,6 +333,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
             </div>
           </div>
         </motion.div>
+      </AnimatePresence>
 
        <div className={toggleAction ? "fixed w-full h-full top-0 left-0 z-[65]" : "hidden"} onClick={() => setToggleAction(false)}></div>
 

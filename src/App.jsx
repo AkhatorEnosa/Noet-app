@@ -25,7 +25,7 @@ function App() {
     <Router>
       <div className="w-screen flex flex-col justify-between items-center relative" translate="yes">
         {/* Refined Blueprint Grid */}
-        <div className="absolute h-screen inset-0 z-0 opacity-[0.15]" 
+        <div className="absolute h-screen inset-0 z-0 opacity-[0.1]" 
           style={{ 
             backgroundImage: `linear-gradient(#255f6f 1px, transparent 1px), linear-gradient(90deg, #255f6f 1px, transparent 1px)`, 
             backgroundSize: '40px 40px' 
@@ -50,7 +50,7 @@ function App() {
                 delay: note.delay,
                 ease: "easeInOut" 
               }}
-              className="absolute hidden lg:block bg-white border border-slate-200 px-4 py-3 rounded-md shadow-sm"
+              className="absolute bg-white border border-slate-200 px-4 py-3 rounded-md shadow-sm"
               style={{ top: note.top, left: note.left }}
             >
               <div className="w-8 h-1 bg-slate-100 rounded mb-2" />
