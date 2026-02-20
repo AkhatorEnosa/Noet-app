@@ -32,18 +32,20 @@ import { toast } from "react-toastify";
 import ConfirmModal from "./ConfirmModal";
 
 /* eslint-disable react/prop-types */
-const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNote, activeNote, handleDrop}) => {
+const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, noteObj, activeNote, handleDrop}) => {
 
-  const [getNote, setGetNote] = useState(note)
+  const [getNote, setGetNote] = useState(note_value)
   const [getNoteTitle, setGetNoteTitle] = useState(title)
-  const [wordCount, setWordCount] = useState(note.length)
+  const [wordCount, setWordCount] = useState(note_value.length)
   const [debouncedTitleInput, setDebouncedTitleInput] = useState("")
   const [debouncedNoteInput, setDebouncedNoteInput] = useState("")
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState(bgColor)
+  const [debouncedColorOption, setDebouncedColorOption] = useState(bgColor)
   const [noteChecked, setnoteChecked] = useState(false)
   const [notePrivacy, setNotePrivacy] = useState(note_privacy)
+  const [noteIsPinned, setNoteIsPinned] = useState(noteObj.pinned)
   const [toggleAction, setToggleAction] = useState(false)
   const [showDrop, setShowDrop] = useState(false)
   const [searchParams] = useSearchParams();
@@ -60,7 +62,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
   const {mutate:update, isPending:updating, } = useUpdateNote()
 
   //  Capture the ID from the URL
-  const activeNoteId = searchParams.get("note");
+  const activeNoteId = searchParams.get("note_value");
 
   // check is editing by comparing noteId with activeNoteId from url
   const isEditing = activeNoteId === noteId.toString();
@@ -94,14 +96,14 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
   // handle navigation
   const handleNav = useCallback(() => {
     if (!isEditing && !updating) {
-      navigate(`/?note=${noteId}`, { replace: true });
+      navigate(`/?note_value=${noteId}`, { replace: true });
     } else {
       navigate(`/`, { replace: true });
     }
     setToggleAction(false)
   }, [isEditing, navigate, noteId]);
 
-  // update note function
+  // update note_value function
   const updateNote = useCallback((title, input, color, notePrivacy, shouldNavigate = false) => {
     if(input.trim() !== "") {
       update(
@@ -123,19 +125,20 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
       setShowColorPallete(false)
       setNotePrivacy(true)
     }
-  }, [noteId, title, colorOptionValue, notePrivacy, update, handleNav, setGetNote, setWordCount, setShowColorPallete])
+  }, [noteId, update, handleNav, setGetNote, setWordCount, setShowColorPallete])
 
-  // debounce note input for auto save
+  // debounce note_value input for auto save
   useDebounce(() => {
-    if (getNote && isEditing && (getNote !== debouncedNoteInput || getNoteTitle !== debouncedTitleInput) && autoSave == "true" && !updating && !stateLoading) {
+    if (getNote && isEditing && (getNote !== debouncedNoteInput || getNoteTitle !== debouncedTitleInput || colorOptionValue !== debouncedColorOption) && autoSave == "true" && !updating && !stateLoading) {
       updateNote(getNoteTitle, getNote, colorOptionValue, notePrivacy, false);
       setDebouncedTitleInput(getNoteTitle);
       setDebouncedNoteInput(getNote);
+      setDebouncedColorOption(colorOptionValue)
     }
-    }, 1500, [getNoteTitle, getNote, updateNote, isEditing, autoSave]
+    }, 1500, [getNoteTitle, getNote, updateNote, colorOptionValue, isEditing, autoSave]
   )
 
-  // disable scroll when editing or deleting note
+  // disable scroll when editing or deleting note_value
   useEffect(() => {
     if (isEditing || showDeleteModal) {
       document.body.style.overflow = 'hidden';
@@ -150,9 +153,9 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
     if (!isEditing) {
       setShowColorPallete(false)
       setColorOptionValue(bgColor)
-      setGetNote(note)
+      setGetNote(note_value)
     }
-  }, [isEditing, showDeleteModal, handleNav, bgColor, note]);
+  }, [isEditing, showDeleteModal, handleNav, bgColor, note_value]);
 
   useEffect(() => {
     if(findMarkedNote) {
@@ -195,11 +198,15 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
 
   // for pinning notes 
   const handlePinUpdate = () => {
-      // console.log(!draggedNote.pinned)
-    updatePin({ pinned: !draggedNote.pinned, id: noteId })
+    if (!isEditing) {
+      setNoteIsPinned(prev => !prev)
+    } else {
+      // console.log(!noteObj.pinned)
+      updatePin({ pinned: !noteIsPinned, id: noteId })
+    }
   }
 
-  // handke note update
+  // handke note_value update
   const handleNoteUpdate = (e) => {
     e.preventDefault()
     updateNote(getNoteTitle, getNote, colorOptionValue, notePrivacy, true);
@@ -241,7 +248,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
     setShowColorPallete(!showColorPallete)
   }
 
-  // handle delete note 
+  // handle delete note_value 
   const handleDeleteNote = () => {
     mutate([noteId], {
       onSuccess: () => {
@@ -274,7 +281,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
   }
   
   return (
-     <article className="note">
+     <article className="note_value">
       <AnimatePresence>
         <motion.div
           layout
@@ -282,7 +289,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, x: 100 }}
           transition={{ duration: 0.3 }}
-          layoutId={`note-${noteId}`}
+          layoutId={`note_value-${noteId}`}
           className={`group flex flex-col justify-between relative break-inside-avoid pt-2 aspect-video w-full ${bgColor} rounded-2xl text-lg break-words active:cursor-grab ${noteChecked ? "ring-black ring-[1px]" : showDrop ? "ring-[#114f60] ring-2 z-50" : "ring-[1px] ring-black/10"} ${toggleAction ? "z-[70]" : "z-10"} ${isEditing && (noteId == activeNoteId) ? "scale-0" : "scale-100"} transition-all duration-300 ease-in-out `} 
           draggable={!noteChecked ? true : false}
           
@@ -293,7 +300,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
           onTouchEnd={cancel}
 
           // dragging events
-          onDragStart={() => activeNote(draggedNote) & cancel()} 
+          onDragStart={() => activeNote(noteObj) & cancel()} 
           onDragEnd={() => activeNote(null)}
           onDragEnter={() => setShowDrop(true)} 
           onDragLeave={() => setShowDrop(false)}
@@ -304,7 +311,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
           onDragOver={(e) => e.preventDefault()}
         >
 
-          {/* overlay to open note edit modal */}
+          {/* overlay to open note_value edit modal */}
           {
             noteChecked
             ? <div className="absolute top-0 left-0 w-full h-full rounded-2xl z-[71]" onClick={handleMarkNotes}></div> 
@@ -314,10 +321,10 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
 
           <div className="absolute top-0 left-0 w-full h-full rounded-2xl" onClick={handleNav}></div>
           
-          {/* note div  */}
-          <div className={`w-full ${note.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
+          {/* note_value div  */}
+          <div className={`w-full ${note_value.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
             <Tooltip title="Mark Note" arrow placement="top">
-              <button className={`relative -top-5 right-5 ${noteChecked ? "opacity-100" : "opacity-0 group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-300 z-[71]`} type="button" onClick={handleMarkNotes}>
+              <button className={`relative -top-5 right-5 ${noteChecked ? "opacity-100" : "opacity-0 group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-300 z-[65]`} type="button" onClick={handleMarkNotes}>
                 { noteChecked ? <CheckCircle sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/> :
                   <CheckCircleOutlineRoundedIcon sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/>}
               </button>
@@ -325,7 +332,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
             
             <Linkify options={{ render: renderLink }}>
                 <pre className={`break-words whitespace-pre-wrap font-sans line-clamp-6 lg:line-clamp-none`}>{
-                  truncateNote(note)
+                  truncateNote(note_value)
                 }</pre>
             </Linkify>
           </div>
@@ -333,7 +340,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
           {/* date and actions  */}
           <div className={`${markedNotes.length > 0 ? "opacity-0 group-hover:opacity-0" : "opacity-100" } flex items-center justify-between px-4 py-3 bg-black/5 rounded-b-2xl border-t border-black/5 transition-opacity ${!toggleAction && !markedNotes.length > 0 && "opacity-100 lg:opacity-0 lg:group-hover:opacity-100"} z-[70]`}>
           
-            {/* overlay to open note edit modal when actions are toggled  */}
+            {/* overlay to open note_value edit modal when actions are toggled  */}
             {!markedNotes.length > 0 && <div className="absolute left-0 w-full h-full z-10" onClick={handleNav}></div>}
             
             {/* date  */}
@@ -348,7 +355,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
                 {notePrivacy ? <LockRoundedIcon /> : <LockOpenRoundedIcon />}
               </Tooltip>
               <Tooltip title="Pin" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50" onClick={() => handlePinUpdate()}>
-                  {updatingPin ? <CircularProgress size="20px" color="inherit"/> : !draggedNote.pinned ? <PushPinOutlinedIcon/> : <PushPinRoundedIcon />}
+                  {updatingPin ? <CircularProgress size="20px" color="inherit"/> : !noteObj.pinned ? <PushPinOutlinedIcon/> : <PushPinRoundedIcon />}
               </Tooltip>
               <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 pointer z-50" onClick={() => setToggleAction(!toggleAction)}>
                 <MoreVertIcon/>
@@ -392,6 +399,13 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
                   </span>
 
                   <div className="flex gap-2 items-center z-20">
+                    
+                    <Tooltip title="Pin" placement="top" arrow>
+                      <button className={`w-8 h-8 flex justify-center items-center border-[1px] cursor-pointer p-1 rounded-full  lg:bg-transparent ${noteIsPinned ? "text-[#114f60] bg-[#114f60]/20" : "lg:hover:bg-[#114f60]/20"} rounded-full cursor-pointer transition-all duration-300`} type="button" onClick={() => handlePinUpdate()}>
+                        {updatingPin ? <CircularProgress size="20px" color="inherit"/> : !noteIsPinned ? <PushPinOutlinedIcon/> : <PushPinRoundedIcon />}
+                      </button>
+                    </Tooltip>
+
                      <Tooltip title={autoSave == "true" ? "Undo Auto-Save" : "Enable Auto-Save"} placement="bottom" arrow>
                       <button className={`w-8 h-8 flex justify-center items-center border-[1px] ${autoSave == "true" ? "text-blue-600 bg-blue-500/10" : "hover:bg-blue-500/10"} rounded-full cursor-pointer transition-all duration-300`} type="button" onClick={handleAutoSaveToggle} disabled={updating || stateLoading}>
                         {updating || stateLoading ? <span className="loading loading-spinner loading-sm"></span> : < UpdateRoundedIcon />}
@@ -516,7 +530,7 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
             pending={isPending}
             handleConfirm={handleDeleteNote}
             title={"Delete Note?"}
-            desc={`You are about to delete a note. This action is permanent. Are you sure you want to proceed? `}
+            desc={`You are about to delete a note_value. This action is permanent. Are you sure you want to proceed? `}
           />
         </AnimatePresence>
     </article>

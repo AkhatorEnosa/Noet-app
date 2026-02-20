@@ -17,7 +17,7 @@ const useLogin = () => {
         onError: (error) => {
             console.error("Error signing in", error)
             toast.error("Oops! Error Signing In.", {
-            className: "text-xs w-fit pr-24"
+                className: "text-xs w-fit pr-24"
             })
         }
     })

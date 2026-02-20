@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import supabase from "../config/supabaseClient.config"
+// import { toast } from "react-toastify"
 
 const usePin = () => {
     const queryClient = useQueryClient()
@@ -15,9 +16,12 @@ const usePin = () => {
             return data
         },
         onSuccess: () => {
+            // toast.success("Note pinned, check pinned notes", {
+            //     className: "text-xs w-fit pr-24"
+            // });
             queryClient.invalidateQueries({
                 queryKey: ['notes'],
-              })
+            });
         }
     })
 }

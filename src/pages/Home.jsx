@@ -433,12 +433,12 @@ const Home = () => {
                                   <Note 
                                     title={note.title}
                                     noteId={note.id}
-                                    note={note.data_value}
+                                    note_value={note.data_value}
                                     note_date={note.created_at}
                                     note_privacy={note.privacy}
                                     bgColor={note.bg_color}
                                     updateId={note.id}
-                                    draggedNote={note}
+                                    noteObj={note}
                                     activeNote={setactiveNote}
                                     handleDrop={() => onDrop(notes.indexOf(note))}
                                   />
@@ -474,12 +474,12 @@ const Home = () => {
                               <Note 
                                 title={note.title}
                                 noteId={note.id}
-                                note={note.data_value}
+                                note_value={note.data_value}
                                 note_date={note.created_at}
                                 note_privacy={note.privacy}
                                 bgColor={note.bg_color}
                                 updateId={note.id}
-                                draggedNote={note}
+                                noteObj={note}
                                 activeNote={setactiveNote}
                                 handleDrop={() => onDrop(notes.indexOf(note))}
                               />
