@@ -9,5 +9,5 @@ export const store = configureStore({
         notes: notesReducer,
         publicNote: publicNoteReducer 
     },
-    devTools: true
+    // devTools: true
 })

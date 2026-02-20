@@ -556,7 +556,7 @@ const Home = () => {
                       autoFocus
                       value={noteInput}
                       onChange={handleChange}
-                      className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 text-base z-30 transition-all duration-300 ${colorOptionValue}`}
+                      className={`w-full flex-grow outline-none resize-none placeholder:text-gray-400 px-4 lg:px-8 py-4 text-base z-30 transition-all duration-300 ${colorOptionValue}`}
                       placeholder="Write Note"
                     />
 

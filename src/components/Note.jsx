@@ -252,12 +252,13 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
       <AnimatePresence>
         <motion.div
           layout
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           exit={{ opacity: 0, x: 100 }}
           transition={{ duration: 0.3 }}
           layoutId={`note-${noteId}`}
-          className={`group flex flex-col justify-between relative break-inside-avoid pt-2 aspect-video w-full ${bgColor} rounded-2xl text-lg break-words active:cursor-grab ${noteChecked ? "ring-black ring-[1px]" : showDrop ? "ring-[#114f60] ring-2 z-50" : "ring-[1px] ring-black/10"} ${toggleAction ? "z-[70]" : "z-10"} transition-all duration-300 ease-in-out `} draggable={!noteChecked ? true : false}
+          className={`group flex flex-col justify-between relative break-inside-avoid pt-2 aspect-video w-full ${bgColor} rounded-2xl text-lg break-words active:cursor-grab ${noteChecked ? "ring-black ring-[1px]" : showDrop ? "ring-[#114f60] ring-2 z-50" : "ring-[1px] ring-black/10"} ${toggleAction ? "z-[70]" : "z-10"} transition-all duration-300 ease-in-out `} 
+          draggable={!noteChecked ? true : false}
           
           // long press and mobile drag events
           onMouseDown={start}
@@ -278,10 +279,14 @@ const Note = ({noteId, title, note, note_date, note_privacy, bgColor, draggedNot
         >
 
           {/* overlay to open note edit modal */}
-          {noteChecked
-          ? <div className="absolute top-0 left-0 w-full h-full rounded-2xl z-[71]" onClick={handleMarkNotes}></div> :
-           !noteChecked && markedNotes.length > 0 ? <div className="absolute top-0 left-0 w-full h-full rounded-2xl z-[71]" onClick={markedNotes.length > 0 ? handleMarkNotes : handleNav}></div> : ""
+          {
+            noteChecked
+            ? <div className="absolute top-0 left-0 w-full h-full rounded-2xl z-[71]" onClick={handleMarkNotes}></div> 
+            : !noteChecked && markedNotes.length > 0 ? <div className="absolute top-0 left-0 w-full h-full rounded-2xl z-[71]" onClick={handleMarkNotes}></div> 
+            : ""
           }
+
+          <div className="absolute top-0 left-0 w-full h-full rounded-2xl" onClick={handleNav}></div>
           
           {/* note div  */}
           <div className={`w-full ${note.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
