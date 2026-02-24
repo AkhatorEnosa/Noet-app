@@ -16,8 +16,8 @@ const useUpdateNote = () => {
             return data
         },
         onSuccess: () => {
-            console.log("Note Updated Successfully")
-            queryClient.invalidateQueries({
+            // console.log("Note Updated Successfully")
+            return queryClient.invalidateQueries({
                 queryKey: ['notes'],
             })
         }, 

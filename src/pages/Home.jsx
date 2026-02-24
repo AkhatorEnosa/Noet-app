@@ -275,7 +275,7 @@ const Home = () => {
   // drop function
   const onDrop = (position) => {
 
-    if(activeNote == null || activeNote == undefined) return
+    if (!activeNote) return;
 
     var notesCopy = JSON.parse(JSON.stringify(notes))
 
@@ -426,7 +426,7 @@ const Home = () => {
                         </button>
                       </Tooltip>
                     
-                      <div className={`${closeSectionPinned ? "hidden" : "block"} rounded-md p-1 sm:p-4 w-full gap-1 sm:gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-1 sm:space-y-2 md:space-y-4 mx-auto`}>
+                      <div className={`${closeSectionPinned ? "hidden" : "block"} rounded-md p-1 sm:p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto`}>
                         {
                           notes?.map((note) => (
                                 note.pinned && <React.Fragment key={note.id}>
@@ -465,7 +465,7 @@ const Home = () => {
                   }
                   
                   { notes.some((note) => !note.pinned) &&
-                    <div className={`${closeSection ? "hidden" : "block"} rounded-md p-1 sm:p-4 w-full gap-1 sm:gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-1 sm:space-y-2 md:space-y-4 mx-auto`}>
+                    <div className={`${closeSection ? "hidden" : "block"} rounded-md p-1 sm:p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto`}>
                       
                       {
                         notes?.map((note) => (

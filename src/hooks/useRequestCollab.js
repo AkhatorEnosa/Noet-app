@@ -43,7 +43,7 @@ const useRequestCollab = () => {
     },
     onSuccess: () => {
       // Refresh queries so the UI knows the user is now a collaborator
-      queryClient.invalidateQueries({
+      return queryClient.invalidateQueries({
         queryKey: ['publicNote'],
       });
     },

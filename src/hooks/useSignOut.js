@@ -13,7 +13,7 @@ const useSignOut = () => {
             return result.payload;
         },
         onSuccess: () => {
-            queryClient.removeQueries({
+            return queryClient.removeQueries({
                 queryKey: ["user"]
             })
         },

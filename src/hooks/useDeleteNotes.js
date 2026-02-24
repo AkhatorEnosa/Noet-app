@@ -16,7 +16,7 @@ const useDeleteNotes = () => {
                 return data
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({
+            return queryClient.invalidateQueries({
                 queryKey: ['notes'],
               })
         },

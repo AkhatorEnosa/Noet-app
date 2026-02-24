@@ -15,7 +15,7 @@ const useCreateNote = () => {
     },
     onSuccess: () => {
       // console.log("Created", data)
-        queryClient.invalidateQueries({
+        return queryClient.invalidateQueries({
           queryKey: ['notes'],
         })
     },

@@ -80,7 +80,7 @@ const MarkedNotesActionsBar = () => {
                     pending={isPending}
                     handleConfirm={handleDeleteNotes}
                     title={markedNotes.length > 1 ? "Delete Notes?" : "Delete Note?"}
-                    desc={`You are about to delete ${markedNotes.length > 1 ? "notes" : "notes"}. This action is permanent. Are you sure you want to proceed? `}
+                    desc={`You are about to delete ${markedNotes.length} ${markedNotes.length > 1 ? "notes" : "notes"}. This action is permanent. Are you sure you want to proceed? `}
                 />
             </AnimatePresence>
         </>

@@ -16,10 +16,9 @@ const usePin = () => {
             return data
         },
         onSuccess: () => {
-            // toast.success("Note pinned, check pinned notes", {
-            //     className: "text-xs w-fit pr-24"
-            // });
-            queryClient.invalidateQueries({
+            // Returning this ensures the mutation promise 
+            // resolves only AFTER the refetch completes, so the UI will update with the new pinned status immediately
+            return queryClient.invalidateQueries({
                 queryKey: ['notes'],
             });
         }
