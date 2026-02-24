@@ -372,6 +372,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
             <div className={`absolute ${!toggleAction ? "scale-0" : "scale-100"} bottom-10 right-2 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-300 transition-all z-[70]`}>
                 <ul>
                     <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer duration-300 transition-all" onClick={handleNav}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
+                    <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer duration-300 transition-all" onClick={handleMarkNotes}>Mark <CheckCircleOutlineRoundedIcon sx={{ fontSize: 12 }}/></li>
                     <li className="flex justify-between hover:text-red-500 hover:bg-red-100/50 p-2 cursor-pointer duration-300 transition-all" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }} /></li>
                 </ul>
             </div>
