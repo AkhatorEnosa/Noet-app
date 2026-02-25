@@ -466,7 +466,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
                     <ColorPallete show={showColorPallete} colorOption={colorOptionValue} addBackground={handleColorOption} />
 
                     <Tooltip title="Choose color" arrow placement="top">
-                      <i className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? "bg-warning border-none" : "border-[1px] border-neutral"} hover:bg-warning hover:border-none z-30 transition-all duration-150 cursor-pointer `}
+                      <i className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? "bg-warning border-none" : "border-[1px] border-black"} hover:bg-warning hover:border-none z-30 transition-all duration-150 cursor-pointer `}
                         onClick={() => setShowColorPallete(!showColorPallete)}
                       >
                         <ColorLensRoundedIcon sx={{ fontSize: 18 }} />
@@ -498,7 +498,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
                       </button>
                     </Tooltip>
 
-                    {!notePrivacy && <ShareNote text={getNote} wordCount={wordCount} />}
+                    {!notePrivacy && <ShareNote title={getNoteTitle} text={getNote} wordCount={wordCount} />}
 
                     {/* update button */}
                     {(getNote !== debouncedNoteInput || getNoteTitle !== debouncedTitleInput) && (!updating || !stateLoading) && (

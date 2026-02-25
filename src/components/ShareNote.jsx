@@ -2,15 +2,19 @@
 import { Tooltip } from "@mui/material";
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
 
-export const ShareNote = ({ text, wordCount }) => {
+export const ShareNote = ({ title, text, wordCount }) => {
+  
+  const truncateNote = (x) => {
+    return x.substring(0, 20).concat('...')
+  }
 
   // handle share note
   const handleShare = async () => {
     if (navigator.canShare) {
       try {
         await navigator.share({
-          title: 'Share my note',
-          text: text,
+          title: title,
+          text: truncateNote(text),
           url: window.location.href
         })
         console.log('Successfully shared');

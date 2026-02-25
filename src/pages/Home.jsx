@@ -610,7 +610,7 @@ const Home = () => {
                             addBackground={handleColorOption}
                           />
                           <Tooltip title="Choose color" arrow>
-                            <i className={`flex justify-center items-center ${wordCount > 0 ? "w-10 h-10 rounded-full" : "w-0 h-0 opacity-0"} ${showColorPallete? "bg-warning shadow-lg border-none": "border-[1px] border-neutral"} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer`}
+                            <i className={`flex justify-center items-center ${wordCount > 0 ? "w-10 h-10 rounded-full" : "w-0 h-0 opacity-0"} ${showColorPallete? "bg-warning shadow-lg border-none": "border-[1px] border-black"} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer`}
                               onClick={() => setShowColorPallete(!showColorPallete)}
                             >
                               <ColorLensRoundedIcon sx={{ fontSize: 18 }} />
