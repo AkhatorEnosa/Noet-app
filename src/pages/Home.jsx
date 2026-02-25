@@ -344,7 +344,7 @@ const Home = () => {
           {/* backdrop  */}
           <div className={"fixed w-full h-full bg-black/80"} onClick={closePublicNote}></div>
 
-          <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
+          <div className="w-full h-full md:w-[80%] md:lg-auto group">
             <motion.form
               // layoutId={`note-${noteId}`}
               // onSubmit={handleNoteUpdate} 
@@ -379,7 +379,7 @@ const Home = () => {
                 ref={textareaRef}
                 value={statePublicNote[0].data_value}
                 disabled
-                className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 pb-10 text-base z-30 transition-all duration-150 bg-transparent`}
+                className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 pb-5 text-base z-30 transition-all duration-150 bg-transparent`}
               />
 
               {/* action buttons  */}
@@ -590,7 +590,7 @@ const Home = () => {
                         autoFocus
                         value={noteInput}
                         onChange={handleChange}
-                        className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 text-base z-30 transition-all duration-150 bg-transparent`}
+                        className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 pb-5 text-base z-30 transition-all duration-150 bg-transparent`}
                         placeholder="Write Note"
                       />
                     </div>

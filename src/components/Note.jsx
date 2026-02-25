@@ -453,7 +453,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
                     ref={textareaRef}
                     value={getNote}
                     onChange={handleChange}
-                    className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 text-base z-30 transition-all duration-150 bg-transparent`}
+                    className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 pb-5 text-base z-30 transition-all duration-150 bg-transparent`}
                     placeholder="Write Note"
                   />
                 </div>
