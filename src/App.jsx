@@ -64,7 +64,7 @@ function App() {
         <MarkedNotesActionsBar />
 
         {/* Dynamic Page Content */}
-        <main className="relative w-full flex flex-col items-center">
+        <main className="relative w-full 2xl:w-[80%] flex flex-col items-center">
           <Routes>
             <Route path="/" element={<Home />} />
           </Routes>

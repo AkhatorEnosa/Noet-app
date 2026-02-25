@@ -344,7 +344,7 @@ const Home = () => {
           {/* backdrop  */}
           <div className={"fixed w-full h-full bg-black/80"} onClick={closePublicNote}></div>
 
-          <div className="w-full h-full md:w-[80%] xl:w-[60%] md:lg-auto group">
+          <div className="w-full h-full lg:w-[90%] xl:w-[60%] md:lg-auto group">
             <motion.form
               // layoutId={`note-${noteId}`}
               // onSubmit={handleNoteUpdate} 
@@ -555,7 +555,7 @@ const Home = () => {
                 {/* backdrop */}
                 <div className="fixed w-full h-full bg-black/80" onClick={handleNav}></div>
 
-                <div className="w-full h-full md:w-[80%] xl:w-[60%] md:lg-auto group">
+                <div className="w-full h-full  lg:w-[90%] xl:w-[60%] md:lg-auto group">
                   <form
                     onSubmit={handleNoteAdd}
                     className={`opacity-100 relative flex flex-col w-full h-full bg-white border sm:rounded-[2rem] shadow-md duration-150 transition-all z-50 overflow-hidden`}
@@ -663,7 +663,7 @@ const Home = () => {
           </AnimatePresence>
 
           {/* Add Noet Button */}
-            <Tooltip title="Add Noet" arrow placement="top"  className={`${markedNotes.length > 0 ? "opacity-0" : "opacity-100"} fixed bottom-4 md:bottom-10 right-10 lg:right-12 duration-150 transition-all z-30`}>
+            <Tooltip title="Add Noet" arrow placement="top"  className={`${markedNotes.length > 0 ? "opacity-0" : "opacity-100"} fixed bottom-4 md:bottom-10 right-10 lg:right-12 2xl:right-[20vw] duration-150 transition-all z-30`}>
                 <button type="submit" className="cursor-pointer flex justify-center items-center rounded-full shadow-lg text-white text-sm font-bold bg-[#255f6f] hover:bg-[#114f60] px-4 py-4 transition-all duration-150 z-30" onClick={handleNav} disabled={markedNotes.length > 0}> 
                   <AddRoundedIcon sx={{ fontSize: 20 }}/> 
                   Add Note
