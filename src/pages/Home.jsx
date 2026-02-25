@@ -344,7 +344,7 @@ const Home = () => {
           {/* backdrop  */}
           <div className={"fixed w-full h-full bg-black/80"} onClick={closePublicNote}></div>
 
-          <div className="w-full h-full md:w-[80%] md:lg-auto group">
+          <div className="w-full h-full md:w-[80%] xl:w-[60%] md:lg-auto group">
             <motion.form
               // layoutId={`note-${noteId}`}
               // onSubmit={handleNoteUpdate} 
@@ -555,7 +555,7 @@ const Home = () => {
                 {/* backdrop */}
                 <div className="fixed w-full h-full bg-black/80" onClick={handleNav}></div>
 
-                <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
+                <div className="w-full h-full md:w-[80%] xl:w-[60%] md:lg-auto group">
                   <form
                     onSubmit={handleNoteAdd}
                     className={`opacity-100 relative flex flex-col w-full h-full bg-white border sm:rounded-[2rem] shadow-md duration-150 transition-all z-50 overflow-hidden`}
