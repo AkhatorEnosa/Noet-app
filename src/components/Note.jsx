@@ -63,7 +63,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
   const {mutate:update, isPending:updating, } = useUpdateNote()
 
   //  Capture the ID from the URL
-  const activeNoteId = searchParams.get("note_value");
+  const activeNoteId = searchParams.get("note");
 
   // check is editing by comparing noteId with activeNoteId from url
   const isEditing = activeNoteId === noteId.toString();
@@ -97,7 +97,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
   // handle navigation
   const handleNav = useCallback(() => {
     if (!isEditing && !updating) {
-      navigate(`/?note_value=${noteId}`, { replace: true });
+      navigate(`/?note=${noteId}`, { replace: true });
     } else {
       navigate(`/`, { replace: true });
     }
@@ -542,7 +542,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
           pending={isPending}
           handleConfirm={handleDeleteNote}
           title={"Delete Note?"}
-          desc={`You are about to delete a note_value. This action is permanent. Are you sure you want to proceed? `}
+          desc={`You are about to delete a note. This action is permanent. Are you sure you want to proceed? `}
         />
       </AnimatePresence>
     </article>
