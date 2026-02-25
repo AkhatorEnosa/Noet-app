@@ -34,7 +34,7 @@ export const CopyToClipboard = ({ text, wordCount }) => {
 
   return (
     <Tooltip title={isCopied ? '✓ Copied!' : 'Copy to Clipboard'} arrow placement="top">
-        <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black hover:text-white hover:bg-green-500 hover:border-none transition-all duration-300": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-200"} type="button" onClick={handleCopy}><ContentCopyRoundedIcon sx={{ fontSize: 18 }}/></button>
+        <button className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black hover:text-white hover:bg-green-500 hover:border-none transition-all duration-150": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-150"} type="button" onClick={handleCopy}><ContentCopyRoundedIcon sx={{ fontSize: 18 }}/></button>
     </Tooltip>
   );
 };

@@ -295,7 +295,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
         exit={{ opacity: 0, x: 100 }}
         transition={{ duration: 0.3 }}
         // layoutId={`note_value-${noteId}`}
-        className={`group flex flex-col justify-between relative break-inside-avoid pt-2 w-full ${bgColor} rounded-2xl text-lg break-words active:cursor-grab ${noteChecked ? "ring-black ring-[1px]" : showDrop ? "ring-[#114f60] ring-2 z-50" : "ring-[1px] ring-black/10"} ${toggleAction ? "z-[70]" : "z-10"} ${isEditing && (noteId == activeNoteId) ? "scale-0" : "scale-100"} transition-all duration-300 ease-in-out `} 
+        className={`group flex flex-col justify-between relative break-inside-avoid pt-2 w-full ${bgColor} rounded-2xl text-lg break-words active:cursor-grab ${noteChecked ? "ring-black ring-[1px]" : showDrop ? "ring-[#114f60] ring-2 z-50" : "ring-[1px] ring-black/10"} ${toggleAction ? "z-[70]" : "z-10"} ${isEditing && (noteId == activeNoteId) ? "scale-0" : "scale-100"} transition-all duration-150 ease-in-out `} 
         draggable={!noteChecked ? true : false}
         
         // long press and mobile drag events
@@ -329,7 +329,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
         {/* note_value div  */}
         <div className={`w-full ${note_value.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
           <Tooltip title="Mark Note" arrow placement="top">
-            <button className={`relative -top-5 right-5 ${noteChecked ? "opacity-100" : "opacity-0 lg:group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-300 z-[65]`} type="button" onClick={() => handleMarkNotes()}>
+            <button className={`relative -top-5 right-5 ${noteChecked ? "opacity-100" : "opacity-0 lg:group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-150 z-[65]`} type="button" onClick={() => handleMarkNotes()}>
               { noteChecked ? <CheckCircle sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/> :
                 <CheckCircleOutlineRoundedIcon sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/>}
             </button>
@@ -343,7 +343,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
         </div>
 
         {/* date and actions  */}
-        <div className={`hidden md:flex ${markedNotes.length > 0 ? "opacity-0 group-hover:opacity-0" : "opacity-100" } flex items-center justify-between px-4 py-3 bg-black/5 rounded-b-2xl border-t border-black/5 transition-opacity ${!toggleAction && !markedNotes.length > 0 && "opacity-100 lg:opacity-0 lg:group-hover:opacity-100"} z-[70]`}>
+        <div className={`hidden lg:flex ${markedNotes.length > 0 ? "opacity-0 group-hover:opacity-0" : "opacity-100" } flex items-center justify-between px-4 py-3 bg-black/5 rounded-b-2xl border-t border-black/5 transition-opacity ${!toggleAction && !markedNotes.length > 0 && "opacity-100 lg:opacity-0 lg:group-hover:opacity-100"} z-[70]`}>
         
           {/* overlay to open note_value edit modal when actions are toggled  */}
           {!markedNotes.length > 0 && <div className="absolute left-0 w-full h-full z-10" onClick={() => handleNav()}></div>}
@@ -369,11 +369,11 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
             </Tooltip>
             
             {/* Dropdown Menu */}
-            <div className={`absolute ${!toggleAction ? "scale-0" : "scale-100"} bottom-10 right-2 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-300 transition-all z-[70]`}>
+            <div className={`absolute ${!toggleAction ? "scale-0" : "scale-100"} bottom-10 right-2 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-150 transition-all z-[70]`}>
                 <ul>
-                    <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer duration-300 transition-all" onClick={handleNav}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
-                    <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer duration-300 transition-all" onClick={handleMarkNotes}>Mark <CheckCircleOutlineRoundedIcon sx={{ fontSize: 12 }}/></li>
-                    <li className="flex justify-between hover:text-red-500 hover:bg-red-100/50 p-2 cursor-pointer duration-300 transition-all" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }} /></li>
+                    <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer duration-150 transition-all" onClick={handleNav}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
+                    <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer duration-150 transition-all" onClick={handleMarkNotes}>Mark <CheckCircleOutlineRoundedIcon sx={{ fontSize: 12 }}/></li>
+                    <li className="flex justify-between hover:text-red-500 hover:bg-red-100/50 p-2 cursor-pointer duration-150 transition-all" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }} /></li>
                 </ul>
             </div>
           </div>
@@ -408,7 +408,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
                   <div className="flex gap-2 items-center z-20">
                     
                     <Tooltip title="Pin" placement="bottom" arrow>
-                      <button className={`w-8 h-8 flex justify-center items-center border-[1px] cursor-pointer p-1 rounded-full ${noteIsPinned ? "text-[#114f60] bg-[#114f60]/10" : "lg:hover:bg-[#114f60]/10"} rounded-full cursor-pointer transition-all duration-300`} type="button"
+                      <button className={`w-8 h-8 flex justify-center items-center border-[1px] cursor-pointer p-1 rounded-full ${noteIsPinned ? "text-[#114f60] bg-[#114f60]/10" : "lg:hover:bg-[#114f60]/10"} rounded-full cursor-pointer transition-all duration-150`} type="button"
                         onClick={() => handlePinUpdate()}
                         disabled={updatingPin || stateLoading}
                       >
@@ -417,7 +417,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
                     </Tooltip>
 
                     <Tooltip title={autoSave == "true" ? "Undo Auto-Save" : "Enable Auto-Save"} placement="bottom" arrow>
-                      <button className={`w-8 h-8 flex justify-center items-center border-[1px] ${autoSave == "true" ? "text-[#114f60] bg-[#114f60]/10" : "lg:hover:bg-[#114f60]/10"} rounded-full cursor-pointer transition-all duration-300`} type="button"
+                      <button className={`w-8 h-8 flex justify-center items-center border-[1px] ${autoSave == "true" ? "text-[#114f60] bg-[#114f60]/10" : "lg:hover:bg-[#114f60]/10"} rounded-full cursor-pointer transition-all duration-150`} type="button"
                         onClick={() => handleAutoSaveToggle()}
                         disabled={updating || stateLoading}
                       >
@@ -426,7 +426,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
                     </Tooltip>
 
                     {/* close button or loading */}
-                    <button className="w-8 h-8 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300" type="button"
+                    <button className="w-8 h-8 border-[1px] hover:bg-black/10 rounded-full transition-all duration-150" type="button"
                       onClick={() => handleNav()}
                       disabled={updating || stateLoading}
                     >
@@ -445,7 +445,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
                     value={getNoteTitle} // Ensure you have a state for the title (e.g., getNoteTitle)
                     onChange={handleTitleChange} // Your title change handler
                     placeholder="Title"
-                    className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent lg:px-8 py-4 placeholder:text-gray-400 transition-all duration-300`}
+                    className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent lg:px-8 py-4 placeholder:text-gray-400 transition-all duration-150`}
                   />
 
                   {/* Textarea (Note Body) */}
@@ -453,7 +453,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
                     ref={textareaRef}
                     value={getNote}
                     onChange={handleChange}
-                    className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 text-base z-30 transition-all duration-300 bg-transparent`}
+                    className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 text-base z-30 transition-all duration-150 bg-transparent`}
                     placeholder="Write Note"
                   />
                 </div>
@@ -466,8 +466,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
                     <ColorPallete show={showColorPallete} colorOption={colorOptionValue} addBackground={handleColorOption} />
 
                     <Tooltip title="Choose color" arrow placement="top">
-                      <i
-                        className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? "bg-warning border-none" : "border-[1px] border-neutral"} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer `}
+                      <i className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? "bg-warning border-none" : "border-[1px] border-neutral"} hover:bg-warning hover:border-none z-30 transition-all duration-150 cursor-pointer `}
                         onClick={() => setShowColorPallete(!showColorPallete)}
                       >
                         <ColorLensRoundedIcon sx={{ fontSize: 18 }} />
@@ -480,7 +479,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
                     {/* Clear input */}
                     {/* <Tooltip title="Clear Note" arrow placement="top">
                       <button
-                        className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black hover:text-white hover:bg-red-500 hover:border-none transition-all duration-300" : "w-0 h-0 opacity-0 transition-all duration-200"}
+                        className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black hover:text-white hover:bg-red-500 hover:border-none transition-all duration-150" : "w-0 h-0 opacity-0 transition-all duration-150"}
                         type="button"
                         onClick={clearInput}
                       >
@@ -491,8 +490,8 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
                     {/* Toggle privacy */}
                     <Tooltip title={notePrivacy ? "Make Note Public" : "Make Note Private"} arrow placement="top">
                       <button
-                        className={`${wordCount > 0 ? "w-10 h-10 rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-black hover:border-none " : "w-0 h-0 opacity-0"} ${notePrivacy && "bg-black text-white"} flex justify-center items-center transition-all duration-300`}
-                        type="button"
+                        className={`${wordCount > 0 ? "w-10 h-10 rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-black hover:border-none " : "w-0 h-0 opacity-0"} ${notePrivacy && "bg-black text-white"} flex justify-center items-center transition-all duration-150`}
+                        type="submit"
                         onClick={() => setNotePrivacy(!notePrivacy)}
                       >
                         {notePrivacy ? <LockRoundedIcon sx={{ fontSize: 18 }} /> : <LockOpenRoundedIcon sx={{ fontSize: 18 }} />}
@@ -506,7 +505,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
                       <Tooltip title="Update Note" arrow placement="top">
                         <button
                           type="submit"
-                          className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full px-5 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300" : "w-0 h-0 opacity-0 transition-all duration-200"}
+                          className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full px-5 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-150" : "w-0 h-0 opacity-0 transition-all duration-150"}
                         >
                           {
                             updating || stateLoading ? <span className="loading loading-spinner loading-sm"></span> :

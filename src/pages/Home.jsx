@@ -71,7 +71,7 @@ const Home = () => {
   //  Capture the ID from the URL
   const queryParam = searchParams.get("note");
   const isPublicNote = Array.isArray(statePublicNote) ? statePublicNote?.some((note) => note.id == queryParam && note.user_id !== uid) : null
-  const isWriting = queryParam === 'true' && !isPublicNote ? true : false;
+  const isWriting = queryParam === 'open' && !isPublicNote ? true : false;
 
   let inputRef = useRef('')
 
@@ -87,7 +87,33 @@ const Home = () => {
 
   const { isLoading: loadingPublicNote } = usePublicNote(queryParam)
   const { isPending: loadingCollabs } = useFetchCollabs(uid, queryParam)
-  const { mutate: requestCollab, isPending:processingRequest } = useRequestCollab()
+  const { mutate: requestCollab, isPending: processingRequest } = useRequestCollab()
+  
+  // get textArea DOM by ref
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    // check if editing 
+    if (!isWriting && textareaRef.current) {
+      const el = textareaRef.current;
+
+      // timeout to move cursor caret 
+      const timeoutId = setTimeout(() => {
+        el.focus();
+        
+        // get textarea value length 
+        const valueLen = el.value.length;
+
+        // move cursorr
+        el.setSelectionRange(valueLen, valueLen);
+        
+        // scroll to the end of textare value
+        el.scrollTop = valueLen;
+      }, 0);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isWriting]);
   
 
   // This hook debounces the searchTerm from making a request to the api on every change. Debouncing stalls the request until searchTerm does not change for a number of time 
@@ -110,7 +136,7 @@ const Home = () => {
   // handle navigation base on query param
   const handleNav = () => {
     if (!isWriting && !isPending) {
-      navigate(`/?note=true`, { replace: true });
+      navigate(`/?note=open`, { replace: true });
     } else {
       navigate(`/`, { replace: true });
     }
@@ -313,7 +339,7 @@ const Home = () => {
       <AnimatePresence>
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          className={"fixed w-full h-full top-0 left-0 p-5 md:py-10 flex justify-center items-center z-[70]"}>
+          className={"fixed w-full h-full top-0 left-0 sm:p-5 md:py-10 flex justify-center items-center z-[70]"}>
 
           {/* backdrop  */}
           <div className={"fixed w-full h-full bg-black/80"} onClick={closePublicNote}></div>
@@ -322,43 +348,47 @@ const Home = () => {
             <motion.form
               // layoutId={`note-${noteId}`}
               // onSubmit={handleNoteUpdate} 
-              className={`opacity-100 relative flex flex-col w-full h-full pb-2 bg-white border justify-between rounded-[2rem] shadow-md duration-150 transition-all z-50`}>
+              className={`opacity-100 relative flex flex-col w-full h-full bg-white border sm:rounded-[2rem] shadow-md duration-150 transition-all z-50 overflow-hidden`}>
 
-              <div className="flex items-center justify-end gap-2 px-2 py-2">
-                <span className={`flex gap-2 flex-row border-[1px] px-4 py-2 rounded-full ${statePublicNote[0].bg_color} text-[10px] uppercase tracking-wider text-gray-600 font-light transition-all duration-150`}>noted on <b className="font-bold">{moment(statePublicNote[0].created_at).format("Do MMMM, YYYY")}</b></span>
+              <div className="flex items-center justify-between px-4 sm:px-6 py-4">
+                <span className={`flex gap-2 flex-row border-[1px] px-2 md:px-4 py-2 rounded-full ${statePublicNote[0].bg_color} text-[8px] sm:text-[10px] uppercase tracking-wider text-gray-600 font-light transition-all duration-150`}>noted on <b className="font-bold">{moment(statePublicNote[0].created_at).format("Do MMMM, YYYY")}</b></span>
                 
                 {/* close button or loading  */}
                 {
                   loadingPublicNote ? <span className="loading loading-spinner loading-sm"></span> :
-                  <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"} type="button" onClick={closePublicNote}><ClearRoundedIcon /></button>
+                  <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-150"} type="button" onClick={closePublicNote}><ClearRoundedIcon /></button>
                 }
               </div>
 
-                {/* Title Field */}
-                {statePublicNote[0].title !== null && <input
+              {/* Title Field */}
+              {statePublicNote[0].title !== null && 
+                <input
                   type="text"
                   name="title"
                   value={statePublicNote[0].title}
-                  className={`w-full outline-none font-bold text-xl md:text-2xl px-4 lg:px-8 py-4 ${colorOptionValue} placeholder:text-gray-400 transition-all duration-300`}
+                  className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent lg:px-8 py-4 placeholder:text-gray-400 transition-all duration-150`}
                   disabled
                   readOnly
-                />}
+                />
+              }
 
               {/* textarea  */}
               <textarea
                 autoFocus
                 type="text" 
+                ref={textareaRef}
                 value={statePublicNote[0].data_value}
                 disabled
-                className={`w-full h-[90%] outline-none resize-none placeholder:text-black px-8 py-4 text-base rounded-lg z-30 transition-all duration-300`} placeholder="Write Note"/>
+                className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 pb-10 text-base z-30 transition-all duration-150 bg-transparent`}
+              />
 
               {/* action buttons  */}
-              <div className="relative w-full md:flex justify-center items-center pt-4 pb-10">
+              <div className="relative w-full flex flex-col lg:flex-row justify-center items-center gap-4 py-4 md:py-8">
                   <div className={`relative w-full flex justify-center gap-4 items-center px-3 md:px-5`}>
                     {/* copy text to clipboard  */}
                     <CopyToClipboard text={statePublicNote[0]?.data_value} wordCount={statePublicNote[0]?.data_value.length} />
                     
-                    {
+                    {/* {
                       uid && 
                       <>
 
@@ -367,22 +397,24 @@ const Home = () => {
                               <span className="loading loading-spinner loading-sm"></span>
                           :
                             <Tooltip title={ collaboration !== null ? "Cancel Request" : "Request Collaboration" } arrow placement="top">
-                              <button className={`w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg ${collaboration ? "bg-[#FF8C00] text-white border-none" : "hover:bg-[#FF8C00] hover:text-white hover:border-none"} transition-all duration-300`} type="button" onClick={handleRequestCollab}><GroupAddRoundedIcon sx={{ fontSize: 18 }}/></button>
+                              <button className={`w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg ${collaboration ? "bg-[#FF8C00] text-white border-none" : "hover:bg-[#FF8C00] hover:text-white hover:border-none"} transition-all duration-150`} type="button" onClick={handleRequestCollab}><GroupAddRoundedIcon sx={{ fontSize: 18 }}/></button>
                             </Tooltip>
                         }
                       </>
-                    }
+                    } */}
                   
                     {/* word count  */}
-                    <span className="hidden md:block md:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                    <span className="hidden lg:block lg:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
                       {statePublicNote[0].data_value.length} characters
                     </span>
                   </div>
                         
-                      {/* word count  */}
-                      <span className="w-full md:hidden absolute text-center bottom-[4px] text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
-                        {statePublicNote[0].data_value.length} characters
-                      </span>
+                  <div className="w-full flex lg:hidden items-center justify-center">
+                    {/* word count  */}
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                      {statePublicNote[0].data_value.length} characters
+                    </span>
+                  </div>
               </div>
             </motion.form>
           </div>
@@ -398,17 +430,17 @@ const Home = () => {
         
           {/* Main section of Homepage  */}
           <section className="relative w-full flex flex-col gap-4 justify-center items-center">
-            <div className="flex justify-center items-center flex-row-reverse gap-2 lg:gap-6 w-full my-2 md:my-8">
-              <Search 
-                searchInput={searchInput}
-                setSearchInput={setSearchInput}
-              />
+            <div className="flex gap-2 lg:gap-6 w-full my-2 md:my-8">
               <FilterButton 
                 options={options}
                 sortValue={sortValue}
                 showSortOptions={showSortOptions}
                 setSortValue={setSortValue}
                 setShowOptions={setShowOptions}
+              />
+              <Search 
+                searchInput={searchInput}
+                setSearchInput={setSearchInput}
               />
             </div>
 
@@ -421,8 +453,8 @@ const Home = () => {
                     <>
                       <Tooltip title={closeSectionPinned ? "Open Pinned" : "Close Pinned"} className={ `${notes.length > 1 ? "block" : "hidden"}`} arrow placement='top'>
                         <button className={`w-fit flex justify-center items-center ${!closeSectionPinned ? 'bg-[#f4f7f8] text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => setCloseSectionPinned(!closeSectionPinned)}>
-                          <p className={`${!closeSectionPinned && "-rotate-180"} cursor-pointer duration-300`}>{closeSectionPinned ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
-                          <h2 className="uppercase text-center text-xs font-medium tracking-wide">pinned notes</h2>
+                          <p className={`${!closeSectionPinned && "-rotate-180"} cursor-pointer duration-150`}>{closeSectionPinned ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
+                          <h2 className="uppercase text-center text-[10px] sm:text-xs font-medium tracking-wide">pinned notes</h2>
                         </button>
                       </Tooltip>
                     
@@ -458,8 +490,8 @@ const Home = () => {
                       (checkForPinned() && notes.some((note) => !note.pinned)) &&
                       <Tooltip title={closeSection ? "Open Notes" : "Close notes"} arrow placement='top'>
                         <button className={`w-fit flex justify-center items-center ${!closeSection ? 'bg-[#f4f7f8] text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => setCloseSection(!closeSection)}>
-                          <p className={`${!closeSection && "-rotate-180"} cursor-pointer duration-300`}>{closeSection ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
-                          <h2 className="uppercase text-center text-xs font-medium tracking-wide">other notes</h2>
+                          <p className={`${!closeSection && "-rotate-180"} cursor-pointer duration-150`}>{closeSection ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
+                          <h2 className="uppercase text-center text-[10px] sm:text-xs font-medium tracking-wide">other notes</h2>
                         </button>
                       </Tooltip>
                   }
@@ -518,7 +550,7 @@ const Home = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed w-full h-full top-0 left-0 p-5 md:py-10 flex justify-center items-center z-[70]"
+                className="fixed w-full h-full top-0 left-0 sm:p-5 md:py-10 flex justify-center items-center z-[70]"
               >
                 {/* backdrop */}
                 <div className="fixed w-full h-full bg-black/80" onClick={handleNav}></div>
@@ -526,12 +558,12 @@ const Home = () => {
                 <div className="w-full h-full md:w-[80%] lg:w-[60%] md:lg-auto group">
                   <form
                     onSubmit={handleNoteAdd}
-                    className={`opacity-100 relative flex flex-col w-full h-full bg-white border rounded-[2rem] shadow-md duration-150 transition-all z-50 overflow-hidden`}
+                    className={`opacity-100 relative flex flex-col w-full h-full bg-white border sm:rounded-[2rem] shadow-md duration-150 transition-all z-50 overflow-hidden`}
                   >
                     {/* Header Actions */}
                     <div className="flex items-center justify-end p-4">
                       <button
-                        className="w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-300"
+                        className="w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-150"
                         type="button"
                         onClick={handleNav}
                       >
@@ -539,7 +571,9 @@ const Home = () => {
                       </button>
                     </div>
 
-                    {/* Title Field */}
+                    {/* input fields Section */}
+                    <div className={`relative w-full h-full flex flex-col ${colorOptionValue}`}>
+                      {/* Title Field */}
                       <input
                         type="text"
                         name="title"
@@ -547,31 +581,28 @@ const Home = () => {
                         onChange={handleTitleChange} // Ensure this handler exists
                         placeholder="Title"
                         maxLength="100"
-                        className={`w-full outline-none font-bold text-xl md:text-2xl px-4 lg:px-8 py-4 ${colorOptionValue} placeholder:text-gray-400 transition-all duration-300`}
+                        className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent lg:px-8 py-4 placeholder:text-gray-400 transition-all duration-150`}
                       />
 
-                    {/* Note Body Field */}
-                    <textarea
-                      ref={inputRef}
-                      autoFocus
-                      value={noteInput}
-                      onChange={handleChange}
-                      className={`w-full flex-grow outline-none resize-none placeholder:text-gray-400 px-4 lg:px-8 py-4 text-base z-30 transition-all duration-300 ${colorOptionValue}`}
-                      placeholder="Write Note"
-                    />
+                      {/* Note Body Field */}
+                      <textarea
+                        ref={inputRef}
+                        autoFocus
+                        value={noteInput}
+                        onChange={handleChange}
+                        className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 text-base z-30 transition-all duration-150 bg-transparent`}
+                        placeholder="Write Note"
+                      />
+                    </div>
 
                     {/* Footer Actions */}
-                    <div className="relative w-full md:flex justify-center items-center py-8">
+                    <div className="relative w-full flex flex-col lg:flex-row justify-center items-center gap-4 py-4 md:py-8">
                       {isPending ? (
                         <div className="w-full flex justify-center items-center px-3 md:px-5 pt-4 transition-all duration-150">
                           <span className="loading loading-spinner loading-sm"></span>
                         </div>
                       ) : (
-                        <div
-                          className={`relative w-full flex justify-center gap-4 items-center px-3 md:px-5 ${
-                            wordCount > 0 ? "gap-4" : "gap-0"
-                          } transition-all duration-150`}
-                        >
+                        <div className={`relative w-full flex justify-center gap-4 items-center px-3 md:px-5 ${wordCount > 0 ? "gap-4" : "gap-0"} transition-all duration-150`}>
                           {/* color palette */}
                           <ColorPallete
                             show={showColorPallete}
@@ -579,14 +610,7 @@ const Home = () => {
                             addBackground={handleColorOption}
                           />
                           <Tooltip title="Choose color" arrow>
-                            <i
-                              className={`flex justify-center items-center ${
-                                wordCount > 0 ? "w-10 h-10 rounded-full" : "w-0 h-0 opacity-0"
-                              } ${
-                                showColorPallete
-                                  ? "bg-warning shadow-lg border-none"
-                                  : "border-[1px] border-neutral"
-                              } hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer`}
+                            <i className={`flex justify-center items-center ${wordCount > 0 ? "w-10 h-10 rounded-full" : "w-0 h-0 opacity-0"} ${showColorPallete? "bg-warning shadow-lg border-none": "border-[1px] border-neutral"} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer`}
                               onClick={() => setShowColorPallete(!showColorPallete)}
                             >
                               <ColorLensRoundedIcon sx={{ fontSize: 18 }} />
@@ -598,7 +622,7 @@ const Home = () => {
                             <button
                               className={
                                 wordCount > 0
-                                  ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-red-500 hover:border-none transition-all duration-300"
+                                  ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-red-500 hover:border-none transition-all duration-150"
                                   : "w-0 h-0 opacity-0 transition-all duration-200"
                               }
                               type="button"
@@ -612,11 +636,7 @@ const Home = () => {
                           <Tooltip title="Add Note" arrow>
                             <button
                               type="submit"
-                              className={
-                                wordCount > 0
-                                  ? "h-10 flex justify-center items-center rounded-full px-5 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-300"
-                                  : "w-0 h-0 opacity-0 transition-all duration-200"
-                              }
+                              className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full px-5 border-[1px] border-[#114f60]  shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-150" : "w-0 h-0 opacity-0 transition-all duration-200"}
                             >
                               <CheckRoundedIcon />
                             </button>
@@ -630,9 +650,11 @@ const Home = () => {
                       )}
 
                       {/* word count mobile */}
-                      <span className="w-full lg:hidden absolute text-center bottom-[4px] text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
-                        {wordCount} characters
-                      </span>
+                      <div className="w-full flex lg:hidden items-center justify-center">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                          {wordCount} characters
+                        </span>
+                      </div>
                     </div>
                   </form>
                 </div>
@@ -641,8 +663,8 @@ const Home = () => {
           </AnimatePresence>
 
           {/* Add Noet Button */}
-            <Tooltip title="Add Noet" arrow placement="top"  className={`${markedNotes.length > 0 ? "opacity-0" : "opacity-100"} fixed bottom-4 md:bottom-10 right-10 lg:right-12 duration-300 transition-all z-30`}>
-                <button type="submit" className="cursor-pointer flex justify-center items-center rounded-full shadow-lg text-white text-sm font-bold bg-[#114f60] hover:bg-[#255f6f] px-4 py-4 transition-all duration-300 z-30" onClick={handleNav} disabled={markedNotes.length > 0}> 
+            <Tooltip title="Add Noet" arrow placement="top"  className={`${markedNotes.length > 0 ? "opacity-0" : "opacity-100"} fixed bottom-4 md:bottom-10 right-10 lg:right-12 duration-150 transition-all z-30`}>
+                <button type="submit" className="cursor-pointer flex justify-center items-center rounded-full shadow-lg text-white text-sm font-bold bg-[#255f6f] hover:bg-[#114f60] px-4 py-4 transition-all duration-150 z-30" onClick={handleNav} disabled={markedNotes.length > 0}> 
                   <AddRoundedIcon sx={{ fontSize: 20 }}/> 
                   Add Note
                 </button>

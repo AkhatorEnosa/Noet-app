@@ -54,7 +54,7 @@ const SignIn = () => {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full max-w-[300px]">
           <button 
             onClick={handleSignIn}
-            className="group relative w-full flex items-center justify-center gap-3 py-4 bg-[#1A1A1A] text-white rounded-full overflow-hidden transition-all duration-500 hover:bg-[#255f6f] hover:shadow-[0_10px_30px_rgba(37,95,111,0.3)]"
+            className="group relative w-full flex items-center justify-center gap-3 py-4 bg-[#1A1A1A] text-white rounded-full overflow-hidden transition-all duration-150 hover:bg-[#255f6f] hover:shadow-[0_10px_30px_rgba(37,95,111,0.3)]"
             disabled={isPending || isLoading || loading}
           >
             {isPending || isLoading || loading ? 
