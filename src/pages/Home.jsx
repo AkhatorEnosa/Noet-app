@@ -292,9 +292,8 @@ const Home = () => {
   // }
 
   // handle colour change
-  const handleColorOption = (e) => {
-    const getColorValue = (e.target.className).split(" ").filter((x) => /bg-/.test(x))[0]
-    setColorOptionValue(getColorValue)
+  const handleColorOption = (color) => {
+    setColorOptionValue(color)
     setShowColorPallete(false)
   }
 
@@ -339,7 +338,7 @@ const Home = () => {
       <AnimatePresence>
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          className={"fixed w-full h-full top-0 left-0 sm:p-5 md:py-10 flex justify-center items-center z-[70]"}>
+          className={`fixed w-full h-full top-0 left-0 sm:p-5 md:py-10 flex ${statePublicNote[0].bg_color} justify-center items-center z-[70]`}>
 
           {/* backdrop  */}
           <div className={"fixed w-full h-full bg-black/80"} onClick={closePublicNote}></div>
@@ -361,7 +360,7 @@ const Home = () => {
               </div>
 
               {/* Title Field */}
-              {statePublicNote[0].title !== null && 
+              {statePublicNote[0].title !== "" && 
                 <input
                   type="text"
                   name="title"
@@ -547,10 +546,10 @@ const Home = () => {
           <AnimatePresence>
             {isWriting && !isPublicNote && (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed w-full h-full top-0 left-0 sm:p-5 md:py-10 flex justify-center items-center z-[70]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className={`fixed w-full h-full top-0 left-0 sm:p-5 md:py-10 flex justify-center items-center z-[70]`}
               >
                 {/* backdrop */}
                 <div className="fixed w-full h-full bg-black/80" onClick={handleNav}></div>
@@ -590,7 +589,7 @@ const Home = () => {
                         autoFocus
                         value={noteInput}
                         onChange={handleChange}
-                        className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 pb-5 text-base z-30 transition-all duration-150 bg-transparent`}
+                        className={`w-full flex-grow outline-none resize-none placeholder:text-gray-400 px-4 lg:px-8 py-4 pb-5 text-base z-30 transition-all duration-150 bg-transparent`}
                         placeholder="Write Note"
                       />
                     </div>
