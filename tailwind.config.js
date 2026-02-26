@@ -1,11 +1,12 @@
+import daisyui from "daisyui"
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    // Putting screens here overrides the defaults entirely
+    extend: {},
     screens: {
       'xs': '480px',   // Mobile (Large)
       'sm': '640px',   // Tablets (Small)
@@ -15,5 +16,16 @@ module.exports = {
       '2xl': '1536px', // Large Desktop (Optional, but standard)
     },
   },
-  plugins: [],
+  plugins: [
+     daisyui,
+  ],
+  daisyui: {
+    themes: ["cupcake"],
+  },
+     safelist: [
+{
+  pattern:
+    /(bg|text|border)-(purple|pink|orange|yellow|green|black|gray|neutral|red|blue|white)/,
+  },
+],
 }

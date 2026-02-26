@@ -238,19 +238,16 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
 
   // truncating long notes to only 599 characters for Note Component rendering 
   const truncateNote = (x) => {
-      if(x.length > 600) {
-          return x.substring(0, 599).concat('...')
-      } else  {
-          return x
-      }
+    if (x.length > 600) {
+      return x.substring(0, 599).concat('...')
+    } else {
+      return x
+    }
   }
 
-  let getColorValue;
-
   // handle color option
-  const handleColorOption = (e) => {
-    getColorValue = (e.target.className).split(" ").filter((x) => /bg-/.test(x))[0]
-    setColorOptionValue(getColorValue)
+  const handleColorOption = (color) => {
+    setColorOptionValue(color)
     setShowColorPallete(!showColorPallete)
   }
 
@@ -349,9 +346,9 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
           {!markedNotes.length > 0 && <div className="absolute left-0 w-full h-full z-10" onClick={() => handleNav()}></div>}
           
           {/* date  */}
-          <div className="flex flex-col text-[10px] text-gray-500 font-medium">
+          <div className="flex flex-col text-[10px] font-medium">
             <span className="uppercase tracking-tighter opacity-70">Noted</span>
-            <b className="text-gray-700">{moment(note_date).format("MMM D, YYYY")}</b>
+            <b className="">{moment(note_date).format("MMM D, YYYY")}</b>
           </div>
           
           {/* action buttons  */}
@@ -465,7 +462,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
                     {/* color pallete component */}
                     <ColorPallete show={showColorPallete} colorOption={colorOptionValue} addBackground={handleColorOption} />
 
-                    <Tooltip title="Choose color" arrow placement="top">
+                    <Tooltip title="Choose colour" arrow placement="top">
                       <i className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? "bg-warning border-none" : "border-[1px] border-black"} hover:bg-warning hover:border-none z-30 transition-all duration-150 cursor-pointer `}
                         onClick={() => setShowColorPallete(!showColorPallete)}
                       >
@@ -475,17 +472,6 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
 
                     {/* copy text to clipboard */}
                     <CopyToClipboard text={getNote} wordCount={wordCount} />
-
-                    {/* Clear input */}
-                    {/* <Tooltip title="Clear Note" arrow placement="top">
-                      <button
-                        className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black hover:text-white hover:bg-red-500 hover:border-none transition-all duration-150" : "w-0 h-0 opacity-0 transition-all duration-150"}
-                        type="button"
-                        onClick={clearInput}
-                      >
-                        <ClearAllRoundedIcon sx={{ fontSize: 18 }} />
-                      </button>
-                    </Tooltip> */}
 
                     {/* Toggle privacy */}
                     <Tooltip title={notePrivacy ? "Make Note Public" : "Make Note Private"} arrow placement="top">
@@ -550,6 +536,3 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
 }
 
 export default Note
-
-
-// (setTodoHeight(noteRef.current.offsetHeight)
