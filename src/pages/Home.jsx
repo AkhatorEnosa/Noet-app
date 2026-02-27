@@ -94,7 +94,7 @@ const Home = () => {
 
   useEffect(() => {
     // check if editing 
-    if (!isWriting && textareaRef.current) {
+    if (isPublicNote && textareaRef.current) {
       const el = textareaRef.current;
 
       // timeout to move cursor caret 
@@ -113,7 +113,7 @@ const Home = () => {
 
       return () => clearTimeout(timeoutId);
     }
-  }, [isWriting]);
+  }, [isPublicNote]);
   
 
   // This hook debounces the searchTerm from making a request to the api on every change. Debouncing stalls the request until searchTerm does not change for a number of time 

@@ -15,7 +15,7 @@ export const THEMES = [
   { name: "Lavender", color: "bg-indigo-50 text-indigo-900", icon: <AutoAwesome fontSize='small' /> },
   
   /* --- Holidays: Softer & Refined --- */
-  { name: "Valentine", color: "bg-pink-50 text-pink-600", icon: <Favorite fontSize='small' /> },
+  { name: "Valentine", color: "bg-pink-100 text-pink-900", icon: <Favorite fontSize='small' /> },
   { name: "Ramadan", color: "bg-teal-50 text-teal-800", icon: <NightlightRound fontSize='small' /> }, // Soft Moonlight
   { name: "Halloween", color: "bg-orange-50 text-orange-900", icon: <NightsStay fontSize='small' /> },
   { name: "Christmas", color: "bg-red-50 text-red-900", icon: <Celebration fontSize='small' /> },
