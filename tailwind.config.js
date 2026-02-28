@@ -22,10 +22,11 @@ export default {
   daisyui: {
     themes: ["cupcake"],
   },
-     safelist: [
-{
-  pattern:
-    /(bg|text|border)-(purple|pink|orange|yellow|green|black|gray|neutral|red|blue|white)/,
-  },
-],
+  safelist: [
+    {
+      pattern: /(bg|text|border)-(purple|pink|orange|yellow|green|black|gray|neutral|red|blue|white|rose|emerald|sky|teal|amber|indigo)/,
+    },
+    'border-white',
+    'border-black'
+  ],
 }

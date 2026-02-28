@@ -73,28 +73,18 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
   }, [isEditing, navigate, noteId]);
 
   // update note_value function
-  const updateNote = useCallback((title, input, color, privacy, shouldNavigate = false) => {
-    if(input.trim() !== "") {
-      update(
-        { id: noteId, title, data_value: input.trim(), bg_color: color, privacy: privacy },
-        { 
-          onSuccess: () => {
-            if (shouldNavigate) handleNav();
-            toast.success("Note updated!", {
-              className: "text-xs w-fit pr-24"
-            })
-          } 
-        }
-      )
-
-      setShowColorPallete(false)
-    } else {
-      setGetNote('')
-      setWordCount(0)
-      setShowColorPallete(false)
-      setNotePrivacy(true)
-    }
-  }, [noteId, update, handleNav])
+  const updateNote = useCallback((title, input, color, privacy) => {
+    update(
+      { id: noteId, title, data_value: input.trim(), bg_color: color, privacy: privacy },
+      { 
+        onSuccess: () => {
+          toast.success("Note updated!", {
+            className: "text-xs w-fit pr-24"
+          })
+        } 
+      }
+    )
+  }, [noteId, update])
 
   // debounce note_value input for auto save
   useDebounce(() => {
@@ -105,7 +95,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
       setDebouncedColorOption(colorOptionValue)
       setDebouncedNotePrivacy(notePrivacy)
     }
-    }, 1500, [getNoteTitle, getNote, colorOptionValue, notePrivacy, isEditing, autoSave, updateNote]
+    }, 1500, [getNoteTitle, getNote, colorOptionValue, notePrivacy, isEditing, autoSave]
   )
 
   // disable scroll when editing or deleting note_value
@@ -213,93 +203,93 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
   
   return (
      <article className="note">
-      <motion.div
-        // layout
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0, x: 100 }}
-        transition={{ duration: 0.3 }}
-        // layoutId={`note_value-${noteId}`}
-        className={`group flex flex-col justify-between relative break-inside-avoid pt-2 w-full ${bgColor} rounded-2xl text-lg break-words active:cursor-grab ${noteChecked ? "ring-black ring-[1px]" : showDrop ? "ring-[#114f60] ring-2 z-50" : "ring-[1px] ring-black/10"} ${toggleAction ? "z-[70]" : "z-10"} ${isEditing && (noteId == activeNoteId) ? "scale-0" : "scale-100"} transition-all duration-150 ease-in-out `} 
-        draggable={!noteChecked ? true : false}
-        
-        // long press and mobile drag events
-        onMouseDown={startLongPress}
-        onMouseUp={cancelLongPress}
-        onTouchStart={startLongPress}
-        onTouchEnd={cancelLongPress}
-
-        // dragging events
-        onDragStart={() => activeNote(noteObj) & cancelLongPress()} 
-        onDragEnd={() => activeNote(null)}
-        onDragEnter={() => setShowDrop(true)} 
-        onDragLeave={() => setShowDrop(false)}
-        onDrop={() => {
-          handleDrop(),
-          setShowDrop(false)
-        }}
-        onDragOver={(e) => e.preventDefault()}
-      >
-
-        {/* overlay to open note_value edit modal */}
-        {
-          noteChecked
-          ? <div className="absolute top-0 left-0 w-full h-full rounded-2xl z-[71]" onClick={() => handleMarkNotes()}></div> 
-          : !noteChecked && markedNotes.length > 0 ? <div className="absolute top-0 left-0 w-full h-full rounded-2xl z-[71]" onClick={() => handleMarkNotes()}></div> 
-          : ""
-        }
-
-        <div className="absolute top-0 left-0 w-full h-full rounded-2xl" onClick={() => handleNav()}></div>
-        
-        {/* note_value div  */}
-        <div className={`w-full ${note_value.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
-          <Tooltip title="Mark Note" arrow placement="top">
-            <button className={`relative -top-5 right-5 ${noteChecked ? "opacity-100" : "opacity-0 lg:group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-150 z-[65]`} type="button" onClick={() => handleMarkNotes()}>
-              { noteChecked ? <CheckCircle sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/> :
-                <CheckCircleOutlineRoundedIcon sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/>}
-            </button>
-          </Tooltip>
-
-          {notePreview}
-        </div>
-
-        {/* date and actions  */}
-        <div className={`hidden lg:flex ${markedNotes.length > 0 ? "opacity-0 group-hover:opacity-0" : "opacity-100" } flex items-center justify-between px-4 py-3 bg-black/5 rounded-b-2xl border-t border-black/5 transition-opacity ${!toggleAction && !markedNotes.length > 0 && "opacity-100 lg:opacity-0 lg:group-hover:opacity-100"} z-[70]`}>
-        
-          {/* overlay to open note_value edit modal when actions are toggled  */}
-          {!markedNotes.length > 0 && <div className="absolute left-0 w-full h-full z-10" onClick={() => handleNav()}></div>}
+        <motion.div
+          // layout
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0, x: 100 }}
+          transition={{ duration: 0.3 }}
+          // layoutId={`note_value-${noteId}`}
+          className={`group flex flex-col justify-between relative break-inside-avoid pt-2 w-full ${bgColor} rounded-2xl text-lg break-words active:cursor-grab ${noteChecked ? "ring-black ring-[1px]" : showDrop ? "ring-[#114f60] ring-2 z-50" : "ring-[1px] ring-black/10"} ${toggleAction ? "z-[70]" : "z-10"} ${isEditing && (noteId == activeNoteId) ? "scale-0" : "scale-100"} transition-all duration-150 ease-in-out `} 
+          draggable={!noteChecked ? true : false}
           
-          {/* date  */}
-          <div className="flex flex-col text-[10px] font-medium">
-            <span className="uppercase tracking-tighter opacity-70">Noted</span>
-            <b className="">{moment(note_date).format("MMM D, YYYY")}</b>
+          // long press and mobile drag events
+          onMouseDown={startLongPress}
+          onMouseUp={cancelLongPress}
+          onTouchStart={startLongPress}
+          onTouchEnd={cancelLongPress}
+
+          // dragging events
+          onDragStart={() => activeNote(noteObj) & cancelLongPress()} 
+          onDragEnd={() => activeNote(null)}
+          onDragEnter={() => setShowDrop(true)} 
+          onDragLeave={() => setShowDrop(false)}
+          onDrop={() => {
+            handleDrop(),
+            setShowDrop(false)
+          }}
+          onDragOver={(e) => e.preventDefault()}
+        >
+
+          {/* overlay to open note_value edit modal */}
+          {
+            noteChecked
+            ? <div className="absolute top-0 left-0 w-full h-full rounded-2xl z-[71]" onClick={() => handleMarkNotes()}></div> 
+            : !noteChecked && markedNotes.length > 0 ? <div className="absolute top-0 left-0 w-full h-full rounded-2xl z-[71]" onClick={() => handleMarkNotes()}></div> 
+            : ""
+          }
+
+          <div className="absolute top-0 left-0 w-full h-full rounded-2xl" onClick={() => handleNav()}></div>
+          
+          {/* note_value div  */}
+          <div className={`w-full ${note_value.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
+            <Tooltip title="Mark Note" arrow placement="top">
+              <button className={`relative -top-5 right-5 ${noteChecked ? "opacity-100" : "opacity-0 lg:group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-150 z-[65]`} type="button" onClick={() => handleMarkNotes()}>
+                { noteChecked ? <CheckCircle sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/> :
+                  <CheckCircleOutlineRoundedIcon sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/>}
+              </button>
+            </Tooltip>
+
+            {notePreview}
           </div>
+
+          {/* date and actions  */}
+          <div className={`hidden lg:flex ${markedNotes.length > 0 ? "opacity-0 group-hover:opacity-0" : "opacity-100" } flex items-center justify-between px-4 py-3 bg-black/5 rounded-b-2xl border-t border-black/5 transition-opacity ${!toggleAction && !markedNotes.length > 0 && "opacity-100 lg:opacity-0 lg:group-hover:opacity-100"} z-[70]`}>
           
-          {/* action buttons  */}
-          <div className={`relative w-fit ${markedNotes.length > 0 ? "hidden" : "flex"} lg:gap-2 z-[60]`}>
-            <Tooltip title={!notePrivacy ? "Public" : "Private"} placement="top" arrow className="flex justify-center items-center w-5 h-5 p-1 rounded-full z-50">
-              {notePrivacy ? <LockRoundedIcon /> : <LockOpenRoundedIcon />}
-            </Tooltip>
-
-            <Tooltip title="Pin" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 z-50" onClick={() => handlePinUpdate()}>
-                {updatingPin ? <CircularProgress size="20px" color="inherit"/> : !noteObj.pinned ? <PushPinOutlinedIcon/> : <PushPinRoundedIcon />}
-            </Tooltip>
-
-            <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 z-50" onClick={() => setToggleAction(!toggleAction)}>
-              <MoreVertIcon/>
-            </Tooltip>
+            {/* overlay to open note_value edit modal when actions are toggled  */}
+            {!markedNotes.length > 0 && <div className="absolute left-0 w-full h-full z-10" onClick={() => handleNav()}></div>}
             
-            {/* Dropdown Menu */}
-            <div className={`absolute ${!toggleAction ? "scale-0" : "scale-100"} bottom-10 right-2 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-150 transition-all z-[70]`}>
-                <ul>
-                    <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer duration-150 transition-all" onClick={handleNav}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
-                    <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer duration-150 transition-all" onClick={handleMarkNotes}>Mark <CheckCircleOutlineRoundedIcon sx={{ fontSize: 12 }}/></li>
-                    <li className="flex justify-between hover:text-red-500 hover:bg-red-100/50 p-2 cursor-pointer duration-150 transition-all" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }} /></li>
-                </ul>
+            {/* date  */}
+            <div className="flex flex-col text-[10px] font-medium">
+              <span className="uppercase tracking-tighter opacity-70">Noted</span>
+              <b className="">{moment(note_date).format("MMM D, YYYY")}</b>
+            </div>
+            
+            {/* action buttons  */}
+            <div className={`relative w-fit ${markedNotes.length > 0 ? "hidden" : "flex"} lg:gap-2 z-[60]`}>
+              <Tooltip title={!notePrivacy ? "Public" : "Private"} placement="top" arrow className="flex justify-center items-center w-5 h-5 p-1 rounded-full z-50">
+                {notePrivacy ? <LockRoundedIcon /> : <LockOpenRoundedIcon />}
+              </Tooltip>
+
+              <Tooltip title="Pin" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 z-50" onClick={() => handlePinUpdate()}>
+                  {updatingPin ? <CircularProgress size="20px" color="inherit"/> : !noteObj.pinned ? <PushPinOutlinedIcon/> : <PushPinRoundedIcon />}
+              </Tooltip>
+
+              <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 z-50" onClick={() => setToggleAction(!toggleAction)}>
+                <MoreVertIcon/>
+              </Tooltip>
+              
+              {/* Dropdown Menu */}
+              <div className={`absolute ${!toggleAction ? "scale-0" : "scale-100"} bottom-10 right-2 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-150 transition-all z-[70]`}>
+                  <ul>
+                      <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer duration-150 transition-all" onClick={handleNav}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
+                      <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer duration-150 transition-all" onClick={handleMarkNotes}>Mark <CheckCircleOutlineRoundedIcon sx={{ fontSize: 12 }}/></li>
+                      <li className="flex justify-between hover:text-red-500 hover:bg-red-100/50 p-2 cursor-pointer duration-150 transition-all" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }} /></li>
+                  </ul>
+              </div>
             </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
 
       <div className={toggleAction ? "fixed w-full h-full top-0 left-0 z-[65]" : "hidden"} onClick={() => setToggleAction(false)}></div>
 

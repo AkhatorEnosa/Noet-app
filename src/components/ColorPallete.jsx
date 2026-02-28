@@ -5,7 +5,7 @@ import { THEMES } from "../constants/theme";
 const ColorPallete = ({ show, colorOption, addBackground }) => {
 
   return (
-    <div className={`absolute flex items-center justify-center bottom-[60px] ${show ? "scale-100 z-50" : "scale-0 translate-y-10 z-0"} transition-all duration-150 gap-3`}>
+    <div className={`absolute flex flex-col md:flex-row md:items-center md:justify-center left-10 md:left-auto bottom-[60px] ${show ? "scale-100 z-50" : "scale-0 translate-y-10 z-0"} transition-all duration-150 gap-3`}>
       {THEMES.map((theme, index) => {
         // Updated comparison logic
         const isActive = colorOption === theme.color;

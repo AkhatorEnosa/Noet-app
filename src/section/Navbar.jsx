@@ -56,7 +56,7 @@ const Navbar = () => {
               <img src={imgUrl} alt={"Your username profile pic"} className={`w-8 h-8 rounded-full border-gray-300 border-[1px] ${isLoading && "animate-spin"}`}/>
               <p className="hidden md:block line-clamp-1">{name}</p>
             </div>
-            <div className={`absolute ${!showLogout ? "scale-0" : "scale-100"} top-14 right-0 sm:left-0 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-300 transition-all z-[70]`}>
+            {/* <div className={`absolute ${!showLogout ? "scale-0" : "scale-100"} top-14 right-0 sm:left-0 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-300 transition-all z-[70]`}>
                 <ul>
                   <li className="flex justify-center items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer duration-300 transition-all"
                     onClick={() => handleSignOut()}
@@ -68,18 +68,18 @@ const Navbar = () => {
                     }
                   </li>
                 </ul>
-            </div>
+            </div> */}
             
             <div className={showLogout ? "fixed w-full h-full top-0 left-0 z-[65]" : "hidden"} onClick={() => setShowLogout(false)}></div>
               
-            {/* <button className={`absolute right-0 sm:left-0 ${showLogout ? "top-14 opacity-100 scale-100" : "top-0 opacity-0 scale-0"} w-fit sm:w-full flex justify-center items-center px-4 py-3 rounded-full gap-3 active:shadow-lg bg-[#114f60] hover:bg-[#255f6f] text-white transition-all duration-200`} onClick={handleSignOut} disabled={isLoading}>
-              {isLoading ? 
+            <button className={`absolute right-0 sm:left-0 ${showLogout ? "top-14 opacity-100 scale-100" : "top-0 opacity-0 scale-0"} w-fit sm:w-full flex justify-center items-center px-4 py-3 rounded-full gap-3 active:shadow-lg ${isLoading ? "bg-gray-500" : "bg-[#114f60] hover:bg-[#255f6f]"} text-white z-[70] transition-all duration-200`} onClick={handleSignOut} disabled={isLoading}>
+              {/* {isLoading ? 
                 <div className="flex gap-2">
                   <span className="loading loading-spinner loading-sm"></span>
-                </div> : 
+                </div> :  */}
                 <p className="flex gap-2 items-center justify-center text-xs"><LogoutRoundedIcon sx={{ fontSize: "18px" }}/><span className="block">Logout</span></p>
-              }
-           </button> */}
+              {/* } */}
+           </button>
           </div>}
         </div>
       </section>

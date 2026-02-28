@@ -47,7 +47,7 @@ const NoteModal = ({
     // get textArea DOM by ref
     const textareaRef = useRef(null);
     const { autoSave, setAutoSave } = useContext(AppContext)
-    
+
     useEffect(() => {
         // check if editing 
         if (isEditing && textareaRef.current) {
@@ -70,6 +70,12 @@ const NoteModal = ({
             return () => clearTimeout(timeoutId);
         }
     }, [isEditing]);
+
+    // verify if color option is white to change text color to black for better visibility
+    const verifyColorIsWhite = () => {
+        const colorIsWhite = colorOptionValue.includes("bg-white");
+        if (colorIsWhite) return true
+    }
     
     // handle autosave toggle 
     const handleAutoSaveToggle = () => {
@@ -87,7 +93,6 @@ const NoteModal = ({
         })
         }
     }
-
   
     // handle change for title input
     const handleTitleChange = (e) => {
@@ -110,6 +115,10 @@ const NoteModal = ({
     const handleColorOption = (color) => {
         setColorOptionValue(color)
         setShowColorPallete(!showColorPallete)
+    }
+
+    const handlePrivacyToggle = () => {
+        setNotePrivacy(!notePrivacy)
     }
     
 
@@ -138,7 +147,7 @@ const NoteModal = ({
                   <div className="flex gap-2 items-center z-20">
                     
                     <Tooltip title="Pin" placement="bottom" arrow>
-                      <button className={`w-8 h-8 flex justify-center items-center border-[1px] cursor-pointer p-1 rounded-full ${noteIsPinned ? "text-[#114f60] bg-[#114f60]/10" : "lg:hover:bg-[#114f60]/10"} rounded-full cursor-pointer transition-all duration-150`} type="button"
+                      <button className={`w-8 h-8 flex justify-center items-center border-[1px] cursor-pointer p-1 rounded-full ${noteIsPinned ? `${verifyColorIsWhite() ? "text-[#114f60] bg-[#114f60]/10" : colorOptionValue}` : "lg:hover:bg-[#114f60]/10"} rounded-full cursor-pointer transition-all duration-150`} type="button"
                         onClick={() => handlePinUpdate()}
                         disabled={updatingPin || stateLoading}
                       >
@@ -147,7 +156,7 @@ const NoteModal = ({
                     </Tooltip>
 
                     <Tooltip title={autoSave == "true" ? "Undo Auto-Save" : "Enable Auto-Save"} placement="bottom" arrow>
-                      <button className={`w-8 h-8 flex justify-center items-center border-[1px] ${autoSave == "true" ? "text-[#114f60] bg-[#114f60]/10" : "lg:hover:bg-[#114f60]/10"} rounded-full cursor-pointer transition-all duration-150`} type="button"
+                      <button className={`w-8 h-8 flex justify-center items-center border-[1px] ${autoSave == "true" ? `${verifyColorIsWhite() ? "text-[#114f60] bg-[#114f60]/10" : colorOptionValue}` : "lg:hover:bg-[#114f60]/10"} rounded-full cursor-pointer transition-all duration-150`} type="button"
                         onClick={() => handleAutoSaveToggle()}
                         disabled={updating || stateLoading}
                       >
@@ -194,6 +203,9 @@ const NoteModal = ({
                     
                     {/* color pallete component */}
                     <ColorPallete show={showColorPallete} colorOption={colorOptionValue} addBackground={handleColorOption} />
+                    
+                    {/* backdrop for colour pallete  */}
+                    <div className={showColorPallete ? "fixed w-full h-full top-0 left-0 z-[30]" : "hidden"} onClick={() => setShowColorPallete(!showColorPallete)}></div>
 
                     <Tooltip title="Choose colour" arrow placement="top">
                       <i className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? "bg-warning border-none" : "border-[1px] border-black"} hover:bg-warning hover:border-none z-30 transition-all duration-150 cursor-pointer `}
@@ -211,7 +223,7 @@ const NoteModal = ({
                       <button
                         className={`${wordCount > 0 ? "w-10 h-10 rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-black hover:border-none " : "w-0 h-0 opacity-0"} ${notePrivacy && "bg-black text-white"} flex justify-center items-center transition-all duration-150`}
                         type="submit"
-                        onClick={() => setNotePrivacy(!notePrivacy)}
+                        onClick={handlePrivacyToggle}
                       >
                         {notePrivacy ? <LockRoundedIcon sx={{ fontSize: 18 }} /> : <LockOpenRoundedIcon sx={{ fontSize: 18 }} />}
                       </button>
