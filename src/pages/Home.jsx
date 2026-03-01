@@ -32,6 +32,7 @@ import useRequestCollab from "../hooks/useRequestCollab";
 import useFetchCollabs from "../hooks/useFetchCollabs";
 import Sidebar from "../section/Sidebar";
 import { toast } from "react-toastify";
+import { ShareNote } from "../components/ShareNote";
 
 const options = ['privacy', 'date', 'content', 'default']
 
@@ -347,7 +348,7 @@ const Home = () => {
             <motion.form
               // layoutId={`note-${noteId}`}
               // onSubmit={handleNoteUpdate} 
-              className={`opacity-100 relative flex flex-col w-full h-full bg-white border sm:rounded-[2rem] shadow-md duration-150 transition-all z-50 overflow-hidden`}>
+              className={`opacity-100 relative flex flex-col w-full h-full border ${statePublicNote[0].bg_color} sm:rounded-[2rem] shadow-md duration-150 transition-all z-50 overflow-hidden`}>
 
               <div className="flex items-center justify-between px-4 sm:px-6 py-4">
                 <span className={`flex gap-2 flex-row border-[1px] px-2 md:px-4 py-2 rounded-full ${statePublicNote[0].bg_color} text-[8px] sm:text-[10px] uppercase tracking-wider text-gray-600 font-light transition-all duration-150`}>noted on <b className="font-bold">{moment(statePublicNote[0].created_at).format("Do MMMM, YYYY")}</b></span>
@@ -359,27 +360,34 @@ const Home = () => {
                 }
               </div>
 
-              {/* Title Field */}
-              {statePublicNote[0].title !== "" && 
-                <input
-                  type="text"
-                  name="title"
-                  value={statePublicNote[0].title}
-                  className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent lg:px-8 py-4 placeholder:text-gray-400 transition-all duration-150`}
+              
+
+              {/* input fields Section */}
+              <div className={`relative w-full h-full flex flex-col ${statePublicNote[0].bg_color}`}>
+                {/* Title Field */}
+                {statePublicNote[0].title !== "" && 
+                  
+                  <input
+                    type="text"
+                    name="title"
+                    value={statePublicNote[0].title}
+                    className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent md:px-8 py-4 placeholder:text-gray-400 transition-all duration-150`}
+                    disabled
+                    readOnly
+                  />
+                }
+
+                {/* textarea  */}
+                <textarea
+                  autoFocus
+                  type="text" 
+                  // ref={textareaRef}
+                  value={statePublicNote[0].data_value}
                   disabled
                   readOnly
+                  className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 md:px-8 py-4 pb-5 text-base z-30 transition-all duration-150 bg-transparent`}
                 />
-              }
-
-              {/* textarea  */}
-              <textarea
-                autoFocus
-                type="text" 
-                ref={textareaRef}
-                value={statePublicNote[0].data_value}
-                disabled
-                className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 lg:px-8 py-4 pb-5 text-base z-30 transition-all duration-150 bg-transparent`}
-              />
+              </div>
 
               {/* action buttons  */}
               <div className="relative w-full flex flex-col lg:flex-row justify-center items-center gap-4 py-4 md:py-8">
@@ -401,6 +409,7 @@ const Home = () => {
                         }
                       </>
                     } */}
+                    <ShareNote title={statePublicNote[0].title} text={statePublicNote[0].data_value} wordCount={statePublicNote[0].data_value.length} />
                   
                     {/* word count  */}
                     <span className="hidden lg:block lg:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">

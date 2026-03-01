@@ -2,7 +2,7 @@
 import { Tooltip } from "@mui/material";
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
 
-export const ShareNote = ({ title, text, wordCount }) => {
+export const ShareNote = ({ title, text }) => {
   
   const truncateNote = (x) => {
     return x.substring(0, 20).concat('...')
@@ -33,7 +33,7 @@ export const ShareNote = ({ title, text, wordCount }) => {
         <button
             type="button"
             onClick={handleShare}
-            className={wordCount > 0 ? "w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-150": "w-0 h-0 opacity-0 flex justify-center items-center transition-all duration-150"}
+            className={"w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg text-black hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-150"}
         >
             <ShareRoundedIcon  sx={{ fontSize: 18 }} />
         </button>
