@@ -360,7 +360,7 @@ const Home = () => {
                       type="text"
                       name="title"
                       value={statePublicNote[0].title}
-                      className={`w-full outline-none font-bold text-xl md:text-2xl bg-transparent placeholder:text-gray-400 transition-all duration-150`}
+                      className={`w-full outline-none font-bold text-xl md:text-2xl line-clamp-1 bg-transparent`}
                       disabled
                       readOnly
                     />
