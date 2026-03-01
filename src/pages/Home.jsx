@@ -350,32 +350,28 @@ const Home = () => {
               // onSubmit={handleNoteUpdate} 
               className={`opacity-100 relative flex flex-col w-full h-full border ${statePublicNote[0].bg_color} sm:rounded-[2rem] shadow-md duration-150 transition-all z-50 overflow-hidden`}>
 
-              <div className="flex items-center justify-between px-4 sm:px-6 py-4">
-                <span className={`flex gap-2 flex-row border-[1px] px-2 md:px-4 py-2 rounded-full ${statePublicNote[0].bg_color} text-[8px] sm:text-[10px] uppercase tracking-wider text-gray-600 font-light transition-all duration-150`}>noted on <b className="font-bold">{moment(statePublicNote[0].created_at).format("Do MMMM, YYYY")}</b></span>
-                
-                {/* close button or loading  */}
-                {
-                  loadingPublicNote ? <span className="loading loading-spinner loading-sm"></span> :
-                  <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-150"} type="button" onClick={closePublicNote}><ClearRoundedIcon /></button>
-                }
-              </div>
-
-              
-
               {/* input fields Section */}
               <div className={`relative w-full h-full flex flex-col ${statePublicNote[0].bg_color}`}>
-                {/* Title Field */}
-                {statePublicNote[0].title !== "" && 
-                  
-                  <input
-                    type="text"
-                    name="title"
-                    value={statePublicNote[0].title}
-                    className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent md:px-8 py-4 placeholder:text-gray-400 transition-all duration-150`}
-                    disabled
-                    readOnly
-                  />
-                }
+                <div className="flex justify-between items-center  px-4 md:px-8 py-4">
+                  {/* Title Field */}
+                  {statePublicNote[0].title !== "" && 
+                    
+                    <input
+                      type="text"
+                      name="title"
+                      value={statePublicNote[0].title}
+                      className={`w-full outline-none font-bold text-xl md:text-2xl bg-transparent placeholder:text-gray-400 transition-all duration-150`}
+                      disabled
+                      readOnly
+                    />
+                  }
+
+                  {/* close button or loading  */}
+                  {
+                    loadingPublicNote ? <span className="loading loading-spinner loading-sm"></span> :
+                    <button className={"w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-150"} type="button" onClick={closePublicNote}><ClearRoundedIcon /></button>
+                  }
+                </div>
 
                 {/* textarea  */}
                 <textarea
@@ -390,7 +386,8 @@ const Home = () => {
               </div>
 
               {/* action buttons  */}
-              <div className="relative w-full flex flex-col lg:flex-row justify-center items-center gap-4 py-4 md:py-8">
+              <div className="relative w-full flex flex-col justify-center items-center gap-4 py-4 md:py-8">
+                  
                   <div className={`relative w-full flex justify-center gap-4 items-center px-3 md:px-5`}>
                     {/* copy text to clipboard  */}
                     <CopyToClipboard text={statePublicNote[0]?.data_value} wordCount={statePublicNote[0]?.data_value.length} />
@@ -410,16 +407,12 @@ const Home = () => {
                       </>
                     } */}
                     <ShareNote title={statePublicNote[0].title} text={statePublicNote[0].data_value} wordCount={statePublicNote[0].data_value.length} />
-                  
-                    {/* word count  */}
-                    <span className="hidden lg:block lg:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
-                      {statePublicNote[0].data_value.length} characters
-                    </span>
                   </div>
-                        
-                  <div className="w-full flex lg:hidden items-center justify-center">
+                  
+                  <div className="flex w-full justify-between items-center px-3 md:px-5">
+                    <span className={`flex gap-2 flex-row border-[1px] md:px-4 uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full text-[8px] sm:text-[10px] font-light`}>noted on <b className="font-bold">{moment(statePublicNote[0].created_at).format("Do MMMM, YYYY")}</b></span>
                     {/* word count  */}
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                    <span className="tflex gap-2 flex-row border-[1px] md:px-4 uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full text-[8px] sm:text-[10px] font-bold">
                       {statePublicNote[0].data_value.length} characters
                     </span>
                   </div>
@@ -589,7 +582,7 @@ const Home = () => {
                         onChange={handleTitleChange} // Ensure this handler exists
                         placeholder="Title"
                         maxLength="100"
-                        className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent lg:px-8 py-4 placeholder:text-gray-400 transition-all duration-150`}
+                        className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent md:px-8 py-4 placeholder:text-gray-400 transition-all duration-150`}
                       />
 
                       {/* Note Body Field */}
@@ -598,7 +591,7 @@ const Home = () => {
                         autoFocus
                         value={noteInput}
                         onChange={handleChange}
-                        className={`w-full flex-grow outline-none resize-none placeholder:text-gray-400 px-4 lg:px-8 py-4 pb-5 text-base z-30 transition-all duration-150 bg-transparent`}
+                        className={`w-full flex-grow outline-none resize-none placeholder:text-gray-400 px-4 md:px-8 py-4 pb-5 text-base z-30 transition-all duration-150 bg-transparent`}
                         placeholder="Write Note"
                       />
                     </div>
