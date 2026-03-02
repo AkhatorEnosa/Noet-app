@@ -168,9 +168,15 @@ npm run lint      # run ESLint
 
 3. (Optional) Enable Realtime on the `notes` table for future live sync.
 
-## Deployment (Netlify – already set up)
+#### Authentication
 
-- Connected to GitHub
+* Go to **Authentication > Providers**.
+* Ensure **Email/Password** is enabled.
+* (Optional) Enable **Google OAuth** if you want to use the social login feature.
+
+## Deployment (Netlify)
+
+- Connect to GitHub
 - Environment variables set: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
 - Auto-deploys on push to main
 
@@ -180,8 +186,14 @@ To deploy your own version:
 3. Add the two environment variables above
 4. Deploy
 
-## Made with 💻🚀 by
+## 📄 License
 
-[@osacodes](https://x.com/osacodes)
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## ✉️ Contact
+
+**Osakhogba Akhator** Email: [aosakhogba@gmail.com](mailto:aosakhogba@gmail.com)
+
+Project Link: [https://github.com/AkhatorEnosa/Noet-app](https://github.com/AkhatorEnosa/Noet-app)
 
 Feedback, bug reports, feature ideas, or pull requests are very welcome!
