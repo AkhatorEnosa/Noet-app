@@ -16,8 +16,6 @@ const usePin = () => {
             return data
         },
         onSuccess: () => {
-            // Returning this ensures the mutation promise 
-            // resolves only AFTER the refetch completes, so the UI will update with the new pinned status immediately
             return queryClient.invalidateQueries({
                 queryKey: ['notes'],
             });
