@@ -115,6 +115,12 @@ const Home = () => {
       return () => clearTimeout(timeoutId);
     }
   }, [isPublicNote]);
+
+  useEffect(() => {
+    if (queryParam !== null) {
+      setCloseSectionPinned(false)
+    }
+  }, [queryParam, closeSectionPinned])
   
 
   // This hook debounces the searchTerm from making a request to the api on every change. Debouncing stalls the request until searchTerm does not change for a number of time 
