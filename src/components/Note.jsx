@@ -197,7 +197,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
 
   const notePreview = useMemo(() => (
     <Linkify options={{ render: renderLink }}>
-      <pre className="break-words whitespace-pre-wrap font-sans line-clamp-6 lg:line-clamp-none">{truncateNote(note_value)}</pre>
+      <pre className="break-words whitespace-pre-wrap font-sans line-clamp-6 lg:line-clamp-none [unicode-bidi:plaintext] text-start ltr" dir="auto">{truncateNote(note_value)}</pre>
     </Linkify>
   ), [note_value]);
   

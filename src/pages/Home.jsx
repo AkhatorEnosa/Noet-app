@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react"
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react"
 import useCreateNote from "../hooks/useCreateNote"
 import Note from "../components/Note"
 import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
@@ -11,7 +11,7 @@ import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 // import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
-import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
+// import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
 import { useSelector } from "react-redux";
 import ColorPallete from "../components/ColorPallete";
 import useUpdateNotes from "../hooks/useUpdateNotes";
@@ -28,9 +28,9 @@ import { AppContext } from "../context/AppContext";
 import moment from "moment";
 import { CopyToClipboard } from "../components/CopyToClipboard";
 import usePublicNote from "../hooks/usePublicNote";
-import useRequestCollab from "../hooks/useRequestCollab";
-import useFetchCollabs from "../hooks/useFetchCollabs";
-import Sidebar from "../section/Sidebar";
+// import useRequestCollab from "../hooks/useRequestCollab";
+// import useFetchCollabs from "../hooks/useFetchCollabs";
+// import Sidebar from "../section/Sidebar";
 import { toast } from "react-toastify";
 import { ShareNote } from "../components/ShareNote";
 
@@ -64,7 +64,7 @@ const Home = () => {
   const stateLoggedIn = useSelector((state) => state.app.loggedIn)
   const { notes:userNotes, loadingNotes } = useSelector((state) => state.notes)
   const statePublicNote = useSelector((state) => state.publicNote.publicNotes)
-  const { collaboration } = useSelector((state) => state.publicNote)
+  // const { collaboration } = useSelector((state) => state.publicNote)
 
   // Accessing marked notes from AppContext
   const { markedNotes } = useContext(AppContext);
@@ -87,11 +87,16 @@ const Home = () => {
   
 
   const { isLoading: loadingPublicNote } = usePublicNote(queryParam)
-  const { isPending: loadingCollabs } = useFetchCollabs(uid, queryParam)
-  const { mutate: requestCollab, isPending: processingRequest } = useRequestCollab()
+  // const { isPending: loadingCollabs } = useFetchCollabs(uid, queryParam)
+  // const { mutate: requestCollab, isPending: processingRequest } = useRequestCollab()
   
   // get textArea DOM by ref
   const textareaRef = useRef(null);
+
+  const checkIsPinned = useCallback((id) => {
+    const findNote = notes?.some((note) => note.pinned && note.id == id)
+    return findNote;
+  }, [notes])
 
   useEffect(() => {
     // check if editing 
@@ -117,10 +122,12 @@ const Home = () => {
   }, [isPublicNote]);
 
   useEffect(() => {
-    if (queryParam !== null) {
+    if (queryParam !== null && checkIsPinned(queryParam)) {
       setCloseSectionPinned(false)
+    } else {
+      setCloseSectionPinned(true)
     }
-  }, [queryParam, closeSectionPinned])
+  }, [queryParam, checkIsPinned])
   
 
   // This hook debounces the searchTerm from making a request to the api on every change. Debouncing stalls the request until searchTerm does not change for a number of time 
@@ -137,7 +144,7 @@ const Home = () => {
   
   // close public modal based on isPublicNote
   const closePublicNote = () => {
-    navigate(`/`, { replace: true });
+    navigate(`/`, { replace: false });
   }
    
   // handle navigation base on query param
@@ -255,16 +262,16 @@ const Home = () => {
   }
 
   // request collab handler
-  const handleRequestCollab = () => {
-    requestCollab({ userId: uid, noteId: queryParam, ownerId: statePublicNote[0].user_id}, {
-      onSuccess: (data) => {
-        console.log("requested", data)
-        toast.success(collaboration == null ? "Requested" : "Canceled", {
-          className: "text-xs w-fit pr-24"
-        })
-      }
-    })
-  }
+  // const handleRequestCollab = () => {
+  //   requestCollab({ userId: uid, noteId: queryParam, ownerId: statePublicNote[0].user_id}, {
+  //     onSuccess: (data) => {
+  //       console.log("requested", data)
+  //       toast.success(collaboration == null ? "Requested" : "Canceled", {
+  //         className: "text-xs w-fit pr-24"
+  //       })
+  //     }
+  //   })
+  // }
   
   // Handle form submission
   const handleNoteAdd = (e) => {
@@ -366,7 +373,8 @@ const Home = () => {
                       type="text"
                       name="title"
                       value={statePublicNote[0].title}
-                      className={`w-full outline-none font-bold text-xl md:text-2xl line-clamp-1 bg-transparent`}
+                      className={`w-full outline-none font-bold text-xl md:text-2xl line-clamp-1 [unicode-bidi:plaintext] text-start ltr bg-transparent`}
+                      dir="auto"
                       disabled
                       readOnly
                     />
@@ -387,7 +395,8 @@ const Home = () => {
                   value={statePublicNote[0].data_value}
                   disabled
                   readOnly
-                  className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 md:px-8 py-4 pb-5 text-base z-30 transition-all duration-150 bg-transparent`}
+                  className={`w-full flex-grow outline-none resize-none placeholder:text-black px-4 md:px-8 py-4 pb-5 text-base [unicode-bidi:plaintext] text-start ltr z-30 transition-all duration-150 bg-transparent`}
+                  dir="auto"
                 />
               </div>
 
@@ -588,7 +597,8 @@ const Home = () => {
                         onChange={handleTitleChange} // Ensure this handler exists
                         placeholder="Title"
                         maxLength="100"
-                        className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent md:px-8 py-4 placeholder:text-gray-400 transition-all duration-150`}
+                        className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent md:px-8 py-4 placeholder:text-gray-400 [unicode-bidi:plaintext] text-start ltr transition-all duration-150`}
+                        dir="auto"
                       />
 
                       {/* Note Body Field */}
@@ -597,8 +607,9 @@ const Home = () => {
                         autoFocus
                         value={noteInput}
                         onChange={handleChange}
-                        className={`w-full flex-grow outline-none resize-none placeholder:text-gray-400 px-4 md:px-8 py-4 pb-5 text-base z-30 transition-all duration-150 bg-transparent`}
+                        className={`w-full flex-grow outline-none resize-none placeholder:text-gray-400 px-4 md:px-8 py-4 pb-5 text-base [unicode-bidi:plaintext] text-start ltr z-30 transition-all duration-150 bg-transparent`}
                         placeholder="Write Note"
+                        dir="auto"
                       />
                     </div>
 

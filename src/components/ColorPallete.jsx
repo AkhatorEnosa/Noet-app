@@ -5,7 +5,7 @@ import { THEMES } from "../constants/theme";
 const ColorPallete = ({ show, colorOption, addBackground }) => {
 
   return (
-    <div className={`absolute flex flex-col md:flex-row md:items-center md:justify-center left-5 md:left-auto bottom-[60px] ${show ? "scale-100 z-50" : "scale-0 translate-y-10 z-0"} bg-white p-2 rounded-full transition-all duration-150 gap-3`}>
+    <div className={`absolute flex flex-col md:flex-row md:items-center md:justify-center left-4 md:left-auto -bottom-5 md:bottom-[60px] ${show ? "scale-100 z-50" : "scale-0 translate-y-10 z-0"} bg-white/10 backdrop-blur-sm p-2 gap-2 md:gap-3 shadow rounded-full transition-all duration-150`}>
       {THEMES.map((theme, index) => {
         // Updated comparison logic
         const isActive = colorOption === theme.color;
@@ -14,7 +14,7 @@ const ColorPallete = ({ show, colorOption, addBackground }) => {
           <Tooltip key={index} title={theme.name} placement="top" arrow>
             <div
               onClick={() => addBackground(theme.color)}
-              className={`w-8 h-8 flex justify-center items-center ${theme.color} ${isActive ? "scale-125 border-2" : ""} hover:scale-125 transition-all duration-150 rounded-full border-[1px] border-black cursor-pointer overflow-hidden`}
+              className={`size-6 md:w-8 md:h-8 flex justify-center items-center ${theme.color} ${isActive ? "scale-125 border-2" : ""} hover:scale-125 transition-all duration-150 rounded-full border-[1px] border-black cursor-pointer overflow-hidden`}
             >
               {/* Render the MUI Icon component directly */}
               <div className="flex items-center justify-center scale-75">

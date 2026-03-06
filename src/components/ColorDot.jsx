@@ -10,7 +10,7 @@ const Color= ({ themeColor, themeIcon, isActive }) => {
   return (
     <motion.span
         variants={variants}
-        className={`w-8 h-8 flex justify-center items-center ${themeColor} ${isActive ? "scale-125 border-2" : ""} hover:scale-125 transition-all duration-150 rounded-full border-[1px] border-black cursor-pointer overflow-hidden`}
+        className={`size-4 md:w-8 md:h-8 flex justify-center items-center ${themeColor} ${isActive ? "scale-125 border-2" : ""} hover:scale-125 transition-all duration-150 rounded-full border-[1px] border-black cursor-pointer overflow-hidden`}
     >
         {/* Render the MUI Icon component directly */}
         <div className="flex items-center justify-center scale-75">

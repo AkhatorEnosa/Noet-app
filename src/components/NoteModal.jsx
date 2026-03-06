@@ -184,7 +184,8 @@ const NoteModal = ({
                     value={getNoteTitle} // Ensure you have a state for the title (e.g., getNoteTitle)
                     onChange={handleTitleChange} // Your title change handler
                     placeholder="Title"
-                    className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent md:px-8 py-4 placeholder:text-gray-400 transition-all duration-150`}
+                    className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent md:px-8 py-4 placeholder:text-gray-400 [unicode-bidi:plaintext] text-start ltr transition-all duration-150`}
+                    dir='auto'
                   />
 
                   {/* Textarea (Note Body) */}
@@ -192,8 +193,9 @@ const NoteModal = ({
                     ref={textareaRef}
                     value={getNote}
                     onChange={handleChange}
-                    className={`w-full flex-grow outline-none resize-none placeholder:text-gray-400 px-4 md:px-8 py-4 pb-5 text-base z-30 transition-all duration-150 bg-transparent`}
+                    className={`w-full flex-grow outline-none resize-none placeholder:text-gray-400 px-4 md:px-8 py-4 pb-5 text-base [unicode-bidi:plaintext] text-start ltr z-30 transition-all duration-150 bg-transparent`}
                     placeholder="Write Note"
+                    dir="auto"
                   />
                 </div>
 
@@ -205,7 +207,7 @@ const NoteModal = ({
                     <ColorPallete show={showColorPallete} colorOption={colorOptionValue} addBackground={handleColorOption} />
                     
                     {/* backdrop for colour pallete  */}
-                    <div className={showColorPallete ? "fixed w-full h-full top-0 left-0 z-[30]" : "hidden"} onClick={() => setShowColorPallete(!showColorPallete)}></div>
+                    <div className={`fixed w-full h-full top-0 left-0 z-[30] ${showColorPallete ? "scale-100" : "scale-0 opacity-0"} duration-150 transition-all`} onClick={() => setShowColorPallete(!showColorPallete)}></div>
 
                     <Tooltip title="Choose colour" arrow placement="top">
                       <i className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? "bg-warning border-none" : "border-[1px] border-black"} text-black hover:bg-warning hover:border-none z-30 transition-all duration-150 cursor-pointer `}
