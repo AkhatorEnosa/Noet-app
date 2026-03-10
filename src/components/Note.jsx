@@ -264,7 +264,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
           </div>
 
           {/* date and actions  */}
-          <div className={`hidden lg:flex ${markedNotes.length > 0 ? "opacity-0 group-hover:opacity-0" : "opacity-100" } flex items-center justify-between px-4 py-3 bg-black/5 rounded-b-2xl border-t border-black/5 transition-opacity ${!toggleAction && !markedNotes.length > 0 && "opacity-100 lg:opacity-0 lg:group-hover:opacity-100"} z-[70]`}>
+          <div className={`hidden lg:flex ${markedNotes.length > 0 ? "opacity-0 group-hover:opacity-0" : "opacity-100" } flex items-center justify-between px-4 py-3 bg-gradient-to-t from-black/10 to-transparent rounded-b-2xl transition-opacity ${!toggleAction && !markedNotes.length > 0 && "opacity-100 lg:opacity-0 lg:group-hover:opacity-100"} z-[70]`}>
           
             {/* overlay to open note_value edit modal when actions are toggled  */}
             {!markedNotes.length > 0 && <div className="absolute left-0 w-full h-full z-10" onClick={() => handleNav()}></div>}
