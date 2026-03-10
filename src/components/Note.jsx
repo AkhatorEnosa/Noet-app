@@ -33,6 +33,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
   const [wordCount, setWordCount] = useState(note_value.length)
   const [debouncedTitleInput, setDebouncedTitleInput] = useState("")
   const [debouncedNoteInput, setDebouncedNoteInput] = useState("")
+  const [wordStore, setWordStore] = useState("")
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState(bgColor)
@@ -69,8 +70,16 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
     } else {
       navigate(`/`, { replace: true });
     }
-    setToggleAction(false)
-  }, [isEditing, navigate, noteId]);
+      setToggleAction(false)
+
+      // reset states when navigating away from edit mode
+      setGetNote(note_value)
+      setGetNoteTitle(title)
+      setColorOptionValue(bgColor)
+      setNotePrivacy(note_privacy)
+      setWordCount(note_value.length)
+      setWordStore("")
+  }, [isEditing, navigate, noteId, note_value, title, bgColor, note_privacy]);
 
   // update note_value function
   const updateNote = useCallback((title, input, color, privacy) => {
@@ -114,6 +123,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
       setShowColorPallete(false)
       setColorOptionValue(bgColor)
       setGetNote(note_value)
+      setWordStore("")
     }
   }, [isEditing, showDeleteModal, handleNav, bgColor, note_value]);
 
@@ -311,6 +321,8 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
             setNotePrivacy={setNotePrivacy}
             debouncedNoteInput={debouncedNoteInput}
             debouncedTitleInput={debouncedTitleInput}
+            wordStore={wordStore} 
+            setWordStore={setWordStore}
 
             note_date={note_date}
             noteIsPinned={noteIsPinned}

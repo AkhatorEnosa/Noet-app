@@ -10,7 +10,8 @@ import Tooltip from '@mui/material/Tooltip';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
-// import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
+import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
+import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
 // import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
 import { useSelector } from "react-redux";
 import ColorPallete from "../components/ColorPallete";
@@ -43,6 +44,7 @@ const Home = () => {
   const [noteInput, setNoteInput] = useState("")
   const [noteTitle, setNoteTitle] = useState("")
   const [wordCount, setWordCount] = useState(0)
+  const [wordStore, setWordStore] = useState("")
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState("")
   const [activeNote, setactiveNote] = useState(null)
@@ -295,15 +297,24 @@ const Home = () => {
   const handleChange = (e) => {
     setNoteInput(e.target.value)
     setWordCount(e.target.value.length)
+    setWordStore("")
   }
 
 
   // Clear input field function
-  // const clearInput = () => {
-  //   setWordCount(0)
-  //   setNoteInput("")
-  //   setColorOptionValue('')
-  // }
+  const clearInput = () => {
+    setWordStore(noteInput)
+    setWordCount(0)
+    setNoteInput("")
+    setColorOptionValue("")
+  }
+
+  // revert input field function to restore cleared text
+  const revertInput = () => {
+    setNoteInput(wordStore)
+    setWordCount(wordStore.length)
+    setWordStore("")
+  }
 
   // handle colour change
   const handleColorOption = (color) => {
@@ -628,7 +639,7 @@ const Home = () => {
                             addBackground={handleColorOption}
                           />
                           <Tooltip title="Choose color" arrow>
-                            <i className={`flex justify-center items-center ${wordCount > 0 ? "w-10 h-10 rounded-full" : "w-0 h-0 opacity-0"} ${showColorPallete? "bg-warning shadow-lg border-none": "border-[1px] border-black"} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer`}
+                            <i className={`flex justify-center items-center ${wordCount > 0 ? "w-10 h-10 rounded-full" : "scale-0 w-0 h-0 opacity-0"} ${showColorPallete? "bg-warning shadow-lg border-none": "border-[1px] border-black"} hover:bg-warning hover:border-none z-30 transition-all duration-200 cursor-pointer`}
                               onClick={() => setShowColorPallete(!showColorPallete)}
                             >
                               <ColorLensRoundedIcon sx={{ fontSize: 18 }} />
@@ -636,25 +647,26 @@ const Home = () => {
                           </Tooltip>
 
                           {/* Clear all text */}
-                          {/* <Tooltip title="Clear Note" arrow>
+                          <Tooltip title={ wordStore !== "" && wordCount < 1 ? "Revert Note" : "Clear Note" } placement="top" arrow>
                             <button
                               className={
-                                wordCount > 0
-                                  ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-red-500 hover:border-none transition-all duration-150"
-                                  : "w-0 h-0 opacity-0 transition-all duration-200"
+                                wordCount > 0 && wordStore == ""
+                                  ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-red-500 hover:border-none transition-all duration-150" :
+                                  wordStore !== "" && wordCount < 1 ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-gray-500 shadow-lg hover:text-white hover:bg-gray-700 hover:border-none transition-all duration-150"
+                                  : "scale-0 w-0 h-0 opacity-0 transition-all duration-200"
                               }
                               type="button"
-                              onClick={clearInput}
+                              onClick={wordStore !== "" && wordCount < 1 ? revertInput : clearInput}
                             >
-                              <ClearAllRoundedIcon />
+                              {wordStore !== "" && wordCount < 1 ? <HistoryRoundedIcon /> : <ClearAllRoundedIcon />}
                             </button>
-                          </Tooltip> */}
+                          </Tooltip>
 
                           {/* add note */}
                           <Tooltip title="Add Note" arrow>
                             <button
                               type="submit"
-                              className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full px-5 border-[1px] border-[#114f60]  shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-150" : "w-0 h-0 opacity-0 transition-all duration-200"}
+                              className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full px-5 border-[1px] border-[#114f60]  shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-150" : "scale-0 w-0 h-0 opacity-0 transition-all duration-200"}
                             >
                               <CheckRoundedIcon />
                             </button>

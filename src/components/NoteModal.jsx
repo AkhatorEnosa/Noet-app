@@ -10,6 +10,8 @@ import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import PushPinRoundedIcon from '@mui/icons-material/PushPinRounded';
 import LockRoundedIcon from '@mui/icons-material/LockRounded';
 import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
+import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
+import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
 import { ShareNote } from "./ShareNote";
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
@@ -32,6 +34,8 @@ const NoteModal = ({
     setNotePrivacy,
     debouncedNoteInput,
     debouncedTitleInput,
+    wordStore, 
+    setWordStore,
 
     note_date,
     noteIsPinned,
@@ -96,30 +100,46 @@ const NoteModal = ({
   
     // handle change for title input
     const handleTitleChange = (e) => {
-        setGetNoteTitle(e.target.value)
+      setGetNoteTitle(e.target.value)
     }
 
     // handle change for form
     const handleChange = (e) => {
-        setGetNote(e.target.value)
-        setWordCount(e.target.value.length)
+      setGetNote(e.target.value)
+      setWordCount(e.target.value.length)
+      setWordStore("")
     }
 
     // handke note_value update
     const handleNoteUpdate = (e) => {
-        e.preventDefault()
-        updateNote(getNoteTitle, getNote, colorOptionValue, notePrivacy, true);
+      e.preventDefault()
+      updateNote(getNoteTitle, getNote, colorOptionValue, notePrivacy, true);
     }
 
     // handle color option
     const handleColorOption = (color) => {
-        setColorOptionValue(color)
-        setShowColorPallete(!showColorPallete)
+      setColorOptionValue(color)
+      setShowColorPallete(!showColorPallete)
     }
 
     const handlePrivacyToggle = () => {
-        setNotePrivacy(!notePrivacy)
+      setNotePrivacy(!notePrivacy)
     }
+
+
+    // Clear input field function
+    const clearInput = () => {
+      setWordStore(getNote)
+      setWordCount(0)
+      setGetNote("")
+    }
+
+    // revert input field function to restore cleared text
+    const revertInput = () => {
+      setGetNote(wordStore)
+      setWordCount(wordStore.length)
+      setWordStore("")
+  }
     
 
   return (
@@ -210,7 +230,7 @@ const NoteModal = ({
                     <div className={`fixed w-full h-full top-0 left-0 z-[30] ${showColorPallete ? "scale-100" : "scale-0 opacity-0"} duration-150 transition-all`} onClick={() => setShowColorPallete(!showColorPallete)}></div>
 
                     <Tooltip title="Choose colour" arrow placement="top">
-                      <i className={`w-10 h-10 flex justify-center items-center rounded-full ${showColorPallete ? "bg-warning border-none" : "border-[1px] border-black"} text-black hover:bg-warning hover:border-none z-30 transition-all duration-150 cursor-pointer `}
+                      <i className={`${wordCount > 0 ? "w-10 h-10 rounded-full" : "scale-0 w-0 h-0 opacity-0"} flex justify-center items-center rounded-full ${showColorPallete ? "bg-warning border-none" : "border-[1px] border-black"} text-black hover:bg-warning hover:border-none z-30 transition-all duration-150 cursor-pointer `}
                         onClick={() => setShowColorPallete(!showColorPallete)}
                       >
                         <ColorLensRoundedIcon sx={{ fontSize: 18 }} />
@@ -223,7 +243,7 @@ const NoteModal = ({
                     {/* Toggle privacy */}
                     <Tooltip title={notePrivacy ? "Make Note Public" : "Make Note Private"} arrow placement="top">
                       <button
-                        className={`${wordCount > 0 ? "w-10 h-10 rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-black hover:border-none " : "w-0 h-0 opacity-0"} ${notePrivacy && "bg-black text-white"} flex justify-center items-center transition-all duration-150`}
+                        className={`${wordCount > 0 ? "w-10 h-10 rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-black hover:border-none " : "scale-0 w-0 h-0 opacity-0"} ${notePrivacy && "bg-black text-white"} flex justify-center items-center transition-all duration-150`}
                         type="submit"
                         onClick={handlePrivacyToggle}
                       >
@@ -232,6 +252,22 @@ const NoteModal = ({
                     </Tooltip>
 
                     {!notePrivacy && <ShareNote title={getNoteTitle} text={getNote} wordCount={wordCount} />}
+                    
+                    {/* Clear all text */}
+                          <Tooltip title={ wordStore !== "" && wordCount < 1 ? "Revert Note" : "Clear Note" } placement="top" arrow>
+                            <button
+                              className={
+                                wordCount > 0 && wordStore == ""
+                                  ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-red-500 hover:border-none transition-all duration-150" :
+                                  wordStore !== "" && wordCount < 1 ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-gray-500 shadow-lg hover:text-white hover:bg-gray-700 hover:border-none transition-all duration-150"
+                                  : "scale-0 w-0 h-0 opacity-0 transition-all duration-200"
+                              }
+                              type="button"
+                              onClick={wordStore !== "" && wordCount < 1 ? revertInput : clearInput}
+                            >
+                              {wordStore !== "" && wordCount < 1 ? <HistoryRoundedIcon /> : <ClearAllRoundedIcon />}
+                            </button>
+                          </Tooltip>
 
                     {/* update button */}
                     {(getNote !== debouncedNoteInput || getNoteTitle !== debouncedTitleInput) && (!updating || !stateLoading) && (
