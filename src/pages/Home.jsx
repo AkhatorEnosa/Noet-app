@@ -34,6 +34,7 @@ import usePublicNote from "../hooks/usePublicNote";
 // import Sidebar from "../section/Sidebar";
 import { toast } from "react-toastify";
 import { ShareNote } from "../components/ShareNote";
+import { getColor } from "../utils/getColor";
 
 const options = ['privacy', 'date', 'content', 'default']
 
@@ -494,6 +495,7 @@ const Home = () => {
                                     noteId={note.id}
                                     note_value={note.data_value}
                                     note_date={note.created_at}
+                                    updated_at={note.updated_at}
                                     note_privacy={note.privacy}
                                     bgColor={note.bg_color}
                                     updateId={note.id}
@@ -535,6 +537,7 @@ const Home = () => {
                                 noteId={note.id}
                                 note_value={note.data_value}
                                 note_date={note.created_at}
+                                updated_at={note.updated_at}
                                 note_privacy={note.privacy}
                                 bgColor={note.bg_color}
                                 updateId={note.id}
@@ -585,12 +588,12 @@ const Home = () => {
                 <div className="w-full h-full  lg:w-[90%] xl:w-[60%] md:lg-auto group">
                   <form
                     onSubmit={handleNoteAdd}
-                    className={`opacity-100 relative flex flex-col w-full h-full bg-white border sm:rounded-[2rem] shadow-md duration-150 transition-all z-50 overflow-hidden`}
+                    className={`opacity-100 relative flex flex-col w-full h-full ${colorOptionValue ? colorOptionValue : "bg-white"} border sm:rounded-[2rem] shadow-md duration-150 transition-all z-50 overflow-hidden`}
                   >
                     {/* Header Actions */}
                     <div className="flex items-center justify-end p-4">
                       <button
-                        className="w-8 h-8 z-20 border-[1px] hover:bg-black/10 rounded-full transition-all duration-150"
+                        className={`w-8 h-8 z-20 border-[1px] border-${getColor(colorOptionValue)} hover:bg-black/10 rounded-full transition-all duration-150`}
                         type="button"
                         onClick={handleNav}
                       >
@@ -608,7 +611,7 @@ const Home = () => {
                         onChange={handleTitleChange} // Ensure this handler exists
                         placeholder="Title"
                         maxLength="100"
-                        className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent md:px-8 py-4 placeholder:text-gray-400 [unicode-bidi:plaintext] text-start ltr transition-all duration-150`}
+                        className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent md:px-8 py-4 placeholder:text-${getColor(colorOptionValue)}/50 [unicode-bidi:plaintext] text-start ltr transition-all duration-150`}
                         dir="auto"
                       />
 
@@ -618,7 +621,7 @@ const Home = () => {
                         autoFocus
                         value={noteInput}
                         onChange={handleChange}
-                        className={`w-full flex-grow outline-none resize-none placeholder:text-gray-400 px-4 md:px-8 py-4 pb-5 text-base [unicode-bidi:plaintext] text-start ltr z-30 transition-all duration-150 bg-transparent`}
+                        className={`w-full flex-grow outline-none resize-none placeholder:text-${getColor(colorOptionValue)}/50 px-4 md:px-8 py-4 pb-5 text-base [unicode-bidi:plaintext] text-start ltr z-30 transition-all duration-150 bg-transparent`}
                         placeholder="Write Note"
                         dir="auto"
                       />

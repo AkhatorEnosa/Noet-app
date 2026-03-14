@@ -26,7 +26,7 @@ import ConfirmModal from "./ConfirmModal";
 import NoteModal from "./NoteModal";
 
 /* eslint-disable react/prop-types */
-const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, noteObj, activeNote, handleDrop}) => {
+const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, bgColor, noteObj, activeNote, handleDrop}) => {
 
   const [getNote, setGetNote] = useState(note_value)
   const [getNoteTitle, setGetNoteTitle] = useState(title)
@@ -84,7 +84,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
   // update note_value function
   const updateNote = useCallback((title, input, color, privacy) => {
     update(
-      { id: noteId, title, data_value: input.trim(), bg_color: color, privacy: privacy },
+      { id: noteId, title, data_value: input.trim(), bg_color: color, privacy: privacy, updated_at: new Date() },
       { 
         onSuccess: () => {
           toast.success("Note updated!", {
@@ -149,6 +149,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
     setNoteIsPinned(prev => !prev)
     // updatePin({ pinned: !noteIsPinned, id: noteId })
   }
+
 
   // clearing form 
   // const clearInput = () => {
@@ -255,8 +256,8 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
           <div className={`w-full ${note_value.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
             <Tooltip title="Mark Note" arrow placement="top">
               <button className={`relative -top-5 right-5 ${noteChecked ? "opacity-100" : "opacity-0 lg:group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-150 z-[65]`} type="button" onClick={() => handleMarkNotes()}>
-                { noteChecked ? <CheckCircle sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/> :
-                  <CheckCircleOutlineRoundedIcon sx={{ fontSize: 28, color: "#255f6f", backgroundColor: "white", borderRadius: "50%" }}/>}
+                { noteChecked ? <CheckCircle sx={{ fontSize: 28, backgroundColor: "white", borderRadius: "50%" }}/> :
+                  <CheckCircleOutlineRoundedIcon sx={{ fontSize: 28, backgroundColor: "white", borderRadius: "50%" }}/>}
               </button>
             </Tooltip>
 
@@ -325,6 +326,7 @@ const Note = ({noteId, title, note_value, note_date, note_privacy, bgColor, note
             setWordStore={setWordStore}
 
             note_date={note_date}
+            updated_at={updated_at}
             noteIsPinned={noteIsPinned}
             updatingPin={updatingPin}
             stateLoading={stateLoading}

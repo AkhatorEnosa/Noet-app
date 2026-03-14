@@ -18,6 +18,8 @@ import { toast } from 'react-toastify';
 import { motion } from 'framer-motion'
 import { CircularProgress, Tooltip } from '@mui/material';
 import { convertTime } from '../utils/timeConverter';
+import { verifyColorIsWhite } from '../utils/verifyColorIsWhite';
+import { getColor } from '../utils/getColor';
 
 const NoteModal = ({
     setGetNoteTitle,
@@ -38,6 +40,7 @@ const NoteModal = ({
     setWordStore,
 
     note_date,
+    updated_at,
     noteIsPinned,
     updatingPin,
     stateLoading,
@@ -74,12 +77,6 @@ const NoteModal = ({
             return () => clearTimeout(timeoutId);
         }
     }, [isEditing]);
-
-    // verify if color option is white to change text color to black for better visibility
-    const verifyColorIsWhite = () => {
-        const colorIsWhite = colorOptionValue.includes("bg-white");
-        if (colorIsWhite) return true
-    }
     
     // handle autosave toggle 
     const handleAutoSaveToggle = () => {
@@ -139,8 +136,7 @@ const NoteModal = ({
       setGetNote(wordStore)
       setWordCount(wordStore.length)
       setWordStore("")
-  }
-    
+    }
 
   return (
     
@@ -160,9 +156,11 @@ const NoteModal = ({
               >
                 {/* Header Section */}
                 <div className="flex items-center justify-between px-4 sm:px-6 py-4">
-                  <span className={`flex gap-2 flex-row border-[1px] px-2 md:px-4 py-2 rounded-full ${colorOptionValue} text-[8px] sm:text-[10px] uppercase tracking-wider text-gray-600 font-light transition-all duration-150`}>
-                    noted on <b className="font-bold">{convertTime(note_date)}</b>
-                  </span>
+                  <Tooltip title={updated_at !== null ? `Last updated on ${convertTime(updated_at)}` : `Note has not been updated since ${convertTime(note_date)}`} placement="bottom" arrow> 
+                    <span className={`flex gap-2 flex-row border-[1px] px-2 md:px-4 py-2 rounded-full ${colorOptionValue} text-[8px] sm:text-[10px] uppercase tracking-wider text-gray-600 font-light transition-all duration-150`}>
+                      noted on <b className="font-bold">{convertTime(note_date)}</b>
+                    </span>
+                  </Tooltip>
 
                   <div className="flex gap-2 items-center z-20">
                     
@@ -176,7 +174,7 @@ const NoteModal = ({
                     </Tooltip>
 
                     <Tooltip title={autoSave == "true" ? "Undo Auto-Save" : "Enable Auto-Save"} placement="bottom" arrow>
-                      <button className={`w-8 h-8 flex justify-center items-center border-[1px] ${autoSave == "true" ? `${verifyColorIsWhite() ? "text-[#114f60] bg-[#114f60]/10" : colorOptionValue}` : "lg:hover:bg-[#114f60]/10"} rounded-full cursor-pointer transition-all duration-150`} type="button"
+                      <button className={`w-8 h-8 flex justify-center items-center border-[1px] ${autoSave == "true" ? `${verifyColorIsWhite(colorOptionValue) ? "text-[#114f60] bg-[#114f60]/10" : colorOptionValue}` : "lg:hover:bg-[#114f60]/10"} rounded-full cursor-pointer transition-all duration-150`} type="button"
                         onClick={() => handleAutoSaveToggle()}
                         disabled={updating || stateLoading}
                       >
@@ -204,7 +202,7 @@ const NoteModal = ({
                     value={getNoteTitle} // Ensure you have a state for the title (e.g., getNoteTitle)
                     onChange={handleTitleChange} // Your title change handler
                     placeholder="Title"
-                    className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent md:px-8 py-4 placeholder:text-gray-400 [unicode-bidi:plaintext] text-start ltr transition-all duration-150`}
+                    className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent md:px-8 py-4 placeholder:text-${getColor(colorOptionValue)}/50 [unicode-bidi:plaintext] text-start ltr transition-all duration-150`}
                     dir='auto'
                   />
 
@@ -213,7 +211,7 @@ const NoteModal = ({
                     ref={textareaRef}
                     value={getNote}
                     onChange={handleChange}
-                    className={`w-full flex-grow outline-none resize-none placeholder:text-gray-400 px-4 md:px-8 py-4 pb-5 text-base [unicode-bidi:plaintext] text-start ltr z-30 transition-all duration-150 bg-transparent`}
+                    className={`w-full flex-grow outline-none resize-none placeholder:text-${getColor(colorOptionValue)}/50 px-4 md:px-8 py-4 pb-5 text-base [unicode-bidi:plaintext] text-start ltr z-30 transition-all duration-150 bg-transparent`}
                     placeholder="Write Note"
                     dir="auto"
                   />

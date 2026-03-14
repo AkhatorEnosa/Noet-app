@@ -28,7 +28,7 @@ export function AppProvider({ children }) {
         markedNotes,
         setMarkedNotes,
         autoSave,
-        setAutoSave
+        setAutoSave,
     }}>
       {children}
     </AppContext.Provider>
