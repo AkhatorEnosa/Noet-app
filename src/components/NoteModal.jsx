@@ -274,7 +274,7 @@ const NoteModal = ({
                     {/* Delete Note */}
                     <Tooltip title={"Delete Note"} arrow placement="top">
                       <button
-                        className={`flex lg:hidden ${wordCount > 0 ? "w-10 h-10 rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-red-600 hover:border-none " : "scale-0 w-0 h-0 opacity-0"} flex justify-center items-center transition-all duration-150`}
+                        className={`flex xl:hidden ${wordCount > 0 ? "w-10 h-10 rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-red-600 hover:border-none " : "scale-0 w-0 h-0 opacity-0"} flex justify-center items-center transition-all duration-150`}
                         type="submit"
                         onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}
                       >
