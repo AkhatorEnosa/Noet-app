@@ -196,15 +196,16 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
   // All about longPress 
   const timerRef = useRef();
 
-  const startLongPress = useCallback(() => {
+  const startLongPress = (e) => {
+    e.preventDefault();
     timerRef.current = setTimeout(() => {
       handleMarkNotes();
-    }, 1000);
-  }, []);
+    }, 1000)
+  };
 
-  const cancelLongPress = useCallback(() => {
+  const cancelLongPress = () => {
     clearTimeout(timerRef.current);
-  }, []);
+  };
 
   const notePreview = useMemo(() => (
     <Linkify options={{ render: renderLink }}>
@@ -221,14 +222,16 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
           exit={{ opacity: 0, x: 100 }}
           transition={{ duration: 0.3 }}
           // layoutId={`note_value-${noteId}`}
-          className={`group flex flex-col justify-between relative break-inside-avoid pt-2 w-full ${bgColor} rounded-2xl text-lg break-words active:cursor-grab ${noteChecked ? "ring-black ring-[1px]" : showDrop ? "ring-[#114f60] ring-2 z-50" : "ring-[1px] ring-black/10"} ${toggleAction ? "z-[70]" : "z-10"} ${isEditing && (noteId == activeNoteId) ? "scale-0" : "scale-100"} transition-all duration-150 ease-in-out `} 
+          className={`group flex flex-col justify-between relative break-inside-avoid pt-2 w-full ${bgColor} rounded-2xl text-lg break-words active:cursor-grab select-none touch-none ${noteChecked ? "ring-black ring-[1px]" : showDrop ? "ring-[#114f60] ring-2 z-50" : "ring-[1px] ring-black/10"} ${toggleAction ? "z-[70]" : "z-10"} ${isEditing && (noteId == activeNoteId) ? "scale-0" : "scale-100"} transition-all duration-150 ease-in-out `} 
           draggable={!noteChecked ? true : false}
           
           // long press and mobile drag events
           onMouseDown={startLongPress}
           onMouseUp={cancelLongPress}
+          onMouseLeave={cancelLongPress}
           onTouchStart={startLongPress}
           onTouchEnd={cancelLongPress}
+          onTouchMove={cancelLongPress}
 
           // dragging events
           onDragStart={() => activeNote(noteObj) & cancelLongPress()} 
