@@ -654,8 +654,8 @@ const Home = () => {
                             <button
                               className={
                                 wordCount > 0 && wordStore == ""
-                                  ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-red-500 hover:border-none transition-all duration-150" :
-                                  wordStore !== "" && wordCount < 1 ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-gray-500 shadow-lg hover:text-white hover:bg-gray-700 hover:border-none transition-all duration-150"
+                                  ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-slate-400 hover:border-none transition-all duration-150" :
+                                  wordStore !== "" && wordCount < 1 ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-slate-400 shadow-lg hover:text-white hover:bg-slate-400 hover:border-none transition-all duration-150"
                                   : "scale-0 w-0 h-0 opacity-0 transition-all duration-200"
                               }
                               type="button"

@@ -183,6 +183,10 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
     mutate([noteId], {
       onSuccess: () => {
         setShowDeleteModal(false);
+        toast.success("Note deleted!", {
+          className: "text-xs w-fit pr-24"
+        })
+        navigate(`/`, { replace: true });
       }
     });
   }
@@ -327,6 +331,9 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
             debouncedTitleInput={debouncedTitleInput}
             wordStore={wordStore} 
             setWordStore={setWordStore}
+            showDeleteModal={showDeleteModal}
+            setShowDeleteModal={setShowDeleteModal}
+            setToggleAction={setToggleAction}
 
             note_date={note_date}
             updated_at={updated_at}

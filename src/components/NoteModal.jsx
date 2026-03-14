@@ -12,6 +12,7 @@ import LockRoundedIcon from '@mui/icons-material/LockRounded';
 import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
 import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
 import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import { ShareNote } from "./ShareNote";
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
@@ -38,6 +39,9 @@ const NoteModal = ({
     debouncedTitleInput,
     wordStore, 
     setWordStore,
+    showDeleteModal,
+    setShowDeleteModal,
+    setToggleAction,
 
     note_date,
     updated_at,
@@ -252,20 +256,31 @@ const NoteModal = ({
                     {!notePrivacy && <ShareNote title={getNoteTitle} text={getNote} wordCount={wordCount} />}
                     
                     {/* Clear all text */}
-                          <Tooltip title={ wordStore !== "" && wordCount < 1 ? "Revert Note" : "Clear Note" } placement="top" arrow>
-                            <button
-                              className={
-                                wordCount > 0 && wordStore == ""
-                                  ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-red-500 hover:border-none transition-all duration-150" :
-                                  wordStore !== "" && wordCount < 1 ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-gray-500 shadow-lg hover:text-white hover:bg-gray-700 hover:border-none transition-all duration-150"
-                                  : "scale-0 w-0 h-0 opacity-0 transition-all duration-200"
-                              }
-                              type="button"
-                              onClick={wordStore !== "" && wordCount < 1 ? revertInput : clearInput}
-                            >
-                              {wordStore !== "" && wordCount < 1 ? <HistoryRoundedIcon /> : <ClearAllRoundedIcon />}
-                            </button>
-                          </Tooltip>
+                    <Tooltip title={ wordStore !== "" && wordCount < 1 ? "Revert Note" : "Clear Note" } placement="top" arrow>
+                      <button
+                        className={
+                          wordCount > 0 && wordStore == ""
+                            ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-slate-400 hover:border-none transition-all duration-150" :
+                            wordStore !== "" && wordCount < 1 ? "w-10 h-10 flex justify-center items-center rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-slate-400 hover:border-none transition-all duration-150"
+                            : "scale-0 w-0 h-0 opacity-0 transition-all duration-200"
+                        }
+                        type="button"
+                        onClick={wordStore !== "" && wordCount < 1 ? revertInput : clearInput}
+                      >
+                        {wordStore !== "" && wordCount < 1 ? <HistoryRoundedIcon /> : <ClearAllRoundedIcon />}
+                      </button>
+                    </Tooltip>
+
+                    {/* Delete Note */}
+                    <Tooltip title={"Delete Note"} arrow placement="top">
+                      <button
+                        className={`flex lg:hidden ${wordCount > 0 ? "w-10 h-10 rounded-full border-[1px] border-black shadow-lg hover:text-white hover:bg-red-600 hover:border-none " : "scale-0 w-0 h-0 opacity-0"} flex justify-center items-center transition-all duration-150`}
+                        type="submit"
+                        onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}
+                      >
+                         <DeleteRoundedIcon sx={{ fontSize: 18 }} />
+                      </button>
+                    </Tooltip>
 
                     {/* update button */}
                     {(getNote !== debouncedNoteInput || getNoteTitle !== debouncedTitleInput) && (!updating || !stateLoading) && (
