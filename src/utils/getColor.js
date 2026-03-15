@@ -8,12 +8,13 @@ import { verifyColorIsWhite } from "./verifyColorIsWhite";
       if (colorOptionValue === undefined || colorOptionValue === "") {
         return String("black");
       } else {
-      const textColor = colorOptionValue?.split(" ")[1];
-
-      // remove "text-" from textColor
-      const colorValue = textColor.replace("text-", "");
+        const colorOptionValueArray = colorOptionValue.split(" ");
+        const textColor = colorOptionValueArray.length > 1 ? colorOptionValueArray[1] : String("");
         
-      return String(colorValue);
+        // remove "text-" from textColor
+        const colorValue = textColor.replace("text-", "");
+          
+        return String(colorValue);
       }
       
     }
