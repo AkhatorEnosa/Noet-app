@@ -262,7 +262,7 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
           {/* note_value div  */}
           <div className={`w-full ${note_value.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
             <Tooltip title="Mark Note" arrow placement="top">
-              <button className={`relative -top-5 right-5 ${noteChecked ? "opacity-100" : "opacity-0 lg:group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-150 z-[65]`} type="button" onClick={() => handleMarkNotes()}>
+              <button className={`relative -top-5 right-5 ${noteChecked ? "opacity-100" : "opacity-0 group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-150 z-[65]`} type="button" onClick={() => handleMarkNotes()}>
                 { noteChecked ? <CheckCircle sx={{ fontSize: 28, backgroundColor: "white", borderRadius: "50%" }}/> :
                   <CheckCircleOutlineRoundedIcon sx={{ fontSize: 28, backgroundColor: "white", borderRadius: "50%" }}/>}
               </button>
