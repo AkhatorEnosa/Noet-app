@@ -199,35 +199,17 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
 
   // All about longPress 
   const timerRef = useRef();
-  const elementRef = useRef(null);
 
-
-  const startLongPress = useCallback(() => {
+  const startLongPress = (e) => {
+    e.preventDefault();
     timerRef.current = setTimeout(() => {
       handleMarkNotes();
     }, 1000)
-  }, [handleMarkNotes])
+  };
 
-  const cancelLongPress = useCallback(() => {
+  const cancelLongPress = () => {
     clearTimeout(timerRef.current);
-  }, [])
-
-  useEffect(() => {
-    const el = elementRef.current;
-    if (!el) return;
-
-    // 'passive: true' allows the browser to scroll immediately 
-    // without waiting for your JS to finish.
-    el.addEventListener('touchstart', startLongPress, { passive: true });
-    el.addEventListener('touchend', cancelLongPress, { passive: true });
-    el.addEventListener('touchmove', cancelLongPress, { passive: true });
-
-    return () => {
-      el.removeEventListener('touchstart', startLongPress);
-      el.removeEventListener('touchend', cancelLongPress);
-      el.removeEventListener('touchmove', cancelLongPress);
-    };
-  }, [startLongPress, cancelLongPress]);
+  };
 
   const notePreview = useMemo(() => (
     <Linkify options={{ render: renderLink }}>
@@ -246,7 +228,6 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
           // layoutId={`note_value-${noteId}`}
           className={`group flex flex-col justify-between relative break-inside-avoid pt-2 w-full ${bgColor} rounded-2xl text-lg break-words active:cursor-grab select-none touch-none ${noteChecked ? "ring-black ring-[1px]" : showDrop ? "ring-[#114f60] ring-2 z-50" : "ring-[1px] ring-black/10"} ${toggleAction ? "z-[70]" : "z-10"} ${isEditing && (noteId == activeNoteId) ? "scale-0" : "scale-100"} transition-all duration-150 ease-in-out `} 
           draggable={!noteChecked ? true : false}
-          ref={elementRef}
           
           // long press and mobile drag events
           onMouseDown={startLongPress}
@@ -254,7 +235,6 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
           onMouseLeave={cancelLongPress}
           onTouchStart={startLongPress}
           onTouchEnd={cancelLongPress}
-          onTouchMove={cancelLongPress}
 
           // dragging events
           onDragStart={() => activeNote(noteObj) & cancelLongPress()} 
