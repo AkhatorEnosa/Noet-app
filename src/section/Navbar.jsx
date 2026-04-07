@@ -53,7 +53,7 @@ const Navbar = () => {
           {user !== null && 
           <div className="relative w-fit flex justify-end items-center gap-5">
             <div className="flex w-full gap-2 justify-center items-center bg-gray-200 p-2 md:pl-2 md:pr-5 py-2 rounded-full cursor-pointer z-50" onClick={() => setShowLogout(prev => !prev)}>
-              <img src={imgUrl} alt={"Your username profile pic"} className={`w-8 h-8 rounded-full border-gray-300 border-[1px] ${isLoading && "animate-spin"}`}/>
+              <img src={imgUrl} alt={"Your username profile pic"} className={`w-8 h-8 rounded-full border-gray-300 border-[1px] ${isLoading && "animate-pulse"}`}/>
               <p className="hidden md:block line-clamp-1">{name}</p>
             </div>
             {/* <div className={`absolute ${!showLogout ? "scale-0" : "scale-100"} top-14 right-0 sm:left-0 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-300 transition-all z-[70]`}>

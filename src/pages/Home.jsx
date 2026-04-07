@@ -12,6 +12,8 @@ import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
 import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
+import FullscreenRoundedIcon from '@mui/icons-material/FullscreenRounded';
+import FullscreenExitRoundedIcon from '@mui/icons-material/FullscreenExitRounded';
 // import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
 import { useSelector } from "react-redux";
 import ColorPallete from "../components/ColorPallete";
@@ -35,6 +37,7 @@ import usePublicNote from "../hooks/usePublicNote";
 import { toast } from "react-toastify";
 import { ShareNote } from "../components/ShareNote";
 import { getColor } from "../utils/getColor";
+import { verifyColorIsWhite } from "../utils/verifyColorIsWhite";
 
 const options = ['privacy', 'date', 'content', 'default']
 
@@ -57,6 +60,8 @@ const Home = () => {
   const [debouncedSearchInput, setDebouncedSearchInput] = useState("")
   const [sortValue, setSortValue] = useState("default")
   const [message, setMessage] = useState("")
+    
+  const [expand, setExpand] = useState(false)
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -580,25 +585,42 @@ const Home = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className={`fixed w-full h-full top-0 left-0 sm:p-5 md:py-10 flex justify-center items-center z-[70]`}
+              className={`fixed w-full h-full top-0 left-0 ${!expand ? "sm:p-5 md:py-10" : "p-0"} flex justify-center items-center z-[70] duration-150 transition-all`}
               >
                 {/* backdrop */}
                 <div className="fixed w-full h-full bg-black/80" onClick={handleNav}></div>
 
-                <div className="w-full h-full  lg:w-[90%] xl:w-[60%] md:lg-auto group">
+                <div className={`${expand ? "w-full h-full" : "w-full h-full lg:w-[90%] xl:w-[60%]"} group duration-150 transition-all`}>
                   <form
                     onSubmit={handleNoteAdd}
-                    className={`opacity-100 relative flex flex-col w-full h-full ${colorOptionValue ? colorOptionValue : "bg-white"} border sm:rounded-[2rem] shadow-md duration-150 transition-all z-50 overflow-hidden`}
+                    className={`opacity-100 relative flex flex-col w-full h-full ${!expand && "sm:rounded-[2rem]"} ${colorOptionValue ? colorOptionValue : "bg-white"} border shadow-md duration-150 transition-all z-50 overflow-hidden`}
                   >
                     {/* Header Actions */}
-                    <div className="flex items-center justify-end p-4">
-                      <button
+                    <div className="flex gap-2 items-center z-20 justify-end p-4">
+                      {/* Expand note  */}
+                      <Tooltip title={ !expand ? "Go FullScreen" : "Revert to default" } placement="bottom" arrow className='hidden sm:flex'>
+                        <button className={`w-8 h-8 flex justify-center items-center border-[1px] cursor-pointer p-1 rounded-full ${expand ? `${verifyColorIsWhite() ? "text-[#114f60] bg-[#114f60]/10" : colorOptionValue}` : "lg:hover:bg-[#114f60]/10"} rounded-full cursor-pointer transition-all duration-150`} type="button"
+                          onClick={() => setExpand(!expand)}
+                        >
+                            {expand ? <FullscreenExitRoundedIcon color="inherit"/> : <FullscreenRoundedIcon color="inherit"/>}
+                        </button>
+                      </Tooltip>
+                      {/* <button
                         className={`w-8 h-8 z-20 border-[1px] border-${getColor(colorOptionValue)} hover:bg-black/10 rounded-full transition-all duration-150`}
                         type="button"
                         onClick={handleNav}
                       >
                         <ClearRoundedIcon />
+                    </button> */}
+                    
+                    <Tooltip title="Close Editing" placement="bottom" arrow>
+                      <button className="w-8 h-8 border-[1px] hover:bg-black/10 rounded-full transition-all duration-150" type="button"
+                        onClick={() => handleNav()}
+                        disabled={isPending}
+                      >
+                        <ClearRoundedIcon />
                       </button>
+                    </Tooltip>
                     </div>
 
                     {/* input fields Section */}
