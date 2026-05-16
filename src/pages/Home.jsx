@@ -1,6 +1,7 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react"
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import useCreateNote from "../hooks/useCreateNote"
 import Note from "../components/Note"
+import LoadSentinel from "../components/LoadSentinel"
 import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
@@ -23,8 +24,10 @@ import useGetUser from "../hooks/useGetUser";
 import Search from "../components/Search";
 import { useDebounce } from "react-use";
 import FilterButton from "../components/FilterButton";
-import useFetchNotes from "../hooks/useFetchNotes";
+import useInfinitePinnedNotes from "../hooks/useInfinitePinnedNotes";
+import useInfiniteUnpinnedNotes from "../hooks/useInfiniteUnpinnedNotes";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
 import { AppContext } from "../context/AppContext";
@@ -54,6 +57,8 @@ const Home = () => {
   const [activeNote, setactiveNote] = useState(null)
   const [closeSectionPinned, setCloseSectionPinned] = useState(true)
   const [closeSection, setCloseSection] = useState(false)
+  const userToggledPinnedRef = useRef(false)
+  const userToggledUnpinnedRef = useRef(false)
   const [showSortOptions, setShowOptions] = useState(false)
 
   const [searchInput, setSearchInput] = useState("")
@@ -67,10 +72,9 @@ const Home = () => {
   const navigate = useNavigate();
 
 
-  // Accessing notes and user from Redux store
+  // Accessing user from Redux store
   const stateUser = useSelector((state) => state.app.user)
   const stateLoggedIn = useSelector((state) => state.app.loggedIn)
-  const { notes:userNotes, loadingNotes } = useSelector((state) => state.notes)
   const statePublicNote = useSelector((state) => state.publicNote.publicNotes)
   // const { collaboration } = useSelector((state) => state.publicNote)
 
@@ -84,15 +88,38 @@ const Home = () => {
 
   let inputRef = useRef('')
 
+  const queryClient = useQueryClient()
   const { isSuccess } = useGetUser()
   const { mutate, isPending } = useCreateNote()
   const { mutate:updateIndexNums } = useUpdateNotes()
-  const { error, isLoading } = useFetchNotes(stateUser?.id, sortValue == 'color' ? 'bg_color' 
+
+  // Determine the sort filter based on sortValue
+  const sortFilter = sortValue == 'color' ? 'bg_color' 
     : sortValue == 'content' ? 'data_value' 
     : sortValue == 'date' ? 'created_at' 
     : sortValue == 'privacy' ? 'privacy'
-    : 'index_num', debouncedSearchInput)
-  
+    : 'index_num'
+
+  // Use infinite queries for pinned and unpinned notes
+  const pinnedNotesQuery = useInfinitePinnedNotes(sortFilter, debouncedSearchInput)
+  const unpinnedNotesQuery = useInfiniteUnpinnedNotes(sortFilter, debouncedSearchInput)
+
+  // Flatten all pages into single arrays with proper null checks
+  const allPinnedNotes = useMemo(() => 
+    pinnedNotesQuery.data?.pages?.flatMap(page => page?.notes)?.filter(Boolean) || [],
+    [pinnedNotesQuery.data]
+  )
+  const allUnpinnedNotes = useMemo(() => 
+    unpinnedNotesQuery.data?.pages?.flatMap(page => page?.notes)?.filter(Boolean) || [],
+    [unpinnedNotesQuery.data]
+  )
+
+  // Combined notes array for local state management
+  const combinedNotes = useMemo(() => [...allPinnedNotes, ...allUnpinnedNotes], [allPinnedNotes, allUnpinnedNotes])
+
+  // Loading and error states
+  const isLoading = pinnedNotesQuery.isLoading || unpinnedNotesQuery.isLoading
+  const error = pinnedNotesQuery.error || unpinnedNotesQuery.error
 
   const { isLoading: loadingPublicNote } = usePublicNote(queryParam)
   // const { isPending: loadingCollabs } = useFetchCollabs(uid, queryParam)
@@ -130,10 +157,13 @@ const Home = () => {
   }, [isPublicNote]);
 
   useEffect(() => {
-    if (queryParam !== null && checkIsPinned(queryParam)) {
-      setCloseSectionPinned(false)
-    } else {
-      setCloseSectionPinned(true)
+    // Only auto-open pinned section based on queryParam if user hasn't manually toggled
+    if (!userToggledPinnedRef.current) {
+      if (queryParam !== null && checkIsPinned(queryParam)) {
+        setCloseSectionPinned(false)
+      } else {
+        setCloseSectionPinned(true)
+      }
     }
   }, [queryParam, checkIsPinned])
   
@@ -142,9 +172,15 @@ const Home = () => {
   useDebounce(() => {
     setDebouncedSearchInput(searchInput)
     if (searchInput !== "") {
+      // Reset user toggle flags when search changes
+      userToggledPinnedRef.current = false
+      userToggledUnpinnedRef.current = false
       setCloseSectionPinned(false)
       setCloseSection(false)
     } else {
+      // Reset user toggle flags when search clears
+      userToggledPinnedRef.current = false
+      userToggledUnpinnedRef.current = false
       setCloseSectionPinned(true)
     }
     }, 500, [searchInput]
@@ -219,13 +255,13 @@ const Home = () => {
     }
   }, []);
   
-  // Sync local notes state with Redux store
+  // Sync local notes state with combined infinite query data
   useEffect(() => {
     setUid(stateUser?.id)
     if(stateUser !== null) {
-      setNotes(userNotes)
+      setNotes(combinedNotes)
     }
-  }, [userNotes, stateUser?.id])
+  }, [combinedNotes, stateUser?.id])
 
   // Display toast notification on successful sign in
   useEffect(() => {
@@ -287,11 +323,6 @@ const Home = () => {
     saveNote();
   }
 
-  // Check if there are pinned notes
-  const checkForPinned = () => {
-    const containsPinned = notes.some((note) => note.pinned)
-    return containsPinned
-  }
 
   // handle notetile field change
   const handleTitleChange = (e) => {
@@ -328,35 +359,54 @@ const Home = () => {
     setShowColorPallete(false)
   }
 
-  // drop function
-  const onDrop = (position) => {
+  // drop function - works with section-specific arrays and updates React Query cache
+  const onDrop = (position, sectionNotes, isPinned) => {
 
     if (!activeNote) return;
 
-    var notesCopy = JSON.parse(JSON.stringify(notes))
+    // Find the note to move in the section array
+    const noteToMove = sectionNotes.find(note => note.index_num == activeNote.index_num)
+    if (!noteToMove) return;
 
-    const noteToMove = notes.filter(note => note.index_num == activeNote.index_num)
-    const updatedNotes = notes.filter((note) => note.index_num !== activeNote.index_num)
+    // Get the current position of the note being dragged
+    const currentPosition = sectionNotes.findIndex(note => note.index_num == activeNote.index_num)
     
-    updatedNotes.splice(position, 0, noteToMove[0])
-    // const getOtherNote = updatedNotes.slice(position + 1, position + 2);
+    // Create a copy and swap positions
+    const notesCopy = JSON.parse(JSON.stringify(sectionNotes))
+    
+    // Swap the index_num values between the two notes
+    const targetNote = notesCopy[position]
+    const tempIndex = notesCopy[currentPosition].index_num
+    
+    notesCopy[currentPosition].index_num = targetNote.index_num
+    notesCopy[position].index_num = tempIndex
 
-    // console.log("position", position)
-    // console.log("notetomoveindex", notes.indexOf(noteToMove[0]))
-    // console.log("note to move", noteToMove)
-    // console.log('before manipulation', notesCopy)
-
-    notesCopy[position].index_num = notes[notes.indexOf(noteToMove[0])].index_num
-    notesCopy[notes.indexOf(noteToMove[0])].index_num = notes[position].index_num
-
-    // console.log("Notes Copy", notesCopy.sort((a,b) => b.index_num - a.index_num))
-
-    setNotes(notesCopy.sort((a,b) => b.index_num - a.index_num))
+    // Sort by index_num descending
+    const sortedNotes = notesCopy.sort((a, b) => b.index_num - a.index_num)
+    
+    // Update React Query cache immediately for instant UI feedback
+    const queryKey = isPinned 
+      ? ['pinnedNotes', stateUser?.id, sortFilter, debouncedSearchInput]
+      : ['unpinnedNotes', stateUser?.id, sortFilter, debouncedSearchInput]
+    
+    queryClient.setQueryData(queryKey, (oldData) => {
+      if (!oldData) return oldData
+      
+      // Update the first page with the sorted notes
+      const updatedPages = [{
+        notes: sortedNotes,
+        nextCursor: oldData.pages[0]?.nextCursor
+      }, ...oldData.pages.slice(1)]
+      
+      return { ...oldData, pages: updatedPages }
+    })
+    
+    // Update on server
     updateIndexNums({
       id_one: notesCopy[position].id, 
       index_two: notesCopy[position].index_num, 
-      index_one: notesCopy[notes.indexOf(noteToMove[0])].index_num,
-      id_two: notesCopy[notes.indexOf(noteToMove[0])].id, 
+      index_one: notesCopy[currentPosition].index_num,
+      id_two: notesCopy[currentPosition].id, 
     })
   }
 
@@ -455,12 +505,9 @@ const Home = () => {
       </AnimatePresence>
     )
   } else {
-    if (userNotes !== null && isSuccess) return (
+    if (combinedNotes !== null && isSuccess) return (
       <div className="relative w-full flex flex-col gap-5 px-3 py-5 md:px-10 lg:px-20 md:py-10 justify-center items-center overflow-scroll">
 
-          {/* side bar  */}
-          {/* <Sidebar /> */}
-        
           {/* Main section of Homepage  */}
           <section className="relative w-full flex flex-col gap-4 justify-center items-center">
             <div className="flex gap-2 lg:gap-6 w-full my-2 md:my-8">
@@ -477,15 +524,18 @@ const Home = () => {
               />
             </div>
 
-            {userNotes !== null && !isLoading && notes?.length > 0 ?
+            {combinedNotes !== null && !isLoading && notes?.length > 0 ?
               <div className="w-full gap-2 flex flex-col items-center justify-center">
                 <div className="w-full flex flex-col gap-5">
                   
                   {
-                    checkForPinned() &&
+                    notes.some((note) => note.pinned) &&
                     <>
                       <Tooltip title={closeSectionPinned ? "Open Pinned" : "Close Pinned"} className={ `${notes.length > 1 ? "block" : "hidden"}`} arrow placement='top'>
-                        <button className={`w-fit flex justify-center items-center ${!closeSectionPinned ? 'bg-[#f4f7f8] text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => setCloseSectionPinned(!closeSectionPinned)}>
+                        <button className={`w-fit flex justify-center items-center ${!closeSectionPinned ? 'bg-[#f4f7f8] text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => {
+                          userToggledPinnedRef.current = true
+                          setCloseSectionPinned(!closeSectionPinned)
+                        }}>
                           <p className={`${!closeSectionPinned && "-rotate-180"} cursor-pointer duration-150`}>{closeSectionPinned ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
                           <h2 className="uppercase text-center text-[10px] sm:text-xs font-medium tracking-wide">pinned notes</h2>
                         </button>
@@ -493,8 +543,8 @@ const Home = () => {
                     
                       <div className={`${closeSectionPinned ? "hidden" : "block"} rounded-md p-1 sm:p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto`}>
                         {
-                          notes?.map((note) => (
-                                note.pinned && <React.Fragment key={note.id}>
+                          allPinnedNotes?.map((note) => (
+                                <React.Fragment key={note.id}>
                                   <Note 
                                     title={note.title}
                                     noteId={note.id}
@@ -506,12 +556,18 @@ const Home = () => {
                                     updateId={note.id}
                                     noteObj={note}
                                     activeNote={setactiveNote}
-                                    handleDrop={() => onDrop(notes.indexOf(note))}
+                                    handleDrop={() => onDrop(allPinnedNotes.indexOf(note), allPinnedNotes, true)}
                                   />
                                 </React.Fragment>
                               )
                             )
                         }
+                        {/* Load sentinel for pinned notes */}
+                        <LoadSentinel 
+                          onLoadMore={() => pinnedNotesQuery.fetchNextPage()}
+                          hasNextPage={pinnedNotesQuery.hasNextPage}
+                          isFetchingNextPage={pinnedNotesQuery.isFetchingNextPage}
+                        />
                       </div>
                     </>
                   }
@@ -521,9 +577,12 @@ const Home = () => {
                 <div className="w-full flex flex-col gap-5">
                   
                   {
-                      (checkForPinned() && notes.some((note) => !note.pinned)) &&
+                      (notes.some((note) => note.pinned) && notes.some((note) => !note.pinned)) &&
                       <Tooltip title={closeSection ? "Open Notes" : "Close notes"} arrow placement='top'>
-                        <button className={`w-fit flex justify-center items-center ${!closeSection ? 'bg-[#f4f7f8] text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => setCloseSection(!closeSection)}>
+                        <button className={`w-fit flex justify-center items-center ${!closeSection ? 'bg-[#f4f7f8] text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => {
+                          userToggledUnpinnedRef.current = true
+                          setCloseSection(!closeSection)
+                        }}>
                           <p className={`${!closeSection && "-rotate-180"} cursor-pointer duration-150`}>{closeSection ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
                           <h2 className="uppercase text-center text-[10px] sm:text-xs font-medium tracking-wide">other notes</h2>
                         </button>
@@ -534,8 +593,7 @@ const Home = () => {
                     <div className={`${closeSection ? "hidden" : "block"} rounded-md p-1 sm:p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto`}>
                       
                       {
-                        notes?.map((note) => (
-                          !note.pinned &&
+                        allUnpinnedNotes?.map((note) => (
                             <React.Fragment key={note.id}>
                               <Note 
                                 title={note.title}
@@ -548,20 +606,25 @@ const Home = () => {
                                 updateId={note.id}
                                 noteObj={note}
                                 activeNote={setactiveNote}
-                                handleDrop={() => onDrop(notes.indexOf(note))}
+                                handleDrop={() => onDrop(allUnpinnedNotes.indexOf(note), allUnpinnedNotes, false)}
                               />
-                              </React.Fragment>
+                            </React.Fragment>
                           )
                         )
                       }
+                      {/* Load sentinel for unpinned notes */}
+                      <LoadSentinel 
+                        onLoadMore={() => unpinnedNotesQuery.fetchNextPage()}
+                        hasNextPage={unpinnedNotesQuery.hasNextPage}
+                        isFetchingNextPage={unpinnedNotesQuery.isFetchingNextPage}
+                      />
                     </div>
                   }
 
                 </div>
               </div> : 
               <div className="py-20 w-full flex justify-center items-center">
-                { isLoading || loadingNotes ? 
-                  // loading 
+                { isLoading ? 
                   <div className="h-[1px] w-32 bg-slate-200 relative overflow-hidden">
                     <p className="text-lg font-light">Loading notes</p>
                     <motion.div 
