@@ -14,10 +14,9 @@ const useCreateNote = () => {
         return data
     },
     onSuccess: () => {
-      // console.log("Created", data)
-        return queryClient.invalidateQueries({
-          queryKey: ['notes'],
-        })
+      // Invalidate both pinned and unpinned notes queries to refresh the UI
+      queryClient.invalidateQueries({ queryKey: ['pinnedNotes'] })
+      queryClient.invalidateQueries({ queryKey: ['unpinnedNotes'] })
     },
     onError: (error) => {
         console.log("Create Mutation Failed", error)

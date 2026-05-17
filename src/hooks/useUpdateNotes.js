@@ -26,9 +26,9 @@ const useUpdateNotes = () => {
             return data
         },
         onSuccess: () => {
-            return queryClient.invalidateQueries({
-                queryKey: ['notes'],
-            })
+            // Invalidate both pinned and unpinned notes queries to refresh the UI
+            queryClient.invalidateQueries({ queryKey: ['pinnedNotes'] })
+            queryClient.invalidateQueries({ queryKey: ['unpinnedNotes'] })
         },
         onError: () => {
             toast.error("Oops! Problem update notes.", {
