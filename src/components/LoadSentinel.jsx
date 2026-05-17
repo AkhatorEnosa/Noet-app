@@ -17,10 +17,17 @@ const LoadSentinel = ({ onLoadMore, hasNextPage, isFetchingNextPage }) => {
 
   return (
     <div ref={ref} className="w-full">
-      {isFetchingNextPage && (
-        <div className="space-y-4">
-          <NoteSkeleton />
-        </div>
+      {
+        isFetchingNextPage && (
+          <div className="space-y-4">
+            <NoteSkeleton />
+          </div>
+        )
+      }
+      {!hasNextPage && !isFetchingNextPage && (
+        <p className="text-sm text-slate-400 font-light text-center py-4">
+          You&apos;ve reached the end
+        </p>
       )}
     </div>
   )

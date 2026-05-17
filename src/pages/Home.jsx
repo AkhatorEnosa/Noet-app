@@ -192,13 +192,13 @@ const Home = () => {
   }
    
   // handle navigation base on query param
-  const handleNav = () => {
+  const handleNav = useCallback(() => {
     if (!isWriting && !isPending) {
       navigate(`/?note=open`, { replace: true });
     } else {
       navigate(`/`, { replace: true });
     }
-  };
+  }, [isWriting, isPending, navigate]);
 
   // Effect to handle body overflow and saving note on form close
   useEffect(() => {
@@ -220,24 +220,13 @@ const Home = () => {
     }
   }, [isPublicNote, isWriting]);
 
-  //  Display message if no notes found after 2 seconds
+  // Display message based on loading and error states
   useEffect(() => {
-    if (!isLoading && !loadingPublicNote && !error) {
-      setMessage(
-        <div className="flex flex-col items-center justify-center text-slate-400">
-          <div className="p-6 bg-white rounded-full shadow-sm mb-4">
-            <DescriptionIcon sx={{ fontSize: 80, opacity: 0.2 }} />
-          </div>
-          <p className="text-lg font-medium">Your creative space is empty</p>
-          <button 
-            onClick={handleNav}
-            className="mt-4 text-cyan-700 font-semibold hover:underline"
-          >
-            Create your first note
-          </button>
-        </div>
-      );
+    if (isLoading || loadingPublicNote) {
+      // Clear message while loading
+      setMessage("");
     } else if (error) {
+      // Show error message
       setMessage(
         <div className="flex flex-col items-center justify-center text-red-400">
           <div className="p-6 bg-red-50 rounded-full mb-4">
@@ -252,8 +241,24 @@ const Home = () => {
           </button>
         </div>
       );
+    } else if (!isLoading && !loadingPublicNote && !error) {
+      // Show empty state when not loading and no error
+      setMessage(
+        <div className="flex flex-col items-center justify-center text-slate-400">
+          <div className="p-6 bg-white rounded-full shadow-sm mb-4">
+            <DescriptionIcon sx={{ fontSize: 80, opacity: 0.2 }} />
+          </div>
+          <p className="text-lg font-medium">Your creative space is empty</p>
+          <button 
+            onClick={handleNav}
+            className="mt-4 text-cyan-700 font-semibold hover:underline"
+          >
+            Create your first note
+          </button>
+        </div>
+      );
     }
-  }, []);
+  }, [isLoading, loadingPublicNote, error, handleNav]);
   
   // Sync local notes state with combined infinite query data
   useEffect(() => {
