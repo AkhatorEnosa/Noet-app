@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 
-const Search = ({ searchInput, setSearchInput, isLoading }) => {
+const Search = ({ searchInput, setSearchInput, isSearching }) => {
   const handleClear = () => {
     setSearchInput('');
   };
@@ -17,14 +17,14 @@ const Search = ({ searchInput, setSearchInput, isLoading }) => {
       />
       
       {/* Loading spinner */}
-      {isLoading && searchInput && (
+      {isSearching && searchInput && (
         <div className="absolute right-3 top-1/2 -translate-y-1/2">
           <div className="w-4 h-4 border-2 border-gray-300 border-t-[#114f60] rounded-full animate-spin"></div>
         </div>
       )}
       
       {/* Clear button */}
-      {!isLoading && searchInput && (
+      {!isSearching && searchInput && (
         <button
           type="button"
           onClick={handleClear}

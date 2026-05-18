@@ -47,7 +47,6 @@ const options = ['privacy', 'date', 'content', 'default']
 const Home = () => {
 
   const [uid, setUid] = useState()
-  const [notes, setNotes] = useState()
   const [noteInput, setNoteInput] = useState("")
   const [noteTitle, setNoteTitle] = useState("")
   const [wordCount, setWordCount] = useState(0)
@@ -65,6 +64,7 @@ const Home = () => {
   const [debouncedSearchInput, setDebouncedSearchInput] = useState("")
   const [sortValue, setSortValue] = useState("default")
   const [message, setMessage] = useState("")
+  const [isSearchLoading, setIsSearchLoading] = useState(false)
     
   const [expand, setExpand] = useState(false)
 
@@ -129,9 +129,9 @@ const Home = () => {
   const textareaRef = useRef(null);
 
   const checkIsPinned = useCallback((id) => {
-    const findNote = notes?.some((note) => note.pinned && note.id == id)
+    const findNote = combinedNotes?.some((note) => note.pinned && note.id == id)
     return findNote;
-  }, [notes])
+  }, [combinedNotes])
 
   useEffect(() => {
     // check if editing 
@@ -177,14 +177,25 @@ const Home = () => {
       userToggledUnpinnedRef.current = false
       setCloseSectionPinned(false)
       setCloseSection(false)
+      // Start loading spinner for search
+      setIsSearchLoading(true)
     } else {
       // Reset user toggle flags when search clears
       userToggledPinnedRef.current = false
       userToggledUnpinnedRef.current = false
       setCloseSectionPinned(true)
+      // Stop loading spinner when search is cleared
+      setIsSearchLoading(false)
     }
     }, 500, [searchInput]
   )
+
+  // Stop loading spinner when search data arrives
+  useEffect(() => {
+    if (!pinnedNotesQuery.isFetching && !unpinnedNotesQuery.isFetching && isSearchLoading) {
+      setIsSearchLoading(false)
+    }
+  }, [pinnedNotesQuery.isFetching, unpinnedNotesQuery.isFetching, isSearchLoading])
   
   // close public modal based on isPublicNote
   const closePublicNote = () => {
@@ -242,31 +253,41 @@ const Home = () => {
         </div>
       );
     } else if (!isLoading && !loadingPublicNote && !error) {
-      // Show empty state when not loading and no error
-      setMessage(
-        <div className="flex flex-col items-center justify-center text-slate-400">
-          <div className="p-6 bg-white rounded-full shadow-sm mb-4">
-            <DescriptionIcon sx={{ fontSize: 80, opacity: 0.2 }} />
+      // Check if searching with no results
+      if (debouncedSearchInput && combinedNotes?.length === 0) {
+        setMessage(
+          <div className="flex flex-col items-center justify-center text-slate-400">
+            <div className="p-6 bg-white rounded-full shadow-sm mb-4">
+              <DescriptionIcon sx={{ fontSize: 80, opacity: 0.2 }} />
+            </div>
+            <p className="text-lg font-medium">No notes found matching "<span className="font-semibold text-slate-600">{debouncedSearchInput}</span>"</p>
+            <p className="text-sm mt-2">Try a different search term</p>
           </div>
-          <p className="text-lg font-medium">Your creative space is empty</p>
-          <button 
-            onClick={handleNav}
-            className="mt-4 text-cyan-700 font-semibold hover:underline"
-          >
-            Create your first note
-          </button>
-        </div>
-      );
+        );
+      } else {
+        // Show empty state when not loading and no error
+        setMessage(
+          <div className="flex flex-col items-center justify-center text-slate-400">
+            <div className="p-6 bg-white rounded-full shadow-sm mb-4">
+              <DescriptionIcon sx={{ fontSize: 80, opacity: 0.2 }} />
+            </div>
+            <p className="text-lg font-medium">Your creative space is empty</p>
+            <button 
+              onClick={handleNav}
+              className="mt-4 text-cyan-700 font-semibold hover:underline"
+            >
+              Create your first note
+            </button>
+          </div>
+        );
+      }
     }
-  }, [isLoading, loadingPublicNote, error, handleNav]);
+  }, [isLoading, loadingPublicNote, error, handleNav, debouncedSearchInput, combinedNotes?.length]);
   
-  // Sync local notes state with combined infinite query data
+  // Update uid when user changes
   useEffect(() => {
     setUid(stateUser?.id)
-    if(stateUser !== null) {
-      setNotes(combinedNotes)
-    }
-  }, [combinedNotes, stateUser?.id])
+  }, [stateUser?.id])
 
   // Display toast notification on successful sign in
   useEffect(() => {
@@ -291,7 +312,7 @@ const Home = () => {
         title: noteTitle,
         data_value: noteInput,
         bg_color: colorOptionValue == "" ? "bg-white" : colorOptionValue,
-        index_num: notes.length > 0 ? notes[0].index_num + 2 : 2,
+        index_num: allUnpinnedNotes.length > 0 ? allUnpinnedNotes[0].index_num + 2 : 2,
         user_id: uid
       }, {
         onSuccess: () => {
@@ -526,17 +547,18 @@ const Home = () => {
               <Search 
                 searchInput={searchInput}
                 setSearchInput={setSearchInput}
+                isSearching={isSearchLoading}
               />
             </div>
 
-            {combinedNotes !== null && !isLoading && notes?.length > 0 ?
+            {combinedNotes !== null && !isLoading && combinedNotes?.length > 0 ?
               <div className="w-full gap-2 flex flex-col items-center justify-center">
                 <div className="w-full flex flex-col gap-5">
                   
                   {
-                    notes.some((note) => note.pinned) &&
+                    combinedNotes.some((note) => note.pinned) &&
                     <>
-                      <Tooltip title={closeSectionPinned ? "Open Pinned" : "Close Pinned"} className={ `${notes.length > 1 ? "block" : "hidden"}`} arrow placement='top'>
+                      <Tooltip title={closeSectionPinned ? "Open Pinned" : "Close Pinned"} className={ `${combinedNotes.length > 1 ? "block" : "hidden"}`} arrow placement='top'>
                         <button className={`w-fit flex justify-center items-center ${!closeSectionPinned ? 'bg-[#f4f7f8] text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => {
                           userToggledPinnedRef.current = true
                           setCloseSectionPinned(!closeSectionPinned)
@@ -546,7 +568,7 @@ const Home = () => {
                         </button>
                       </Tooltip>
                     
-                      <div className={`${closeSectionPinned ? "hidden" : "block"} rounded-md p-1 sm:p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto`}>
+                      <div className={`${(closeSectionPinned && !searchInput) ? "hidden" : "block"} rounded-md p-1 sm:p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto`}>
                         {
                           allPinnedNotes?.map((note) => (
                                 <React.Fragment key={note.id}>
@@ -582,7 +604,7 @@ const Home = () => {
                 <div className="w-full flex flex-col gap-5">
                   
                   {
-                      (notes.some((note) => note.pinned) && notes.some((note) => !note.pinned)) &&
+                      (combinedNotes.some((note) => note.pinned) && combinedNotes.some((note) => !note.pinned)) &&
                       <Tooltip title={closeSection ? "Open Notes" : "Close notes"} arrow placement='top'>
                         <button className={`w-fit flex justify-center items-center ${!closeSection ? 'bg-[#f4f7f8] text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => {
                           userToggledUnpinnedRef.current = true
@@ -594,8 +616,8 @@ const Home = () => {
                       </Tooltip>
                   }
                   
-                  { notes.some((note) => !note.pinned) &&
-                    <div className={`${closeSection ? "hidden" : "block"} rounded-md p-1 sm:p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto`}>
+                  { combinedNotes.some((note) => !note.pinned) &&
+                    <div className={`${(closeSection && !searchInput) ? "hidden" : "block"} rounded-md p-1 sm:p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto`}>
                       
                       {
                         allUnpinnedNotes?.map((note) => (

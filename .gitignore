@@ -23,6 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 *INFINITE_SCROLL_IMPLEMENTATION*
+*SEARCH*
 
 # Environment variables
 .env
