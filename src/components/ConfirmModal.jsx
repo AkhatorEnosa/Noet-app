@@ -1,8 +1,12 @@
 /* eslint-disable react/prop-types */
 
 import { motion } from "framer-motion"
+import { useTheme } from "../context/ThemeContext"
 
 function ConfirmModal({ action, setAction, pending, handleConfirm, title, desc }) {
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
+
   return (
         action && (
             <motion.div 
@@ -13,10 +17,10 @@ function ConfirmModal({ action, setAction, pending, handleConfirm, title, desc }
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.9, opacity: 0 }}
-                    className="w-full max-w-sm bg-white rounded-2xl p-6 shadow-xl"
+                    className={`w-full max-w-sm rounded-2xl p-6 shadow-xl ${isDark ? 'bg-dark-surface' : 'bg-white'}`}
                 >
-                      <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-                    <p className="mt-2 text-gray-500 text-sm">
+                      <h2 className={`text-xl font-bold ${isDark ? 'text-dark-text' : 'text-gray-900'}`}>{title}</h2>
+                    <p className={`mt-2 text-sm ${isDark ? 'text-dark-textMuted' : 'text-gray-500'}`}>
                         {desc}
                     </p>
 
@@ -24,7 +28,7 @@ function ConfirmModal({ action, setAction, pending, handleConfirm, title, desc }
                         <button 
                             disabled={pending}
                             onClick={() => setAction(false)}
-                            className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+                            className={`flex-1 px-4 py-2 text-sm font-medium rounded-xl transition-colors ${isDark ? 'text-dark-text bg-dark-border hover:bg-dark-border/80' : 'text-gray-700 bg-gray-100 hover:bg-gray-200'}`}
                         >
                             Cancel
                         </button>

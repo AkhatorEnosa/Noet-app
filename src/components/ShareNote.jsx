@@ -33,7 +33,7 @@ export const ShareNote = ({ title, text }) => {
         <button
             type="button"
             onClick={handleShare}
-            className={"w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black shadow-lg text-black hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-150"}
+            className={"w-10 h-10 flex justify-center items-center rounded-full top-2 right-2 px-2 py-2 border-[1px] border-black dark:border-dark-border shadow-lg text-black dark:text-dark-text hover:text-white hover:bg-[#114f60] dark:hover:bg-[#2d7a8a] hover:border-none transition-all duration-150"}
         >
             <ShareRoundedIcon  sx={{ fontSize: 18 }} />
         </button>

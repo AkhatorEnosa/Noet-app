@@ -40,20 +40,20 @@ const MarkedNotesActionsBar = () => {
                         initial={{ y: 100, x: "-50%", opacity: 0 }}
                         animate={{ y: 20, x: "-50%", opacity: 1 }}
                         exit={{ y: -100, x: "-50%", opacity: 0 }}
-                        className="fixed bottom-10 left-1/2 z-[100] flex items-center gap-6 px-6 py-3 bg-white/80 backdrop-blur-md border border-gray-200 shadow-2xl rounded-full"
+                        className="fixed bottom-10 left-1/2 z-[100] flex items-center gap-6 px-6 py-3 bg-white/80 dark:bg-dark-surface/90 backdrop-blur-md border border-gray-200 dark:border-dark-border shadow-2xl rounded-full"
                     >
                         <div className="flex items-center gap-2 border-r border-gray-300 pr-4">
-                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#255f6f] text-[10px] font-bold text-white">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#255f6f] dark:bg-[#3b8a9e] text-[10px] font-bold text-white">
                                 {markedNotes.length}
                             </span>
-                            <p className="text-sm font-medium text-[#255f6f]">Selected</p>
+                            <p className="text-sm font-medium text-[#255f6f] dark:text-gray-300">Selected</p>
                         </div>
 
                         <div className="flex items-center gap-2">
                             <Tooltip title="Deselect All" arrow>
                                 <button 
                                     onClick={() => setMarkedNotes([])}
-                                    className="p-2 hover:bg-gray-100 rounded-full text-gray-600 transition-colors"
+                                    className="p-2 size-10 hover:bg-gray-100 rounded-full text-gray-300 hover:text-gray-600 transition-colors"
                                 >
                                     <RemoveDoneIcon fontSize="small" />
                                 </button>
@@ -62,7 +62,7 @@ const MarkedNotesActionsBar = () => {
                             <Tooltip title="Delete" arrow>
                                 <button 
                                     onClick={() => setShowDeleteModal(true)}
-                                    className="p-2 hover:bg-red-50 text-red-500 rounded-full transition-colors"
+                                    className="p-2 size-10 hover:bg-red-50 text-red-500 rounded-full transition-colors"
                                 >
                                     <DeleteRoundedIcon fontSize="small" />
                                 </button>

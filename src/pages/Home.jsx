@@ -10,7 +10,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import Tooltip from '@mui/material/Tooltip';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
-import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
+import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutline';
 import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
 import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
 import FullscreenRoundedIcon from '@mui/icons-material/FullscreenRounded';
@@ -41,10 +41,13 @@ import { toast } from "react-toastify";
 import { ShareNote } from "../components/ShareNote";
 import { getColor } from "../utils/getColor";
 import { verifyColorIsWhite } from "../utils/verifyColorIsWhite";
+import { useTheme } from "../context/ThemeContext";
 
 const options = ['privacy', 'date', 'content', 'default']
 
 const Home = () => {
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
 
   const [uid, setUid] = useState()
   const [noteInput, setNoteInput] = useState("")
@@ -260,7 +263,7 @@ const Home = () => {
             <div className="p-6 bg-white rounded-full shadow-sm mb-4">
               <DescriptionIcon sx={{ fontSize: 80, opacity: 0.2 }} />
             </div>
-            <p className="text-lg font-medium">No notes found matching "<span className="font-semibold text-slate-600">{debouncedSearchInput}</span>"</p>
+            <p className="text-lg font-medium">No notes found matching &ldquo;<span className="font-semibold text-slate-600">{debouncedSearchInput}</span>&rdquo;</p>
             <p className="text-sm mt-2">Try a different search term</p>
           </div>
         );
@@ -559,7 +562,7 @@ const Home = () => {
                     combinedNotes.some((note) => note.pinned) &&
                     <>
                       <Tooltip title={closeSectionPinned ? "Open Pinned" : "Close Pinned"} className={ `${combinedNotes.length > 1 ? "block" : "hidden"}`} arrow placement='top'>
-                        <button className={`w-fit flex justify-center items-center ${!closeSectionPinned ? 'bg-[#f4f7f8] text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => {
+                        <button className={`w-fit flex justify-center items-center ${!closeSectionPinned ? (isDark ? 'bg-dark-border text-dark-text' : 'bg-[#f4f7f8] text-[#255f6f]') : (isDark ? 'bg-dark-surface text-dark-text border border-dark-border' : 'bg-white')} border-[1px] ${isDark ? 'border-dark-border' : 'border-gray-500/20'} pr-4 rounded-full z-40`} onClick={() => {
                           userToggledPinnedRef.current = true
                           setCloseSectionPinned(!closeSectionPinned)
                         }}>
@@ -606,7 +609,7 @@ const Home = () => {
                   {
                       (combinedNotes.some((note) => note.pinned) && combinedNotes.some((note) => !note.pinned)) &&
                       <Tooltip title={closeSection ? "Open Notes" : "Close notes"} arrow placement='top'>
-                        <button className={`w-fit flex justify-center items-center ${!closeSection ? 'bg-[#f4f7f8] text-[#255f6f] border-[#255f6f]/20' : 'bg-white'} border-[1px] border-gray-500/20 pr-4 rounded-full z-40`} onClick={() => {
+                        <button className={`w-fit flex justify-center items-center ${!closeSection ? (isDark ? 'bg-dark-border text-dark-text' : 'bg-[#f4f7f8] text-[#255f6f]') : (isDark ? 'bg-dark-surface text-dark-text border border-dark-border' : 'bg-white')} border-[1px] ${isDark ? 'border-dark-border' : 'border-gray-500/20'} pr-4 rounded-full z-40`} onClick={() => {
                           userToggledUnpinnedRef.current = true
                           setCloseSection(!closeSection)
                         }}>
@@ -658,7 +661,7 @@ const Home = () => {
                       initial={{ left: "-100%" }}
                       animate={{ left: "100%" }}
                       transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                      className="absolute top-0 h-full w-1/2 bg-[#255f6f]"
+                      className="absolute top-0 h-full w-1/2 bg-[#255f6f] dark:bg-[#3b8a9e]"
                     />
                   </div>
                    : message
@@ -781,7 +784,7 @@ const Home = () => {
                           <Tooltip title="Add Note" arrow>
                             <button
                               type="submit"
-                              className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full px-5 border-[1px] border-[#114f60]  shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-150" : "scale-0 w-0 h-0 opacity-0 transition-all duration-200"}
+                              className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full px-5 border-[1px] border-[#114f60] dark:border-[#3b8a9e] shadow-lg text-[#114f60] dark:text-[#3b8a9e] hover:text-white hover:bg-[#114f60] dark:hover:bg-[#2d7a8a] dark:hover:text-white hover:border-none transition-all duration-150" : "scale-0 w-0 h-0 opacity-0 transition-all duration-200"}
                             >
                               <CheckRoundedIcon />
                             </button>
@@ -809,7 +812,7 @@ const Home = () => {
 
           {/* Add Noet Button */}
             <Tooltip title="Add Noet" arrow placement="top"  className={`${markedNotes.length > 0 ? "opacity-0" : "opacity-100"} fixed bottom-4 md:bottom-10 right-10 lg:right-12 2xl:right-[20vw] duration-150 transition-all z-30`}>
-                <button type="submit" className="cursor-pointer flex justify-center items-center rounded-full shadow-lg text-white text-sm font-bold bg-[#255f6f] hover:bg-[#114f60] px-4 py-4 transition-all duration-150 z-30" onClick={handleNav} disabled={markedNotes.length > 0}> 
+                <button type="submit" className="cursor-pointer flex justify-center items-center rounded-full shadow-lg text-white text-sm font-bold bg-[#255f6f] hover:bg-[#114f60] dark:bg-[#3b8a9e] dark:hover:bg-[#2d7a8a] px-4 py-4 transition-all duration-150 z-30" onClick={handleNav} disabled={markedNotes.length > 0}> 
                   <AddRoundedIcon sx={{ fontSize: 20 }}/> 
                   Add Note
                 </button>

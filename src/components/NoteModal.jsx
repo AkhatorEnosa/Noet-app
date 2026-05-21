@@ -173,7 +173,7 @@ const NoteModal = ({
               <div className="flex gap-2 items-center z-20">
                 {/* Expand note  */}
                 <Tooltip title={ !expand ? "Go FullScreen" : "Revert to default" } placement="bottom" arrow className='hidden sm:flex'>
-                  <button className={`w-8 h-8 flex justify-center items-center border-[1px] cursor-pointer p-1 rounded-full ${expand ? `${verifyColorIsWhite() ? "text-[#114f60] bg-[#114f60]/10" : colorOptionValue}` : "lg:hover:bg-[#114f60]/10"} rounded-full cursor-pointer transition-all duration-150`} type="button"
+                  <button className={`w-8 h-8 flex justify-center items-center border-[1px] cursor-pointer p-1 rounded-full ${expand ? `${verifyColorIsWhite() ? "text-[#114f60] bg-[#114f60]/10" : colorOptionValue}` : "lg:hover:bg-[#114f60]/10 dark:hover:bg-[#3b8a9e]/30"} rounded-full cursor-pointer transition-all duration-150`} type="button"
                     onClick={() => setExpand(!expand)}
                   >
                        {expand ? <FullscreenExitRoundedIcon color="inherit"/> : <FullscreenRoundedIcon color="inherit"/>}
@@ -181,7 +181,7 @@ const NoteModal = ({
                 </Tooltip>
                 
                 <Tooltip title="Pin" placement="bottom" arrow>
-                  <button className={`w-8 h-8 flex justify-center items-center border-[1px] cursor-pointer p-1 rounded-full ${noteIsPinned ? `${verifyColorIsWhite() ? "text-[#114f60] bg-[#114f60]/10" : colorOptionValue}` : "lg:hover:bg-[#114f60]/10"} rounded-full cursor-pointer transition-all duration-150`} type="button"
+                  <button className={`w-8 h-8 flex justify-center items-center border-[1px] cursor-pointer p-1 rounded-full ${noteIsPinned ? `${verifyColorIsWhite() ? "text-[#114f60] bg-[#114f60]/10" : colorOptionValue}` : "lg:hover:bg-[#114f60]/10 dark:hover:bg-[#3b8a9e]/30"} rounded-full cursor-pointer transition-all duration-150`} type="button"
                     onClick={() => handlePinUpdate()}
                     disabled={updatingPin || stateLoading}
                   >
@@ -190,7 +190,7 @@ const NoteModal = ({
                 </Tooltip>
 
                 <Tooltip title={autoSave == "true" ? "Undo Auto-Save" : "Enable Auto-Save"} placement="bottom" arrow>
-                  <button className={`w-8 h-8 flex justify-center items-center border-[1px] ${autoSave == "true" ? `${verifyColorIsWhite(colorOptionValue) ? "text-[#114f60] bg-[#114f60]/10" : colorOptionValue}` : "lg:hover:bg-[#114f60]/10"} rounded-full cursor-pointer transition-all duration-150`} type="button"
+                  <button className={`w-8 h-8 flex justify-center items-center border-[1px] ${autoSave == "true" ? `${verifyColorIsWhite(colorOptionValue) ? "text-[#114f60] bg-[#114f60]/10" : colorOptionValue}` : "lg:hover:bg-[#114f60]/10 dark:hover:bg-[#3b8a9e]/30"} rounded-full cursor-pointer transition-all duration-150`} type="button"
                     onClick={() => handleAutoSaveToggle()}
                     disabled={updating || stateLoading}
                   >
@@ -301,7 +301,7 @@ const NoteModal = ({
                   <Tooltip title="Update Note" arrow placement="top">
                     <button
                       type="submit"
-                      className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full px-5 border-[1px] border-[#114f60] shadow-lg text-[#114f60] hover:text-white hover:bg-[#114f60] hover:border-none transition-all duration-150" : "w-0 h-0 opacity-0 transition-all duration-150"}
+                      className={wordCount > 0 ? "h-10 flex justify-center items-center rounded-full px-5 border-[1px] border-[#114f60] dark:border-[#3b8a9e] shadow-lg text-[#114f60] dark:text-[#3b8a9e] hover:text-white hover:bg-[#114f60] dark:hover:bg-[#2d7a8a] dark:hover:text-white hover:border-none transition-all duration-150" : "w-0 h-0 opacity-0 transition-all duration-150"}
                     >
                       {
                         updating || stateLoading ? <span className="loading loading-spinner loading-sm"></span> :

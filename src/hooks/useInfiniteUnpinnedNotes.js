@@ -20,6 +20,7 @@ const useInfiniteUnpinnedNotes = (filter, searchInput) => {
         }))
         return result.payload
       }
+      
       return null
     },
     getNextPageParam: (lastPage, pages) => {

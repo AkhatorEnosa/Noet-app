@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { motion } from "framer-motion"; // Required for the snippets
+import { useTheme } from "./context/ThemeContext";
 import Home from "./pages/Home";
 import Navbar from "./section/Navbar";
 import MarkedNotesActionsBar from "./section/MarkedNotesActionsBar";
@@ -21,17 +22,19 @@ const snippets = [
 ];
 
 function App() {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  
   return (
     <Router>
-      <div className="w-screen flex flex-col justify-between items-center relative" translate="yes">
+      <div className={`w-screen flex flex-col justify-between items-center relative min-h-screen ${isDark ? 'bg-dark-bg' : ''}`} translate="yes">
         {/* Refined Blueprint Grid */}
-        <div className="absolute h-screen inset-0 z-0 opacity-[0.1]" 
+        <div className={`absolute h-screen inset-0 z-0 ${isDark ? 'opacity-[0.05]' : 'opacity-[0.1]'}`} 
           style={{ 
-            backgroundImage: `linear-gradient(#255f6f 1px, transparent 1px), linear-gradient(90deg, #255f6f 1px, transparent 1px)`, 
+            backgroundImage: `linear-gradient(${isDark ? '#3b82f6' : '#255f6f'} 1px, transparent 1px), linear-gradient(90deg, ${isDark ? '#3b82f6' : '#255f6f'} 1px, transparent 1px)`, 
             backgroundSize: '40px 40px' 
           }} 
         />
-        {/* <div className="fixed inset-0 bg-white/95 z-0"></div> */}
 
         {/* Floating note snippets */}
         <div className="fixed inset-0 pointer-events-none z-0">
@@ -50,11 +53,11 @@ function App() {
                 delay: note.delay,
                 ease: "easeInOut" 
               }}
-              className="absolute bg-white border border-slate-200 px-4 py-3 rounded-md shadow-sm"
+              className={`absolute px-4 py-3 rounded-md shadow-sm ${isDark ? 'bg-dark-surface border border-dark-border' : 'bg-white border border-slate-200'}`}
               style={{ top: note.top, left: note.left }}
             >
-              <div className="w-8 h-1 bg-slate-100 rounded mb-2" />
-              <span className="text-[11px] font-mono text-slate-400 whitespace-nowrap">{note.text}</span>
+              <div className={`w-8 h-1 rounded mb-2 ${isDark ? 'bg-dark-border' : 'bg-slate-100'}`} />
+              <span className={`text-[11px] font-mono whitespace-nowrap ${isDark ? 'text-dark-textMuted' : 'text-slate-400'}`}>{note.text}</span>
             </motion.div>
           ))}
         </div>

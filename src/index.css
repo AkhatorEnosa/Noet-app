@@ -11,6 +11,29 @@
   font-family: "Nunito", sans-serif;
 }
 
+/* Dark mode base styles */
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  background-color: #0f172a;
+}
+
+/* Smooth transitions for theme switching */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: ease-in-out;
+  transition-duration: 200ms;
+}
+
+/* Exclude certain elements from transition */
+.note,
+.note * {
+  transition-property: none;
+  transition-duration: 0s;
+}
+
 /* Change highlight for the whole site */
 ::selection {
   background-color: #255f6f;

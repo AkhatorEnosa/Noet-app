@@ -24,9 +24,12 @@ import { AppContext } from "../context/AppContext";
 import { toast } from "react-toastify";
 import ConfirmModal from "./ConfirmModal";
 import NoteModal from "./NoteModal";
+import { useTheme } from "../context/ThemeContext";
 
 /* eslint-disable react/prop-types */
 const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, bgColor, noteObj, activeNote, handleDrop}) => {
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
 
   const [getNote, setGetNote] = useState(note_value)
   const [getNoteTitle, setGetNoteTitle] = useState(title)
@@ -194,7 +197,7 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
   // custom link render for linkify
   const renderLink = ({ attributes, content }) => {
     const { href, ...props } = attributes;
-    return <a href={href} target="_blank" {...props} className="relative z-20 hover:underline">{content}</a>;
+    return <a href={href} target="_blank" {...props} className="relative z-20 !no-underline hover:!underline focus:no-underline underline-offset-4 !text-[#044dde] [&:visited]:!text-[#800080]">{content}</a>;
   };
 
   // All about longPress 
@@ -288,20 +291,27 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
                 {notePrivacy ? <LockRoundedIcon /> : <LockOpenRoundedIcon />}
               </Tooltip>
 
-              <Tooltip title="Pin" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 z-50" onClick={() => handlePinUpdate()}>
+              <Tooltip title="Pin" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 dark:hover:bg-[#3b8a9e]/30 z-50" onClick={() => handlePinUpdate()}>
                   {updatingPin ? <CircularProgress size="20px" color="inherit"/> : !noteObj.pinned ? <PushPinOutlinedIcon/> : <PushPinRoundedIcon />}
               </Tooltip>
 
-              <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 z-50" onClick={() => setToggleAction(!toggleAction)}>
+              <Tooltip title="Actions" placement="top" arrow className="flex justify-center items-center cursor-pointer w-5 h-5 p-1 rounded-full  lg:bg-transparent lg:hover:bg-[#114f60]/20 dark:hover:bg-[#3b8a9e]/30 z-50" onClick={() => setToggleAction(!toggleAction)}>
                 <MoreVertIcon/>
               </Tooltip>
               
               {/* Dropdown Menu */}
-              <div className={`absolute ${!toggleAction ? "scale-0" : "scale-100"} bottom-10 right-2 text-xs bg-white shadow-lg border-[0.2px] border-black/50 rounded-md overflow-hidden duration-150 transition-all z-[70]`}>
+              <div className={`absolute ${!toggleAction ? "scale-0" : "scale-100"} bottom-10 right-2 text-xs shadow-lg rounded-md overflow-hidden duration-150 transition-all z-[70] ${isDark ? 'bg-dark-surface border border-dark-border' : 'bg-white border-[0.2px] border-black/50'}`}>
                   <ul>
-                      <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer duration-150 transition-all" onClick={handleNav}>Edit/View <EditNoteRoundedIcon sx={{ fontSize: 12 }}/></li>
-                      <li className="flex justify-between items-center gap-5 hover:bg-gray-100 p-2 cursor-pointer duration-150 transition-all" onClick={handleMarkNotes}>Mark <CheckCircleOutlineRoundedIcon sx={{ fontSize: 12 }}/></li>
-                      <li className="flex justify-between hover:text-red-500 hover:bg-red-100/50 p-2 cursor-pointer duration-150 transition-all" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>Delete <DeleteRoundedIcon sx={{ fontSize: 12 }} /></li>
+                      <li className={`flex justify-between items-center gap-5 p-2 cursor-pointer duration-150 transition-all ${isDark ? 'hover:bg-dark-border text-dark-text' : 'hover:bg-gray-100 text-gray-700'}`} onClick={handleNav}>
+                        Edit/View 
+                        <EditNoteRoundedIcon sx={{ fontSize: 12 }}/>
+                      </li>
+                      <li className={`flex justify-between items-center gap-5 p-2 cursor-pointer duration-150 transition-all ${isDark ? 'hover:bg-dark-border text-dark-text' : 'hover:bg-gray-100 text-gray-700'}`} onClick={handleMarkNotes}>
+                        Mark <CheckCircleOutlineRoundedIcon sx={{ fontSize: 12 }}/>
+                      </li>
+                      <li className="flex justify-between dark:text-dark-text dark:hover:text-red-500 hover:dark:bg-dark-border hover:text-red-500 hover:bg-red-100/50 p-2 cursor-pointer duration-150 transition-all text-gray-700" onClick={() => setShowDeleteModal(!showDeleteModal) & setToggleAction(false)}>
+                        Delete <DeleteRoundedIcon sx={{ fontSize: 12 }} />
+                      </li>
                   </ul>
               </div>
             </div>
