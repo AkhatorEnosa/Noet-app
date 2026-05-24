@@ -27,7 +27,8 @@ function App() {
   
   return (
     <Router>
-      <div className={`w-screen flex flex-col justify-between items-center relative min-h-screen ${isDark ? 'bg-dark-bg' : ''}`} translate="yes">
+      <div className={`w-screen flex flex-col justify-between items-center relative ${isDark ? 'bg-dark-bg' : ''}`} translate="yes">
+        
         {/* Refined Blueprint Grid */}
         <div className={`absolute h-screen inset-0 z-0 ${isDark ? 'opacity-[0.05]' : 'opacity-[0.1]'}`} 
           style={{ 

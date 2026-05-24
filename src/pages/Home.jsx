@@ -571,7 +571,7 @@ const Home = () => {
                         </button>
                       </Tooltip>
                     
-                      <div className={`${(closeSectionPinned && !searchInput) ? "hidden" : "block"} rounded-md p-1 sm:p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto`}>
+                      <div className={`${(closeSectionPinned && !searchInput) ? "hidden" : "block"} p-1 sm:p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto ${isDark ? "bg-dark-surface" : "bg-white/50"} rounded-2xl`}>
                         {
                           allPinnedNotes?.map((note) => (
                                 <React.Fragment key={note.id}>
@@ -620,7 +620,7 @@ const Home = () => {
                   }
                   
                   { combinedNotes.some((note) => !note.pinned) &&
-                    <div className={`${(closeSection && !searchInput) ? "hidden" : "block"} rounded-md p-1 sm:p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto`}>
+                    <div className={`${(closeSection && !searchInput) ? "hidden" : "block"} p-1 sm:p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto ${isDark ? "bg-dark-surface" : "bg-white/50"} rounded-2xl`}>
                       
                       {
                         allUnpinnedNotes?.map((note) => (
