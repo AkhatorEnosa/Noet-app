@@ -261,6 +261,10 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
 
           <div className="absolute top-0 left-0 w-full h-full rounded-2xl" onClick={() => handleNav()}></div>
           
+          {/* note title */}
+          {title && <div className="px-3 font-bold text-lg mb-3 leading-tight border-b line-clamp-2">
+            { title }
+          </div>}
           {/* note_value div  */}
           <div className={`w-full ${note_value.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
             <Tooltip title="Mark Note" arrow placement="top">
@@ -269,7 +273,6 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
                   <CheckCircleOutlineRoundedIcon sx={{ fontSize: 28, backgroundColor: "white", borderRadius: "50%" }}/>}
               </button>
             </Tooltip>
-
             {notePreview}
           </div>
 

@@ -49,9 +49,13 @@ const Home = () => {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
+  const MAX_TITLE_WORDS = 15;
+  const MAX_NOTE_CHARACTERS = 30000;
+
   const [uid, setUid] = useState()
   const [noteInput, setNoteInput] = useState("")
   const [noteTitle, setNoteTitle] = useState("")
+  const [titleWordsCount, setTitleWordsCount] = useState(noteTitle.trim().split(/\s+/).length || 0);
   const [wordCount, setWordCount] = useState(0)
   const [wordStore, setWordStore] = useState("")
   const [showColorPallete, setShowColorPallete] = useState(false)
@@ -199,6 +203,59 @@ const Home = () => {
       setIsSearchLoading(false)
     }
   }, [pinnedNotesQuery.isFetching, unpinnedNotesQuery.isFetching, isSearchLoading])
+  
+  // Helper to get progress color based on percentage
+  const getProgressColor = (percentage) => {
+    if (percentage < 0.6) return '#22c55e'; // green
+    if (percentage < 0.9) return '#eab308'; // yellow
+    return '#ef4444'; // red
+  }
+  
+  // Circular progress component for title word count
+  const TitleWordProgress = () => {
+    const percentage = Math.min(titleWordsCount / MAX_TITLE_WORDS, 1);
+    const color = getProgressColor(percentage);
+    const size = 20;
+    const strokeWidth = 3;
+    const radius = (size - strokeWidth) / 2;
+    const circumference = radius * 2 * Math.PI;
+    const offset = circumference - percentage * circumference;
+
+    return (
+      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="transform -rotate-90">
+          {/* Background circle */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke="rgba(0,0,0,0.1)"
+            strokeWidth={strokeWidth}
+          />
+          {/* Progress circle */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke={color}
+            strokeWidth={strokeWidth}
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            strokeLinecap="round"
+            className="transition-all duration-300 ease-out"
+          />
+        </svg>
+        {/* <span 
+          className="absolute text-[8px] font-bold"
+          style={{ color: color, fontSize: '9px' }}
+        >
+          {Math.round(percentage * 100)}%
+        </span> */}
+      </div>
+    )
+  }
   
   // close public modal based on isPublicNote
   const closePublicNote = () => {
@@ -352,15 +409,44 @@ const Home = () => {
     saveNote();
   }
 
-
   // handle notetile field change
   const handleTitleChange = (e) => {
+    const value = e.target.value;
+    const words = value.trim().split(/\s+/).filter(word => word.length > 0);
+    const wordCount = words.length;
+
+    if (wordCount > MAX_TITLE_WORDS) {
+      // Truncate to 50 words
+      const truncatedTitle = words.slice(0, MAX_TITLE_WORDS).join(' ');
+      setNoteTitle(truncatedTitle);
+      setTitleWordsCount(MAX_TITLE_WORDS);
+      toast.warning(`Title limited to ${MAX_TITLE_WORDS} words`, {
+        className: "text-xs w-fit"
+      });
+    } else {
+      setNoteTitle(value);
+      setTitleWordsCount(wordCount);
+    }
     setNoteTitle(e.target.value)
   }
 
   
   // onChange for input field
   const handleChange = (e) => {
+    // handle words longer than MAX_NOTE_CHARACTERS
+    const value = e.target.value;
+    const characters = value.length;
+
+    if (characters > MAX_NOTE_CHARACTERS) {
+      setNoteInput(e.target.value.slice(0, MAX_NOTE_CHARACTERS))
+      setWordCount(MAX_NOTE_CHARACTERS)
+      setWordStore("")
+      // toast.warning(`Note limited to ${MAX_NOTE_CHARACTERS} characters`, {
+      //   className: "text-xs w-fit"
+      // })
+      return;
+    }
+
     setNoteInput(e.target.value)
     setWordCount(e.target.value.length)
     setWordStore("")
@@ -718,17 +804,25 @@ const Home = () => {
 
                     {/* input fields Section */}
                     <div className={`relative w-full h-full flex flex-col ${colorOptionValue}`}>
+              
+                      <div className='flex items-center justify-end px-4 bg-transparent md:px-8 py-4 pb-2 float-right'>
                       {/* Title Field */}
-                      <input
-                        type="text"
-                        name="title"
-                        value={noteTitle} // Ensure this state exists
-                        onChange={handleTitleChange} // Ensure this handler exists
-                        placeholder="Title"
-                        maxLength="100"
-                        className={`w-full outline-none font-bold text-xl md:text-2xl px-4 bg-transparent md:px-8 py-4 placeholder:text-${getColor(colorOptionValue)}/50 [unicode-bidi:plaintext] text-start ltr transition-all duration-150`}
-                        dir="auto"
-                      />
+                        <input
+                          type="text"
+                          name="title"
+                          value={noteTitle} // Ensure this state exists
+                          onChange={handleTitleChange} // Ensure this handler exists
+                          placeholder="Title"
+                          maxLength="100"
+                          className={`w-full outline-none font-bold text-xl md:text-2xl placeholder:text-${getColor(colorOptionValue)}/50 [unicode-bidi:plaintext] text-start ltr transition-all duration-150`}
+                          dir="auto"
+                        />
+                        {noteTitle.length > 0 && <Tooltip title={`${titleWordsCount} of ${MAX_TITLE_WORDS} words used`} arrow placement="top">
+                          <div className="cursor-help">
+                            <TitleWordProgress />
+                          </div>
+                        </Tooltip>}
+                      </div>
 
                       {/* Note Body Field */}
                       <textarea
@@ -791,16 +885,19 @@ const Home = () => {
                           </Tooltip>
 
                           {/* Word count desktop */}
-                          <span className="hidden lg:block lg:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
-                            {wordCount} characters
-                          </span>
+                          <Tooltip title={`${wordCount} of ${MAX_NOTE_CHARACTERS} characters used`} arrow placement="top">
+                            <span className="hidden lg:block lg:absolute left-10 text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
+                              <span className={`${wordCount < 20000 ? "text-[#22c55e]" : wordCount < 700 ? "text-[#eab308]" : "text-[#ef4444]"}`}>{wordCount}</span>/
+                              {MAX_NOTE_CHARACTERS} characters
+                            </span>
+                          </Tooltip>
                         </div>
                       )}
 
                       {/* word count mobile */}
                       <div className="w-full flex lg:hidden items-center justify-center">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
-                          {wordCount} characters
+                          <span className={`${wordCount < 20000 ? "text-[#22c55e]" : wordCount < MAX_NOTE_CHARACTERS ? "text-[#eab308]" : "text-[#ef4444]" }`}>{wordCount}</span>{MAX_NOTE_CHARACTERS} characters
                         </span>
                       </div>
                     </div>
