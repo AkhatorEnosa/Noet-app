@@ -300,7 +300,7 @@ const NoteModal = ({
             {/* input fields Section */}
             <div className={`relative w-full h-full flex flex-col ${colorOptionValue}`}>
               
-              <div className='flex items-center justify-end px-4 bg-transparent md:px-8 py-4 pb-2 float-right'>
+              <div className='flex items-center justify-end px-4 bg-transparent  md:px-8 py-4 pb-2 float-right'>
                 {/* Title Field */}
                 <input
                   type="text"
@@ -308,7 +308,7 @@ const NoteModal = ({
                   value={getNoteTitle} // Ensure you have a state for the title (e.g., getNoteTitle)
                   onChange={handleTitleChange} // Your title change handler
                   placeholder="Title"
-                  className={`w-full outline-none font-bold text-xl md:text-2xl  placeholder:text-${getColor(colorOptionValue)}/50 [unicode-bidi:plaintext] text-start ltr transition-all duration-150`}
+                  className={`w-full outline-none font-bold text-xl md:text-2xl  placeholder:text-${getColor(colorOptionValue)}/50 [unicode-bidi:plaintext] text-start ltr bg-inherit transition-all duration-150`}
                   dir='auto'
                 />
                 {getNoteTitle?.length > 0 && <Tooltip title={`${titleWordCount} of ${MAX_TITLE_WORDS} words used`} arrow placement="top">
