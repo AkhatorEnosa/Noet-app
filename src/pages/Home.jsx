@@ -814,7 +814,7 @@ const Home = () => {
                           onChange={handleTitleChange} // Ensure this handler exists
                           placeholder="Title"
                           maxLength="100"
-                          className={`w-full outline-none font-bold text-xl md:text-2xl placeholder:text-${getColor(colorOptionValue)}/50 [unicode-bidi:plaintext] text-start ltr transition-all duration-150`}
+                          className={`w-full outline-none font-bold text-xl md:text-2xl placeholder:text-${getColor(colorOptionValue)}/50 [unicode-bidi:plaintext] text-start bg-inherit ltr transition-all duration-150`}
                           dir="auto"
                         />
                         {noteTitle.length > 0 && <Tooltip title={`${titleWordsCount} of ${MAX_TITLE_WORDS} words used`} arrow placement="top">
