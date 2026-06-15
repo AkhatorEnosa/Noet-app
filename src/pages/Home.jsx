@@ -26,6 +26,7 @@ import { useDebounce } from "react-use";
 import FilterButton from "../components/FilterButton";
 import useInfinitePinnedNotes from "../hooks/useInfinitePinnedNotes";
 import useInfiniteUnpinnedNotes from "../hooks/useInfiniteUnpinnedNotes";
+import useNoteById from "../hooks/useNoteById";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
@@ -39,6 +40,9 @@ import usePublicNote from "../hooks/usePublicNote";
 // import Sidebar from "../section/Sidebar";
 import { toast } from "react-toastify";
 import { ShareNote } from "../components/ShareNote";
+import NoteModal from "../components/NoteModal";
+import useUpdateNote from "../hooks/useUpdateNote";
+import usePin from "../hooks/usePin";
 import { getColor } from "../utils/getColor";
 import { verifyColorIsWhite } from "../utils/verifyColorIsWhite";
 import { useTheme } from "../context/ThemeContext";
@@ -131,6 +135,121 @@ const Home = () => {
   const { isLoading: loadingPublicNote } = usePublicNote(queryParam)
   // const { isPending: loadingCollabs } = useFetchCollabs(uid, queryParam)
   // const { mutate: requestCollab, isPending: processingRequest } = useRequestCollab()
+  
+  // Fetch note by ID when URL param is present and note is not in loaded notes
+  const noteInCombinedNotes = useMemo(() => 
+    combinedNotes?.find(note => note.id == queryParam),
+    [combinedNotes, queryParam]
+  );
+  
+  // Only fetch by ID if queryParam exists, is not a public note, is not 'open', and note is not in loaded notes
+  const shouldFetchById = queryParam && !isPublicNote && queryParam !== 'open' && !noteInCombinedNotes;
+  const { data: fetchedNote } = useNoteById(shouldFetchById ? queryParam : null);
+  
+  // State for opening a note directly via URL (when note wasn't loaded via infinite scroll)
+  const [directNoteData, setDirectNoteData] = useState(null);
+  const isDirectNoteOpen = !!directNoteData;
+  
+  // Effect to handle opening note when fetched by ID
+  useEffect(() => {
+    if (fetchedNote && !isDirectNoteOpen) {
+      setDirectNoteData(fetchedNote);
+    }
+  }, [fetchedNote, isDirectNoteOpen]);
+  
+  // Handler for closing direct note modal
+  const handleDirectNoteClose = useCallback(() => {
+    setDirectNoteData(null);
+    navigate(`/`, { replace: true });
+  }, [navigate]);
+  
+  // Effect to handle body overflow for direct note modal
+  useEffect(() => {
+    if (isDirectNoteOpen) {
+      document.body.style.overflow = 'hidden';
+      const handleEsc = (e) => e.key === "Escape" && handleDirectNoteClose();
+      window.addEventListener("keydown", handleEsc);
+      
+      return () => {
+        document.body.style.overflow = 'unset';
+        window.removeEventListener("keydown", handleEsc);
+      };
+    }
+  }, [isDirectNoteOpen, handleDirectNoteClose]);
+
+  // Get loading state from Redux
+  const stateLoading = useSelector((state) => state.app.isLoading);
+  
+  // Hooks for direct note operations (called at component level)
+  const directNoteUpdateMutation = useUpdateNote();
+  const directNotePinMutation = usePin();
+  
+  // State for direct note modal
+  const [directNoteContent, setDirectNoteContent] = useState("");
+  const [directNoteTitle, setDirectNoteTitle] = useState("");
+  const [directWordCount, setDirectWordCount] = useState(0);
+  const [directWordStore, setDirectWordStore] = useState("");
+  const [directShowColorPallete, setDirectShowColorPallete] = useState(false);
+  const [directColorOption, setDirectColorOption] = useState("");
+  const [directNotePrivacy, setDirectNotePrivacy] = useState(false);
+  const [directDebouncedNote, setDirectDebouncedNote] = useState("");
+  const [directDebouncedTitle, setDirectDebouncedTitle] = useState("");
+  const [directDebouncedColorOption, setDirectDebouncedColorOption] = useState("");
+  const [directDebouncedNotePrivacy, setDirectDebouncedNotePrivacy] = useState(false);
+  
+  // Effect to initialize direct note modal state when note is fetched
+  useEffect(() => {
+    if (directNoteData) {
+      setDirectNoteContent(directNoteData.data_value || "");
+      setDirectNoteTitle(directNoteData.title || "");
+      setDirectWordCount((directNoteData.data_value || "").length);
+      setDirectColorOption(directNoteData.bg_color || "bg-white");
+      setDirectNotePrivacy(directNoteData.privacy || false);
+    }
+  }, [directNoteData]);
+  
+  // Direct note update handler
+  const handleDirectNoteUpdate = useCallback((title, input, color, privacy) => {
+    directNoteUpdateMutation.mutate({ 
+      id: directNoteData.id, 
+      title, 
+      data_value: input.trim(), 
+      bg_color: color, 
+      privacy: privacy, 
+      updated_at: new Date() 
+    });
+  }, [directNoteData, directNoteUpdateMutation]);
+
+  // Direct note pin handler
+  const handleDirectNotePin = useCallback(() => {
+    directNotePinMutation.mutate({ pinned: !directNoteData.pinned, id: directNoteData.id });
+    // Update local state
+    setDirectNoteData(prev => ({ ...prev, pinned: !prev.pinned }));
+  }, [directNoteData, directNotePinMutation]);
+  
+  // Get autoSave setting from AppContext
+  const { autoSave } = useContext(AppContext);
+  
+  // Autosave for direct note modal - debounces changes and saves after 1.5 seconds
+  useDebounce(() => {
+    if (
+      directNoteContent && 
+      isDirectNoteOpen && 
+      (directNoteContent !== directDebouncedNote || 
+       directNoteTitle !== directDebouncedTitle || 
+       directColorOption !== directDebouncedColorOption || 
+       directNotePrivacy !== directDebouncedNotePrivacy) && 
+      autoSave == "true" && 
+      !directNoteUpdateMutation.isPending && 
+      !stateLoading
+    ) {
+      handleDirectNoteUpdate(directNoteTitle, directNoteContent, directColorOption, directNotePrivacy);
+      setDirectDebouncedTitle(directNoteTitle);
+      setDirectDebouncedNote(directNoteContent);
+      setDirectDebouncedColorOption(directColorOption);
+      setDirectDebouncedNotePrivacy(directNotePrivacy);
+    }
+  }, 1500, [directNoteTitle, directNoteContent, directColorOption, directNotePrivacy, isDirectNoteOpen, autoSave]);
   
   // get textArea DOM by ref
   const textareaRef = useRef(null);
@@ -658,26 +777,27 @@ const Home = () => {
                       </Tooltip>
                     
                       <div className={`${(closeSectionPinned && !searchInput) ? "hidden" : "block"} p-1 sm:p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto ${isDark ? "bg-dark-surface" : "bg-white/50"} rounded-2xl`}>
-                        {
-                          allPinnedNotes?.map((note) => (
-                                <React.Fragment key={note.id}>
-                                  <Note 
-                                    title={note.title}
-                                    noteId={note.id}
-                                    note_value={note.data_value}
-                                    note_date={note.created_at}
-                                    updated_at={note.updated_at}
-                                    note_privacy={note.privacy}
-                                    bgColor={note.bg_color}
-                                    updateId={note.id}
-                                    noteObj={note}
-                                    activeNote={setactiveNote}
-                                    handleDrop={() => onDrop(allPinnedNotes.indexOf(note), allPinnedNotes, true)}
-                                  />
-                                </React.Fragment>
-                              )
+                      {
+                        allPinnedNotes?.map((note) => (
+                              <React.Fragment key={note.id}>
+                                <Note 
+                                  title={note.title}
+                                  noteId={note.id}
+                                  note_value={note.data_value}
+                                  note_date={note.created_at}
+                                  updated_at={note.updated_at}
+                                  note_privacy={note.privacy}
+                                  bgColor={note.bg_color}
+                                  updateId={note.id}
+                                  noteObj={note}
+                                  activeNote={setactiveNote}
+                                  isRefetching={pinnedNotesQuery.isRefetching}
+                                  handleDrop={() => onDrop(allPinnedNotes.indexOf(note), allPinnedNotes, true)}
+                                />
+                              </React.Fragment>
                             )
-                        }
+                          )
+                      }
                         {/* Load sentinel for pinned notes */}
                         <LoadSentinel 
                           onLoadMore={() => pinnedNotesQuery.fetchNextPage()}
@@ -722,6 +842,7 @@ const Home = () => {
                                 updateId={note.id}
                                 noteObj={note}
                                 activeNote={setactiveNote}
+                                isRefetching={unpinnedNotesQuery.isRefetching}
                                 handleDrop={() => onDrop(allUnpinnedNotes.indexOf(note), allUnpinnedNotes, false)}
                               />
                             </React.Fragment>
@@ -904,6 +1025,45 @@ const Home = () => {
                   </form>
                 </div>
               </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Direct Note Modal - for notes accessed via URL that aren't in the DOM */}
+          <AnimatePresence>
+            {isDirectNoteOpen && directNoteData && (
+              <NoteModal
+                setGetNoteTitle={setDirectNoteTitle}
+                setGetNote={setDirectNoteContent}
+                setWordCount={setDirectWordCount}
+                getNoteTitle={directNoteTitle}
+                getNote={directNoteContent}
+                colorOptionValue={directColorOption}
+                notePrivacy={directNotePrivacy}
+                setColorOptionValue={setDirectColorOption}
+                setShowColorPallete={setDirectShowColorPallete}
+                showColorPallete={directShowColorPallete}
+                wordCount={directWordCount}
+                setNotePrivacy={setDirectNotePrivacy}
+                debouncedNoteInput={directDebouncedNote}
+                debouncedTitleInput={directDebouncedTitle}
+                wordStore={directWordStore} 
+                setWordStore={setDirectWordStore}
+                showDeleteModal={false}
+                setShowDeleteModal={() => {}}
+                setToggleAction={() => {}}
+
+                note_date={directNoteData.created_at}
+                updated_at={directNoteData.updated_at}
+                noteIsPinned={directNoteData.pinned}
+                updatingPin={directNotePinMutation.isPending}
+                stateLoading={stateLoading}
+                updating={directNoteUpdateMutation.isPending}
+                isEditing={isDirectNoteOpen}
+
+                updateNote={handleDirectNoteUpdate}
+                handlePinUpdate={handleDirectNotePin}
+                handleNav={handleDirectNoteClose}
+              />
             )}
           </AnimatePresence>
 

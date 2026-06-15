@@ -27,7 +27,7 @@ import NoteModal from "./NoteModal";
 import { useTheme } from "../context/ThemeContext";
 
 /* eslint-disable react/prop-types */
-const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, bgColor, noteObj, activeNote, handleDrop}) => {
+const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, bgColor, noteObj, activeNote, isRefetching, handleDrop}) => {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
@@ -58,7 +58,7 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
 
   const {mutate, isPending} = useDeleteNotes()
   const {mutate:updatePin, isPending:updatingPin, } = usePin()
-  const {mutate:update, isPending:updating, } = useUpdateNote()
+  const {mutate:update, isPending:updating } = useUpdateNote()
 
   //  Capture the ID from the URL
   const activeNoteId = searchParams.get("note");
@@ -250,6 +250,7 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
           }}
           onDragOver={(e) => e.preventDefault()}
         >
+          { isRefetching ? <div className="absolute top-0 left-0 w-full h-full bg-white/30 rounded-2xl z-[72] animate-ping"></div> : ""}
 
           {/* overlay to open note_value edit modal */}
           {
