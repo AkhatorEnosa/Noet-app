@@ -10,7 +10,7 @@ export default {
     extend: {
       colors: {
         dark: {
-          bg: '#0f172a',
+          bg: '#202124',
           surface: '#1e293b',
           border: '#334155',
           text: '#e2e8f0',

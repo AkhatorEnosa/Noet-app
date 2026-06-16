@@ -419,7 +419,7 @@ const Home = () => {
       // Show error message
       setMessage(
         <div className="flex flex-col items-center justify-center text-red-400">
-          <div className="p-6 bg-red-50 rounded-full mb-4">
+          <div className="p-6 rounded-full mb-4">
             <ErrorOutlineRoundedIcon sx={{ fontSize: 80, opacity: 0.5 }} />
           </div>
           <p className="text-lg font-medium text-slate-600">Failed to load notes</p>
