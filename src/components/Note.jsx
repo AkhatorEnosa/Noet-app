@@ -250,7 +250,13 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
           }}
           onDragOver={(e) => e.preventDefault()}
         >
-          { isRefetching ? <div className="absolute top-0 left-0 w-full h-full bg-white/30 rounded-2xl z-[72] animate-pulse"></div> : ""}
+        
+          { 
+            isRefetching ? 
+              <div className="absolute top-0 left-0 w-full h-full bg-white/30 rounded-2xl z-[72] animate-pulse"></div> 
+                : 
+              ""
+          }
 
           {/* overlay to open note_value edit modal */}
           {
@@ -263,17 +269,28 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
           <div className="absolute top-0 left-0 w-full h-full rounded-2xl" onClick={() => handleNav()}></div>
           
           {/* note title */}
-          {title && <div className="px-3 font-bold text-lg mb-3 leading-tight border-b line-clamp-2">
-            { title }
-          </div>}
-          {/* note_value div  */}
-          <div className={`w-full ${note_value.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
+          {title && <div>
+            {/* checkmark  */}
             <Tooltip title="Mark Note" arrow placement="top">
-              <button className={`relative -top-5 right-5 ${noteChecked ? "opacity-100" : "opacity-0 group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-150 z-[65]`} type="button" onClick={() => handleMarkNotes()}>
+              <button className={`relative -top-5 right-2 ${noteChecked ? "opacity-100" : "opacity-0 group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-150 z-[65]`} type="button" onClick={() => handleMarkNotes()}>
                 { noteChecked ? <CheckCircle sx={{ fontSize: 28, backgroundColor: "white", borderRadius: "50%" }}/> :
                   <CheckCircleOutlineRoundedIcon sx={{ fontSize: 28, backgroundColor: "white", borderRadius: "50%" }}/>}
               </button>
             </Tooltip>
+            <p className="px-3 font-bold text-lg mb-3 leading-tight border-b line-clamp-2">{ title }</p>
+          </div>}
+          {/* note_value div  */}
+          <div className={`w-full ${note_value.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
+            {/* checkmark  */}
+            {
+              !title && 
+              <Tooltip title="Mark Note" arrow placement="top">
+                <button className={`relative -top-5 right-2 ${noteChecked ? "opacity-100" : "opacity-0 group-hover:opacity-100"} float-right w-fit h-fit flex justify-center items-center rounded-full -left-2 transition-all duration-150 z-[65]`} type="button" onClick={() => handleMarkNotes()}>
+                  {noteChecked ? <CheckCircle sx={{ fontSize: 28, backgroundColor: "white", borderRadius: "50%" }} /> :
+                    <CheckCircleOutlineRoundedIcon sx={{ fontSize: 28, backgroundColor: "white", borderRadius: "50%" }} />}
+                </button>
+              </Tooltip>
+            }
             {notePreview}
           </div>
 
