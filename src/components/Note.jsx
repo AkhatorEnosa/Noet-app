@@ -250,7 +250,7 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
           }}
           onDragOver={(e) => e.preventDefault()}
         >
-          { isRefetching ? <div className="absolute top-0 left-0 w-full h-full bg-white/30 rounded-2xl z-[72] animate-ping"></div> : ""}
+          { isRefetching ? <div className="absolute top-0 left-0 w-full h-full bg-white/30 rounded-2xl z-[72] animate-pulse"></div> : ""}
 
           {/* overlay to open note_value edit modal */}
           {
