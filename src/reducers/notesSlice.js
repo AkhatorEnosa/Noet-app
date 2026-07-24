@@ -23,7 +23,9 @@ export const getAllNotes = createAsyncThunk('api/getAllNotes', async({
         .from('notes')
         .select('*', { count: 'exact' })
         .eq('user_id', id)
+        // .order('updated_at', { ascending: true })
         .ilike('data_value', `%${searchInput}%`)
+
       
       // Filter by pinned status if specified
       if (pinned !== null) {

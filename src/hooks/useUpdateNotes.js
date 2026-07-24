@@ -13,7 +13,7 @@ const useUpdateNotes = () => {
             .upsert([
                 {id: id_one, index_num: index_two}, 
                 {id: id_two, index_num: index_one}
-                ])
+            ])
             .select()
 
             if(error) console.log(error)

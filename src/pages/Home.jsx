@@ -47,7 +47,7 @@ import { getColor } from "../utils/getColor";
 import { verifyColorIsWhite } from "../utils/verifyColorIsWhite";
 import { useTheme } from "../context/ThemeContext";
 
-const options = ['privacy', 'date', 'content', 'default']
+const options = ['custom', 'created', 'updated', 'privacy', 'content']
 
 const Home = () => {
   const { theme } = useTheme()
@@ -55,6 +55,10 @@ const Home = () => {
 
   const MAX_TITLE_WORDS = 15;
   const MAX_NOTE_CHARACTERS = 30000;
+
+  const getSortValue = localStorage.getItem('sortValue');
+  const getCloseSectionPinned = localStorage.getItem('closeSectionPinned');
+  const getCloseSectionUnpinned = localStorage.getItem('closeSectionUnpinned');
 
   const [uid, setUid] = useState()
   const [noteInput, setNoteInput] = useState("")
@@ -65,15 +69,13 @@ const Home = () => {
   const [showColorPallete, setShowColorPallete] = useState(false)
   const [colorOptionValue, setColorOptionValue] = useState("")
   const [activeNote, setactiveNote] = useState(null)
-  const [closeSectionPinned, setCloseSectionPinned] = useState(true)
-  const [closeSection, setCloseSection] = useState(false)
-  const userToggledPinnedRef = useRef(false)
-  const userToggledUnpinnedRef = useRef(false)
+  const [closeSectionUnpinned, setCloseSectionUnpinned] = useState(getCloseSectionUnpinned ? getCloseSectionUnpinned === "true" : false)
+  const [closeSectionPinned, setCloseSectionPinned] = useState(getCloseSectionPinned ? getCloseSectionPinned === "true" : false)
   const [showSortOptions, setShowOptions] = useState(false)
 
   const [searchInput, setSearchInput] = useState("")
   const [debouncedSearchInput, setDebouncedSearchInput] = useState("")
-  const [sortValue, setSortValue] = useState("default")
+  const [sortValue, setSortValue] = useState(getSortValue ? getSortValue : 'custom')
   const [message, setMessage] = useState("")
   const [isSearchLoading, setIsSearchLoading] = useState(false)
     
@@ -105,9 +107,11 @@ const Home = () => {
   const { mutate:updateIndexNums } = useUpdateNotes()
 
   // Determine the sort filter based on sortValue
-  const sortFilter = sortValue == 'color' ? 'bg_color' 
-    : sortValue == 'content' ? 'data_value' 
-    : sortValue == 'date' ? 'created_at' 
+  const sortFilter =
+    // sortValue == 'color' ? 'bg_color' 
+    sortValue == 'content' ? 'data_value' 
+    : sortValue == 'created' ? 'created_at' 
+    : sortValue == 'updated' ? 'updated_at'
     : sortValue == 'privacy' ? 'privacy'
     : 'index_num'
 
@@ -156,6 +160,13 @@ const Home = () => {
       setDirectNoteData(fetchedNote);
     }
   }, [fetchedNote, isDirectNoteOpen]);
+
+  // Persist sortValue, pinned and unpinned sections in localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("sortValue", sortValue);
+    localStorage.setItem("closeSectionPinned", closeSectionPinned);
+    localStorage.setItem("closeSectionUnpinned", closeSectionUnpinned);
+  }, [sortValue, closeSectionPinned, closeSectionUnpinned]);
   
   // Handler for closing direct note modal
   const handleDirectNoteClose = useCallback(() => {
@@ -254,11 +265,6 @@ const Home = () => {
   // get textArea DOM by ref
   const textareaRef = useRef(null);
 
-  const checkIsPinned = useCallback((id) => {
-    const findNote = combinedNotes?.some((note) => note.pinned && note.id == id)
-    return findNote;
-  }, [combinedNotes])
-
   useEffect(() => {
     // check if editing 
     if (isPublicNote && textareaRef.current) {
@@ -282,37 +288,9 @@ const Home = () => {
     }
   }, [isPublicNote]);
 
-  useEffect(() => {
-    // Only auto-open pinned section based on queryParam if user hasn't manually toggled
-    if (!userToggledPinnedRef.current) {
-      if (queryParam !== null && checkIsPinned(queryParam)) {
-        setCloseSectionPinned(false)
-      } else {
-        setCloseSectionPinned(true)
-      }
-    }
-  }, [queryParam, checkIsPinned])
-  
-
-  // This hook debounces the searchTerm from making a request to the api on every change. Debouncing stalls the request until searchTerm does not change for a number of time 
+  // This hook debounces the searchTerm from making a request to the api on every change. Debouncing stalls the request until searchTerm does not change for a number of time
   useDebounce(() => {
     setDebouncedSearchInput(searchInput)
-    if (searchInput !== "") {
-      // Reset user toggle flags when search changes
-      userToggledPinnedRef.current = false
-      userToggledUnpinnedRef.current = false
-      setCloseSectionPinned(false)
-      setCloseSection(false)
-      // Start loading spinner for search
-      setIsSearchLoading(true)
-    } else {
-      // Reset user toggle flags when search clears
-      userToggledPinnedRef.current = false
-      userToggledUnpinnedRef.current = false
-      setCloseSectionPinned(true)
-      // Stop loading spinner when search is cleared
-      setIsSearchLoading(false)
-    }
     }, 500, [searchInput]
   )
 
@@ -743,7 +721,7 @@ const Home = () => {
       <div className="relative w-full flex flex-col gap-5 px-3 py-5 md:px-10 lg:px-20 md:py-10 justify-center items-center overflow-scroll">
 
           {/* Main section of Homepage  */}
-          <section className="relative w-full flex flex-col gap-4 justify-center items-center">
+          <section className="relative w-full min-h-[80vh] flex flex-col gap-4 justify-start items-center">
             <div className="flex gap-2 lg:gap-6 w-full my-2 md:my-8">
               <FilterButton 
                 options={options}
@@ -768,7 +746,6 @@ const Home = () => {
                     <>
                       <Tooltip title={closeSectionPinned ? "Open Pinned" : "Close Pinned"} className={ `${combinedNotes.length > 1 ? "block" : "hidden"}`} arrow placement='top'>
                         <button className={`w-fit flex justify-center items-center ${!closeSectionPinned ? (isDark ? 'bg-dark-border text-dark-text' : 'bg-[#f4f7f8] text-[#255f6f]') : (isDark ? 'bg-dark-surface text-dark-text border border-dark-border' : 'bg-white')} border-[1px] ${isDark ? 'border-dark-border' : 'border-gray-500/20'} pr-4 rounded-full z-40`} onClick={() => {
-                          userToggledPinnedRef.current = true
                           setCloseSectionPinned(!closeSectionPinned)
                         }}>
                           <p className={`${!closeSectionPinned && "-rotate-180"} cursor-pointer duration-150`}>{closeSectionPinned ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
@@ -814,19 +791,18 @@ const Home = () => {
                   
                   {
                       (combinedNotes.some((note) => note.pinned) && combinedNotes.some((note) => !note.pinned)) &&
-                      <Tooltip title={closeSection ? "Open Notes" : "Close notes"} arrow placement='top'>
-                        <button className={`w-fit flex justify-center items-center ${!closeSection ? (isDark ? 'bg-dark-border text-dark-text' : 'bg-[#f4f7f8] text-[#255f6f]') : (isDark ? 'bg-dark-surface text-dark-text border border-dark-border' : 'bg-white')} border-[1px] ${isDark ? 'border-dark-border' : 'border-gray-500/20'} pr-4 rounded-full z-40`} onClick={() => {
-                          userToggledUnpinnedRef.current = true
-                          setCloseSection(!closeSection)
+                      <Tooltip title={closeSectionUnpinned ? "Open Notes" : "Close notes"} arrow placement='top'>
+                        <button className={`w-fit flex justify-center items-center ${!closeSectionUnpinned ? (isDark ? 'bg-dark-border text-dark-text' : 'bg-[#f4f7f8] text-[#255f6f]') : (isDark ? 'bg-dark-surface text-dark-text border border-dark-border' : 'bg-white')} border-[1px] ${isDark ? 'border-dark-border' : 'border-gray-500/20'} pr-4 rounded-full z-40`} onClick={() => {
+                          setCloseSectionUnpinned(!closeSectionUnpinned)
                         }}>
-                          <p className={`${!closeSection && "-rotate-180"} cursor-pointer duration-150`}>{closeSection ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
+                          <p className={`${!closeSectionUnpinned && "-rotate-180"} cursor-pointer duration-150`}>{closeSectionUnpinned ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
                           <h2 className="uppercase text-center text-[10px] sm:text-xs font-medium tracking-wide">other notes</h2>
                         </button>
                       </Tooltip>
                   }
                   
                   { combinedNotes.some((note) => !note.pinned) &&
-                    <div className={`${(closeSection && !searchInput) ? "hidden" : "block"} p-1 sm:p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto ${isDark ? "bg-dark-surface" : "bg-white/50"} rounded-2xl`}>
+                    <div className={`${(closeSectionUnpinned && !searchInput) ? "hidden" : "block"} p-1 sm:p-4 w-full gap-2 md:gap-4 columns-2 md:columns-3 lg:columns-4 space-y-2 md:space-y-4 mx-auto ${isDark ? "bg-dark-surface" : "bg-white/50"} rounded-2xl`}>
                       
                       {
                         allUnpinnedNotes?.map((note) => (

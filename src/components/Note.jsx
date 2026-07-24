@@ -34,8 +34,8 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
   const [getNote, setGetNote] = useState(note_value)
   const [getNoteTitle, setGetNoteTitle] = useState(title)
   const [wordCount, setWordCount] = useState(note_value.length)
-  const [debouncedTitleInput, setDebouncedTitleInput] = useState("")
-  const [debouncedNoteInput, setDebouncedNoteInput] = useState("")
+  const [debouncedTitleInput, setDebouncedTitleInput] = useState(title)
+  const [debouncedNoteInput, setDebouncedNoteInput] = useState(note_value)
   const [wordStore, setWordStore] = useState("")
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showColorPallete, setShowColorPallete] = useState(false)
@@ -100,7 +100,7 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
 
   // debounce note_value input for auto save
   useDebounce(() => {
-    if (getNote && isEditing && (getNote !== debouncedNoteInput || getNoteTitle !== debouncedTitleInput || colorOptionValue !== debouncedColorOption || notePrivacy !== debouncedNotePrivacy) && autoSave == "true" && !updating && !stateLoading) {
+    if (getNote && isEditing && (getNote.trim() !== debouncedNoteInput.trim() || getNoteTitle.trim() !== debouncedTitleInput.trim() || colorOptionValue !== debouncedColorOption || notePrivacy !== debouncedNotePrivacy) && autoSave == "true" && !updating && !stateLoading) {
       updateNote(getNoteTitle, getNote, colorOptionValue, notePrivacy, false);
       setDebouncedTitleInput(getNoteTitle);
       setDebouncedNoteInput(getNote);
