@@ -16,6 +16,7 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import FullscreenRoundedIcon from '@mui/icons-material/FullscreenRounded';
 import FullscreenExitRoundedIcon from '@mui/icons-material/FullscreenExitRounded';
 import { ShareNote } from "./ShareNote";
+import DateReminders from "./DateReminders";
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion'
@@ -328,6 +329,9 @@ const NoteModal = ({
                 dir="auto"
               />
             </div>
+
+            {/* Date Reminders */}
+            <DateReminders noteTitle={getNoteTitle} noteBody={getNote} color={colorOptionValue} />
 
             {/* Action Buttons Footer */}
             <div className="relative w-full flex flex-col lg:flex-row justify-center items-center gap-4 py-4 md:py-8">
