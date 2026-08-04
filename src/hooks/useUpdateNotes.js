@@ -8,22 +8,35 @@ const useUpdateNotes = () => {
     return useMutation({
         mutationFn: async ({id_one, index_two, id_two, index_one}) => {
 
-            const { data, error } = await supabase
-            .from('notes')
-            .upsert([
-                {id: id_one, index_num: index_two}, 
-                {id: id_two, index_num: index_one}
-            ])
-            .select()
+            // Use a temporary index value that won't conflict with existing notes
+            // index_num values start at 2, so -1 is safe
+            const tempIndex = -100;
 
-            if(error) console.log(error)
+            // First move id_one to a temp index to free up its current value
+            const { error: step1Error } = await supabase
+                .from('notes')
+                .update({ index_num: tempIndex })
+                .eq('id', id_one)
 
-            // console.log("id_one", id_one)
-            // console.log("index_two", index_two)
-            // console.log("id_two", id_two)
-            // console.log("index_one", index_one)
+            if (step1Error) throw step1Error
 
-            return data
+            // Next move id_two to id_one's original index
+            const { error: step2Error } = await supabase
+                .from('notes')
+                .update({ index_num: index_one })
+                .eq('id', id_two)
+
+            if (step2Error) throw step2Error
+
+            // Finally move id_one to id_two's original index
+            const { error: step3Error } = await supabase
+                .from('notes')
+                .update({ index_num: index_two })
+                .eq('id', id_one)
+
+            if (step3Error) throw step3Error
+
+            return { id_one, index_two, id_two, index_one }
         },
         onSuccess: () => {
             // Invalidate both pinned and unpinned notes queries to refresh the UI

@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import supabase from '../config/supabaseClient.config';
+import { cacheUser, getCachedUser, isOnline } from '../utils/offlineCache';
 
 const initialState = {
   user: null,
@@ -18,9 +19,30 @@ export const signIn = createAsyncThunk('api/signIn', async() => {
 })
 
 export const getUser = createAsyncThunk('api/getUser', async() => {
+  // If offline, return the cached user so the app can render
+  if (!isOnline()) {
+    const cachedUser = getCachedUser();
+    if (cachedUser) {
+      return cachedUser;
+    }
+    return null;
+  }
+
   const { data: { user }, error } = await supabase.auth.getUser()
 
-  if(error) throw error
+  if (error) {
+    // On network error, fall back to cached user
+    const cachedUser = getCachedUser();
+    if (cachedUser) {
+      return cachedUser;
+    }
+    throw error
+  }
+
+  // Cache the user for offline use
+  if (user) {
+    cacheUser(user);
+  }
   return user
 })
 

@@ -158,12 +158,22 @@ const Home = () => {
   const [directNoteData, setDirectNoteData] = useState(null);
   const isDirectNoteOpen = !!directNoteData;
   
+  // Ref to track if the user manually closed the direct note modal
+  const manuallyClosedRef = useRef(false);
+  
+  // Reset the flag when a new note is opened via URL
+  useEffect(() => {
+    if (queryParam && queryParam !== 'open') {
+      manuallyClosedRef.current = false;
+    }
+  }, [queryParam]);
+  
   // Effect to handle opening note when fetched by ID
   useEffect(() => {
-    if (fetchedNote && !isDirectNoteOpen) {
+    if (fetchedNote && !isDirectNoteOpen && !manuallyClosedRef.current && queryParam && queryParam !== 'open') {
       setDirectNoteData(fetchedNote);
     }
-  }, [fetchedNote, isDirectNoteOpen]);
+  }, [fetchedNote, isDirectNoteOpen, queryParam]);
 
   // Persist sortValue, pinned and unpinned sections in localStorage whenever it changes
   useEffect(() => {
@@ -174,6 +184,7 @@ const Home = () => {
   
   // Handler for closing direct note modal
   const handleDirectNoteClose = useCallback(() => {
+    manuallyClosedRef.current = true;
     setDirectNoteData(null);
     navigate(`/`, { replace: true });
   }, [navigate]);
@@ -602,8 +613,8 @@ const Home = () => {
     
     // Update React Query cache immediately for instant UI feedback
     const queryKey = isPinned 
-      ? ['pinnedNotes', stateUser?.id, sortFilter, debouncedSearchInput]
-      : ['unpinnedNotes', stateUser?.id, sortFilter, debouncedSearchInput]
+      ? ['pinnedNotes', stateUser?.id, sortFilter, debouncedSearchInput, isOnline]
+      : ['unpinnedNotes', stateUser?.id, sortFilter, debouncedSearchInput, isOnline]
     
     queryClient.setQueryData(queryKey, (oldData) => {
       if (!oldData) return oldData
@@ -726,7 +737,7 @@ const Home = () => {
 
           {/* Offline banner */}
           {!isOnline && (
-            <div className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 rounded-lg text-sm font-medium">
+            <div className="fixed bottom-0 z-[200] w-full flex items-center justify-center gap-2 px-4 py-2 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 rounded-lg text-sm font-medium">
               <WifiOffRoundedIcon sx={{ fontSize: 18 }} />
               <span>Offline mode — showing saved notes from your last session</span>
             </div>

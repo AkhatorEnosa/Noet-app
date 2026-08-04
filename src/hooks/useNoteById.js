@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import supabase from "../config/supabaseClient.config";
+import { getCachedNotes, isOnline } from "../utils/offlineCache";
 
 /**
  * Hook to fetch a single note by its ID for the logged-in user.
@@ -18,6 +19,16 @@ const useNoteById = (noteId) => {
     queryFn: async () => {
       if (!user || !noteId) return null;
 
+      // If offline, look up the note in cached notes
+      if (!isOnline()) {
+        const cachedNotes = getCachedNotes(user.id);
+        if (cachedNotes) {
+          const cachedNote = cachedNotes.find(note => note.id == noteId);
+          if (cachedNote) return cachedNote;
+        }
+        return null;
+      }
+
       const { data, error } = await supabase
         .from('notes')
         .select('*')
@@ -25,7 +36,15 @@ const useNoteById = (noteId) => {
         .eq('user_id', user.id)
         .single();
 
-      if (error) return null;
+      if (error) {
+        // On network error, fall back to cached notes
+        const cachedNotes = getCachedNotes(user.id);
+        if (cachedNotes) {
+          const cachedNote = cachedNotes.find(note => note.id == noteId);
+          if (cachedNote) return cachedNote;
+        }
+        return null;
+      }
       return data;
     },
     enabled: !!noteId && !!user,

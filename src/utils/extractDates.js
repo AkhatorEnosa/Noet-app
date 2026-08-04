@@ -30,7 +30,14 @@ export function extractSentenceContext(fullText, dateText) {
 export function extractDates(text) {
   if (!text || typeof text !== 'string') return [];
 
-  const results = chrono.parse(text, undefined, { forwardDate: true });
+  // Preprocess text to improve chrono parsing:
+  // 1. "next tomorrow" means 2 days from now → normalize to "the day after tomorrow"
+  // 2. Replace "@" with "at" when used as a time connector (e.g. "tomorrow @ 8pm")
+  //    but NOT in emails like "john@example.com"
+  let processedText = text.replace(/\bnext\s+tomorrow\b/gi, 'the day after tomorrow');
+  processedText = processedText.replace(/\s@\s*(?=\d)/g, ' at ');
+
+  const results = chrono.parse(processedText, undefined, { forwardDate: true });
 
   return results
     .filter((result) => {
