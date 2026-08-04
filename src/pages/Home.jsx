@@ -11,6 +11,7 @@ import Tooltip from '@mui/material/Tooltip';
 import ColorLensRoundedIcon from '@mui/icons-material/ColorLensRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutline';
+import WifiOffRoundedIcon from '@mui/icons-material/WifiOffRounded';
 import ClearAllRoundedIcon from '@mui/icons-material/ClearAllRounded';
 import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
 import FullscreenRoundedIcon from '@mui/icons-material/FullscreenRounded';
@@ -46,12 +47,15 @@ import usePin from "../hooks/usePin";
 import { getColor } from "../utils/getColor";
 import { verifyColorIsWhite } from "../utils/verifyColorIsWhite";
 import { useTheme } from "../context/ThemeContext";
+import DateReminders from "../components/DateReminders";
+import useOfflineStatus from "../hooks/useOfflineStatus";
 
 const options = ['custom', 'created', 'updated', 'privacy', 'content']
 
 const Home = () => {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
+  const isOnline = useOfflineStatus()
 
   const MAX_TITLE_WORDS = 15;
   const MAX_NOTE_CHARACTERS = 30000;
@@ -393,8 +397,8 @@ const Home = () => {
     if (isLoading || loadingPublicNote) {
       // Clear message while loading
       setMessage("");
-    } else if (error) {
-      // Show error message
+    } else if (error && isOnline) {
+      // Show error message only when online (network errors)
       setMessage(
         <div className="flex flex-col items-center justify-center text-red-400">
           <div className="p-6 rounded-full mb-4">
@@ -439,7 +443,7 @@ const Home = () => {
         );
       }
     }
-  }, [isLoading, loadingPublicNote, error, handleNav, debouncedSearchInput, combinedNotes?.length]);
+  }, [isLoading, loadingPublicNote, error, isOnline, handleNav, debouncedSearchInput, combinedNotes?.length]);
   
   // Update uid when user changes
   useEffect(() => {
@@ -720,6 +724,14 @@ const Home = () => {
     if (combinedNotes !== null && isSuccess) return (
       <div className="relative w-full flex flex-col gap-5 px-3 py-5 md:px-10 lg:px-20 md:py-10 justify-center items-center overflow-scroll">
 
+          {/* Offline banner */}
+          {!isOnline && (
+            <div className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 rounded-lg text-sm font-medium">
+              <WifiOffRoundedIcon sx={{ fontSize: 18 }} />
+              <span>Offline mode — showing saved notes from your last session</span>
+            </div>
+          )}
+
           {/* Main section of Homepage  */}
           <section className="relative w-full min-h-[80vh] flex flex-col gap-4 justify-start items-center">
             <div className="flex gap-2 lg:gap-6 w-full my-2 md:my-8">
@@ -770,6 +782,7 @@ const Home = () => {
                                   activeNote={setactiveNote}
                                   isRefetching={pinnedNotesQuery.isRefetching}
                                   handleDrop={() => onDrop(allPinnedNotes.indexOf(note), allPinnedNotes, true)}
+                                  searchTerm={debouncedSearchInput}
                                 />
                               </React.Fragment>
                             )
@@ -820,6 +833,7 @@ const Home = () => {
                                 activeNote={setactiveNote}
                                 isRefetching={unpinnedNotesQuery.isRefetching}
                                 handleDrop={() => onDrop(allUnpinnedNotes.indexOf(note), allUnpinnedNotes, false)}
+                                searchTerm={debouncedSearchInput}
                               />
                             </React.Fragment>
                           )
@@ -932,6 +946,9 @@ const Home = () => {
                         dir="auto"
                       />
                     </div>
+
+                    {/* Date Reminders */}
+                    <DateReminders noteTitle={noteTitle} noteBody={noteInput} color={colorOptionValue} />
 
                     {/* Footer Actions */}
                     <div className="relative w-full flex flex-col lg:flex-row justify-center items-center gap-4 py-4 md:py-8">

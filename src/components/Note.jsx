@@ -27,7 +27,7 @@ import NoteModal from "./NoteModal";
 import { useTheme } from "../context/ThemeContext";
 
 /* eslint-disable react/prop-types */
-const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, bgColor, noteObj, activeNote, isRefetching, handleDrop}) => {
+const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, bgColor, noteObj, activeNote, isRefetching, handleDrop, searchTerm}) => {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
@@ -181,6 +181,24 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
     }
   }
 
+  // Highlight matching search term in text (case-insensitive)
+  const highlightText = (text, term) => {
+    if (!term || !text) return text;
+
+    // Escape special regex characters in the search term
+    const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escapedTerm})`, 'gi');
+    const parts = text.split(regex);
+
+    return parts.map((part, index) => 
+      part.toLowerCase() === term.toLowerCase() ? (
+        <mark key={index} className="bg-yellow-200 dark:bg-yellow-500/30 rounded px-0.5">
+          {part}
+        </mark>
+      ) : part
+    );
+  }
+
   // handle delete note_value 
   const handleDeleteNote = () => {
     mutate([noteId], {
@@ -215,9 +233,9 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
 
   const notePreview = useMemo(() => (
     <Linkify options={{ render: renderLink }}>
-      <pre className="break-words whitespace-pre-wrap font-sans line-clamp-6 lg:line-clamp-none [unicode-bidi:plaintext] text-start ltr" dir="auto">{truncateNote(note_value)}</pre>
+      <pre className="break-words whitespace-pre-wrap font-sans line-clamp-6 lg:line-clamp-none [unicode-bidi:plaintext] text-start ltr" dir="auto">{highlightText(truncateNote(note_value), searchTerm)}</pre>
     </Linkify>
-  ), [note_value]);
+  ), [note_value, searchTerm]);
   
   return (
      <article className="note">
@@ -277,7 +295,7 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
                   <CheckCircleOutlineRoundedIcon sx={{ fontSize: 28, backgroundColor: "white", borderRadius: "50%" }}/>}
               </button>
             </Tooltip>
-            <p className="px-3 font-bold text-lg mb-3 leading-tight border-b line-clamp-2">{ title }</p>
+            <p className="px-3 font-bold text-lg mb-3 leading-tight border-b line-clamp-2">{ highlightText(title, searchTerm) }</p>
           </div>}
           {/* note_value div  */}
           <div className={`w-full ${note_value.length > 300 && "text-sm"} block leading-normal px-3 pb-4`}>
