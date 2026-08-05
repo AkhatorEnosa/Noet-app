@@ -4,14 +4,16 @@ import { useSelector } from "react-redux"
 import Logo from '../assets/logo.webp'
 import LogoDark from '../assets/logo-dark.webp'
 import useSignOut from "../hooks/useSignOut"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import { useTheme } from "../context/ThemeContext";
+import { AppContext } from "../context/AppContext"
 
 const Navbar = () => {
   const { user, isLoading } = useSelector(state => (state.app))
+  const { loggingIn, setLoggingIn } = useContext(AppContext)
   const {mutate} = useSignOut()
   const { theme, toggleTheme } = useTheme()
   const isDark = theme === 'dark'
@@ -47,9 +49,15 @@ const Navbar = () => {
   
   
 
-  const handleSignOut = async() => {
-      mutate()
+  const handleSignOut = async () => {
+    setLoggingIn(true)
+    mutate()
   }
+
+  useEffect(() => {
+    setLoggingIn(false)
+  }, [user])
+      
 
     if(user !== null) return (
       <section className={`top-0 w-full flex justify-between items-center px-3 md:px-20 py-3 md:py-5 ${isScrolled && (isDark ? 'bg-dark-surface shadow-lg' : 'bg-white shadow')} sticky text-sm z-[62] duration-150 ease-in-out ${isDark ? 'text-dark-text' : ''}`}>
@@ -88,13 +96,13 @@ const Navbar = () => {
             
             <div className={showLogout ? "fixed w-full h-full top-0 left-0 z-[65]" : "hidden"} onClick={() => setShowLogout(false)}></div>
               
-            <button className={`absolute right-0 sm:left-0 ${showLogout ? "top-14 opacity-100 scale-100" : "top-0 opacity-0 scale-0"} w-fit sm:w-full flex justify-center items-center px-4 py-3 rounded-full gap-3 active:shadow-lg ${isLoading ? "bg-gray-500" : "bg-[#114f60] hover:bg-[#255f6f] dark:bg-[#2d7a8a] dark:hover:bg-[#3b8a9e]"} text-white z-[70] transition-all duration-200`} onClick={handleSignOut} disabled={isLoading}>
-              {/* {isLoading ? 
+            <button className={`absolute right-0 sm:left-0 ${showLogout ? "top-14 opacity-100 scale-100" : "top-0 opacity-0 scale-0"} w-fit sm:w-full flex justify-center items-center px-4 py-3 rounded-full gap-3 active:shadow-lg ${isLoading ? "bg-gray-500" : "bg-[#114f60] hover:bg-[#255f6f] dark:bg-[#2d7a8a] dark:hover:bg-[#3b8a9e]"} text-white z-[70] transition-all duration-200`} onClick={handleSignOut} disabled={loggingIn}>
+              {loggingIn ? 
                 <div className="flex gap-2">
                   <span className="loading loading-spinner loading-sm"></span>
-                </div> :  */}
+                </div> : 
                 <p className="flex gap-2 items-center justify-center text-xs"><LogoutRoundedIcon sx={{ fontSize: "18px" }}/><span className="block">Logout</span></p>
-              {/* } */}
+              }
            </button>
           </div>}
         </div>

@@ -3,39 +3,51 @@ import GoogleIcon from '@mui/icons-material/Google';
 import { motion } from 'framer-motion';
 import useLogin from '../hooks/useLogin';
 import { useSelector } from 'react-redux';
+import { useContext, useEffect } from 'react';
+import { AppContext } from '../context/AppContext';
 
 const SignIn = () => {
   const { mutate, isPending, isLoading:loading } = useLogin();
   const { isLoading } = useSelector((state) => state.app);
+  const { loggingIn, setLoggingIn } = useContext(AppContext);
 
-  const handleSignIn = () => mutate();
+  // Handle sign in button click and make sure to set loggingIn state to true when the button is clicked. This state will be used to show a loading state on the button and also to prevent multiple clicks on the button while the login process is ongoing.
+  const handleSignIn = () => {
+    setLoggingIn(true);
+    mutate();
+  }
 
-  if (isPending || loading || isLoading) return (
-    <div className="h-screen w-full flex flex-col items-center justify-center bg-[#fcfcfc] overflow-hidden">
-          <motion.div 
-            animate={{ scale: [1, 1.05, 1], opacity: [0.4, 1, 0.4] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="flex flex-col items-center"
-          >
-            <img src={Logo} alt="logo" className="w-24 grayscale opacity-80 mb-6" />
-            <div className="h-[1px] w-32 bg-slate-200 dark:bg-dark-border relative overflow-hidden">
-              <motion.div 
-                initial={{ left: "-100%" }}
-                animate={{ left: "100%" }}
-                transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                className="absolute top-0 h-full w-1/2 bg-[#255f6f] dark:bg-[#3b8a9e]"
-              />
-        </div>
-      </motion.div>
-    </div>
-  );
+  useEffect(() => {
+    console.log("Logging In State:", loggingIn);
+  }, [loggingIn]);
+
+  if (isPending || loading || isLoading) {
+    return (
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-[#fcfcfc] overflow-hidden">
+            <motion.div 
+              animate={{ scale: [1, 1.05, 1], opacity: [0.4, 1, 0.4] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="flex flex-col items-center"
+            >
+              <img src={Logo} alt="logo" className="w-24 grayscale opacity-80 mb-6" />
+              <div className="h-[1px] w-32 bg-slate-200 dark:bg-dark-border relative overflow-hidden">
+                <motion.div 
+                  initial={{ left: "-100%" }}
+                  animate={{ left: "100%" }}
+                  transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                  className="absolute top-0 h-full w-1/2 bg-[#255f6f] dark:bg-[#3b8a9e]"
+                />
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen w-full relative flex items-center justify-center overflow-hidden text-slate-900">
     
 
       <div className="relative z-10 w-full max-w-xl px-8 flex flex-col items-center">
-        
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.2 }}>
           <img src={Logo} alt="logo" className="w-16 mb-12" />
         </motion.div>
@@ -55,9 +67,9 @@ const SignIn = () => {
           <button 
             onClick={handleSignIn}
             className="group relative w-full flex items-center justify-center gap-3 py-4 bg-[#1A1A1A] dark:bg-dark-surface text-white rounded-full overflow-hidden transition-all duration-150 hover:bg-[#255f6f] dark:hover:bg-[#3b8a9e] hover:shadow-[0_10px_30px_rgba(37,95,111,0.3)]"
-            disabled={isPending || isLoading || loading}
+            disabled={loggingIn}
           >
-            {isPending || isLoading || loading ? 
+            {loggingIn ? 
               <span className='loading loading-spinner loading-sm'></span> :
               <>
                 <GoogleIcon sx={{ fontSize: 18, color: '#fff' }} className="z-10" />
