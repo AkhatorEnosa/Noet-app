@@ -1,9 +1,8 @@
-
 # Noet – WroteNote(Official name)
 
 Modern, seamless note-taking web application.
 
-Built with **React** + **Vite**, styled with **Tailwind CSS**, animated with **Framer Motion**, using **Supabase** for authentication & persistent storage, **Redux Toolkit** + **Thunk** for state management, and **TanStack React Query** for efficient data fetching & synchronization.
+Built with **React** + **Vite**, styled with **Tailwind CSS** + **daisyUI** + **MUI**, animated with **Framer Motion** + **GSAP**, using **Supabase** for authentication & persistent storage, **Redux Toolkit** for state management, and **TanStack React Query** for efficient data fetching & synchronization.
 
 🌐 **Live Demo**: https://wrotenote.netlify.app
 
@@ -12,8 +11,11 @@ Built with **React** + **Vite**, styled with **Tailwind CSS**, animated with **F
 - Secure email/password authentication (Supabase Auth)
 - Create, read, update, delete personal notes
 - Full-text search
-- Note sharing
+- Note sharing & collaboration
 - Note privacy
+- Pin important notes
+- Date reminders
+- Offline support (IndexedDB + sync when online)
 - Smooth UI transitions and micro-animations
 - Responsive design across devices
 - Fast development & hot-reloading (Vite)
@@ -25,17 +27,17 @@ Built with **React** + **Vite**, styled with **Tailwind CSS**, animated with **F
 - Note categories, tags or folders
 - Dark / light mode toggle
 - Markdown editor + preview
-- Offline support (IndexedDB + sync when online)
 - Note export / import
 - PWA (installable app)
 
 ## 🛠 Tech Stack
 
 - **Frontend**: React 18, Vite
-- **Styling**: Tailwind CSS
-- **Animations**: Framer Motion
-- **State Management**: Redux Toolkit + Redux Thunk
+- **Styling**: Tailwind CSS, daisyUI, MUI
+- **Animations**: Framer Motion, GSAP
+- **State Management**: Redux Toolkit
 - **Data Fetching & Sync**: @tanstack/react-query
+- **Routing**: react-router-dom
 - **Backend & Auth**: Supabase (PostgreSQL + Auth)
 - **Deployment**: Netlify
 - **Linting**: ESLint
@@ -46,15 +48,19 @@ Built with **React** + **Vite**, styled with **Tailwind CSS**, animated with **F
 Noet-app/
 ├── public/              # Static assets
 ├── src/
+│   ├── assets/          # Images and static resources
 │   ├── components/      # Reusable UI components
-│   ├── features/        # Redux slices and related logic (e.g., notes, auth)
+│   ├── config/          # Configuration (e.g., Supabase client)
+│   ├── constants/       # Constant values
+│   ├── context/         # React context providers
 │   ├── hooks/           # Custom React hooks
 │   ├── pages/           # Application views/routes
-│   ├── services/        # API calls (Supabase client)
-│   ├── store/           # Redux store configuration
+│   ├── reducers/        # Redux slices (app, notes, publicNote)
+│   ├── section/         # Larger layout sections (Navbar, Sidebar, etc.)
 │   ├── utils/           # Helper functions
 │   ├── App.jsx
-│   └── main.jsx
+│   ├── main.jsx
+│   └── store.js         # Redux store configuration
 ├── .env                 # Environment variables (not committed)
 ├── .gitignore
 ├── eslint.config.js
@@ -94,8 +100,8 @@ Noet-app/
 3. Create `.env` file in root with your Supabase keys:
 
    ```env
-   VITE_SUPABASE_URL=https://your-project-ref.supabase.co
-   VITE_SUPABASE_ANON_KEY=your-anon-public-key
+   VITE_APP_URL=https://your-project-ref.supabase.co
+   VITE_APP_KEY=your-anon-public-key
    ```
 
    → Find these in Supabase → Settings → API
@@ -166,7 +172,7 @@ npm run lint      # run ESLint
         USING (auth.uid() = user_id);
    ```
 
-3. (Optional) Enable Realtime on the `notes` table for future live sync.
+> **Note:** Realtime is currently disabled in the app's Supabase client configuration. If you want to enable live sync in the future, you can enable Realtime on the `notes` table and update the client config accordingly.
 
 #### Authentication
 
@@ -177,7 +183,7 @@ npm run lint      # run ESLint
 ## Deployment (Netlify)
 
 - Connect to GitHub
-- Environment variables set: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
+- Environment variables set: `VITE_APP_URL` and `VITE_APP_KEY`
 - Auto-deploys on push to main
 
 To deploy your own version:

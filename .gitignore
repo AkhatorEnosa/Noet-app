@@ -24,6 +24,7 @@ dist-ssr
 *.sw?
 *INFINITE_SCROLL_IMPLEMENTATION*
 *SEARCH*
+*job*
 
 # Environment variables
 .env
