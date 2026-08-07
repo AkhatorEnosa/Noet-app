@@ -11,11 +11,10 @@ Built with **React** + **Vite**, styled with **Tailwind CSS** + **daisyUI** + **
 - Secure email/password authentication (Supabase Auth)
 - Create, read, update, delete personal notes
 - Full-text search
-- Note sharing & collaboration
+- Note sharing
 - Note privacy
 - Pin important notes
 - Date reminders
-- Offline support (IndexedDB + sync when online)
 - Smooth UI transitions and micro-animations
 - Responsive design across devices
 - Fast development & hot-reloading (Vite)
@@ -25,6 +24,8 @@ Built with **React** + **Vite**, styled with **Tailwind CSS** + **daisyUI** + **
 ### Planned / Coming Soon
 
 - Note categories, tags or folders
+- Offline support (IndexedDB + sync when online)
+- Note collaboration
 - Dark / light mode toggle
 - Markdown editor + preview
 - Note export / import
