@@ -2,7 +2,7 @@
 
 Modern, seamless note-taking web application.
 
-Built with **React** + **Vite**, styled with **Tailwind CSS** + **daisyUI** + **MUI**, animated with **Framer Motion** + **GSAP**, using **Supabase** for authentication & persistent storage, **Redux Toolkit** for state management, and **TanStack React Query** for efficient data fetching & synchronization.
+Built with **React** + **Vite**, styled with **Tailwind CSS** + **daisyUI** + **MUI**, animated with **Framer Motion**, using **Supabase** for authentication & persistent storage, **Redux Toolkit** for state management, and **TanStack React Query** for efficient data fetching & synchronization.
 
 🌐 **Live Demo**: https://wrotenote.netlify.app
 
@@ -16,6 +16,8 @@ Built with **React** + **Vite**, styled with **Tailwind CSS** + **daisyUI** + **
 - Pin important notes
 - Date reminders
 - Smooth UI transitions and micro-animations
+- Dark / light mode toggle
+- Offline reading of saved notes (localStorage cache)
 - Responsive design across devices
 - Fast development & hot-reloading (Vite)
 - Efficient server-state handling & caching
@@ -23,10 +25,9 @@ Built with **React** + **Vite**, styled with **Tailwind CSS** + **daisyUI** + **
 
 ### Planned / Coming Soon
 
+- Offline sync (queue changes and sync when back online)
 - Note categories, tags or folders
-- Offline support (IndexedDB + sync when online)
-- Note collaboration
-- Dark / light mode toggle
+- Note collaboration (backend logic exists, UI pending)
 - Markdown editor + preview
 - Note export / import
 - PWA (installable app)
@@ -35,8 +36,8 @@ Built with **React** + **Vite**, styled with **Tailwind CSS** + **daisyUI** + **
 
 - **Frontend**: React 18, Vite
 - **Styling**: Tailwind CSS, daisyUI, MUI
-- **Animations**: Framer Motion, GSAP
-- **State Management**: Redux Toolkit
+- **Animations**: Framer Motion
+- **State Management**: Redux Toolkit, Context API
 - **Data Fetching & Sync**: @tanstack/react-query
 - **Routing**: react-router-dom
 - **Backend & Auth**: Supabase (PostgreSQL + Auth)
