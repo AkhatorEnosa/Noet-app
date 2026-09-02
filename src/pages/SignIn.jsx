@@ -3,7 +3,7 @@ import GoogleIcon from '@mui/icons-material/Google';
 import { motion } from 'framer-motion';
 import useLogin from '../hooks/useLogin';
 import { useSelector } from 'react-redux';
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 
 const SignIn = () => {
@@ -17,9 +17,9 @@ const SignIn = () => {
     mutate();
   }
 
-  useEffect(() => {
-    console.log("Logging In State:", loggingIn);
-  }, [loggingIn]);
+  // useEffect(() => {
+  //   console.log("Logging In State:", loggingIn);
+  // }, [loggingIn]);
 
   if (isPending || loading || isLoading) {
     return (

@@ -19,6 +19,8 @@ const usePin = () => {
             // Invalidate both pinned and unpinned notes queries to refresh the UI
             queryClient.invalidateQueries({ queryKey: ['pinnedNotes'] })
             queryClient.invalidateQueries({ queryKey: ['unpinnedNotes'] })
+            // Refresh the tracked highest index_num after every creation
+            queryClient.invalidateQueries({ queryKey: ['lastIndexNum'] })
         }
     })
 }

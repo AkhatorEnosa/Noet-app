@@ -76,12 +76,12 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
       setToggleAction(false)
 
       // reset states when navigating away from edit mode
-      setGetNote(note_value)
-      setGetNoteTitle(title)
-      setColorOptionValue(bgColor)
-      setNotePrivacy(note_privacy)
-      setWordCount(note_value.length)
-      setWordStore("")
+      // setGetNote(note_value)
+      // setGetNoteTitle(title)
+      // setColorOptionValue(bgColor)
+      // setNotePrivacy(note_privacy)
+      // setWordCount(note_value.length)
+      // setWordStore("")
   }, [isEditing, navigate, noteId, note_value, title, bgColor, note_privacy]);
 
   // update note_value function
@@ -102,6 +102,8 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
   useDebounce(() => {
     if (getNote && isEditing && (getNote.trim() !== debouncedNoteInput.trim() || getNoteTitle.trim() !== debouncedTitleInput.trim() || colorOptionValue !== debouncedColorOption || notePrivacy !== debouncedNotePrivacy) && autoSave == "true" && !updating && !stateLoading) {
       updateNote(getNoteTitle, getNote, colorOptionValue, notePrivacy, false);
+
+      // update debounced states after saving
       setDebouncedTitleInput(getNoteTitle);
       setDebouncedNoteInput(getNote);
       setDebouncedColorOption(colorOptionValue)
@@ -122,13 +124,38 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
         window.removeEventListener("keydown", handleEsc);
       };
     }
-    if (!isEditing) {
-      setShowColorPallete(false)
-      setColorOptionValue(bgColor)
-      setGetNote(note_value)
-      setWordStore("")
-    }
-  }, [isEditing, showDeleteModal, handleNav, bgColor, note_value]);
+    // if (!isEditing) {
+    //   setShowColorPallete(false)
+    //   setColorOptionValue(bgColor)
+    //   setGetNote(note_value)
+    //   setWordStore("")
+    // }
+
+
+      
+      // update note if editing, note title and note has changed
+      if(!isEditing && (getNote?.trim() !== debouncedNoteInput?.trim() || getNoteTitle?.trim() !== debouncedTitleInput?.trim() || colorOptionValue !== debouncedColorOption || notePrivacy !== debouncedNotePrivacy) && autoSave !== "true" && !updating && !stateLoading) {
+
+        // setShowColorPallete(false)
+        // setColorOptionValue(bgColor)
+        // setGetNote(note_value)
+        // setGetNoteTitle(title)
+        // setWordStore("")
+    
+        // console.log({
+        //   "getNote": getNote,
+        //   "debouncedNoteInput": debouncedNoteInput,
+        //   "getNoteTitle": getNoteTitle,
+        //   "debouncedTitleInput": debouncedTitleInput,
+        // })
+        updateNote(getNoteTitle, getNote, colorOptionValue, notePrivacy)
+      }
+      setDebouncedTitleInput(getNoteTitle);
+      setDebouncedNoteInput(getNote);
+      setDebouncedColorOption(colorOptionValue)
+      setDebouncedNotePrivacy(notePrivacy)
+      
+  }, [isEditing, showDeleteModal, handleNav, getNote, debouncedNoteInput, getNoteTitle, debouncedTitleInput, colorOptionValue, debouncedColorOption, notePrivacy, debouncedNotePrivacy, bgColor, note_value, title]);
 
   useEffect(() => {
     if(findMarkedNote) {

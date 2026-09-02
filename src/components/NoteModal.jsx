@@ -421,7 +421,7 @@ const NoteModal = ({
               {/* word count mobile */}
               <div className="w-full flex lg:hidden items-center justify-center">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
-                  <span className={`${wordCount < 20000 ? "text-[#22c55e]" : wordCount < MAX_NOTE_CHARACTERS ? "text-[#eab308]" : "text-[#ef4444]" }`}>{wordCount}</span>{MAX_NOTE_CHARACTERS} characters
+                  <span className={`${wordCount < 20000 ? "text-[#22c55e]" : wordCount < MAX_NOTE_CHARACTERS ? "text-[#eab308]" : "text-[#ef4444]" }`}>{wordCount}</span>/{MAX_NOTE_CHARACTERS} characters
                 </span>
               </div>
             </div>

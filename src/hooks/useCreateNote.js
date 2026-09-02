@@ -8,15 +8,40 @@ const useCreateNote = () => {
 
   return useMutation({
     mutationFn: async (newNote) => {
-        const {data, error} = await supabase.from('notes').insert(newNote)
+      const insertNote = (payload) =>
+        supabase.from('notes').insert(payload).select().single()
 
-        if(error) console.log(error)
-        return data
+      let { data, error } = await insertNote(newNote)
+
+      // Safety net: if index_num collided with an existing note (Postgres 23505),
+      // fetch the true highest index_num for this user and retry once.
+      if (error?.code === '23505') {
+        const { data: lastNote } = await supabase
+          .from('notes')
+          .select('index_num')
+          .eq('user_id', newNote.user_id)
+          .order('index_num', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+
+        const retryResult = await insertNote({
+          ...newNote,
+          index_num: (lastNote?.index_num ?? 0) + 2,
+        })
+
+        data = retryResult.data
+        error = retryResult.error
+      }
+
+      if (error) throw error
+      return data
     },
     onSuccess: () => {
       // Invalidate both pinned and unpinned notes queries to refresh the UI
       queryClient.invalidateQueries({ queryKey: ['pinnedNotes'] })
       queryClient.invalidateQueries({ queryKey: ['unpinnedNotes'] })
+      // Refresh the tracked highest index_num after every creation
+      queryClient.invalidateQueries({ queryKey: ['lastIndexNum'] })
     },
     onError: (error) => {
         console.log("Create Mutation Failed", error)

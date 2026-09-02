@@ -1,5 +1,6 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import useCreateNote from "../hooks/useCreateNote"
+import useGetLastIndexNum from "../hooks/useGetLastIndexNum"
 import Note from "../components/Note"
 import LoadSentinel from "../components/LoadSentinel"
 import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
@@ -109,6 +110,10 @@ const Home = () => {
   const { isSuccess } = useGetUser()
   const { mutate, isPending } = useCreateNote()
   const { mutate:updateIndexNums } = useUpdateNotes()
+
+  // Track the highest index_num across ALL of the user's notes (server-side),
+  // so new notes always get a unique index regardless of loaded pages or sort order
+  const { data: lastIndexNum } = useGetLastIndexNum(uid)
 
   // Determine the sort filter based on sortValue
   const sortFilter =
@@ -259,8 +264,7 @@ const Home = () => {
   // Autosave for direct note modal - debounces changes and saves after 1.5 seconds
   useDebounce(() => {
     if (
-      directNoteContent && 
-      isDirectNoteOpen && 
+      directNoteContent && isDirectNoteOpen && 
       (directNoteContent !== directDebouncedNote || 
        directNoteTitle !== directDebouncedTitle || 
        directColorOption !== directDebouncedColorOption || 
@@ -484,7 +488,7 @@ const Home = () => {
         title: noteTitle,
         data_value: noteInput,
         bg_color: colorOptionValue == "" ? "bg-white" : colorOptionValue,
-        index_num: allUnpinnedNotes.length > 0 ? allUnpinnedNotes[0].index_num + 2 : 2,
+        index_num: (lastIndexNum ?? 0) + 2,
         user_id: uid
       }, {
         onSuccess: () => {
@@ -1022,7 +1026,7 @@ const Home = () => {
                       {/* word count mobile */}
                       <div className="w-full flex lg:hidden items-center justify-center">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-white/50 px-3 py-1 rounded-full">
-                          <span className={`${wordCount < 20000 ? "text-[#22c55e]" : wordCount < MAX_NOTE_CHARACTERS ? "text-[#eab308]" : "text-[#ef4444]" }`}>{wordCount}</span>{MAX_NOTE_CHARACTERS} characters
+                          <span className={`${wordCount < 20000 ? "text-[#22c55e]" : wordCount < MAX_NOTE_CHARACTERS ? "text-[#eab308]" : "text-[#ef4444]" }`}>{wordCount}</span>/{MAX_NOTE_CHARACTERS} characters
                         </span>
                       </div>
                     </div>
