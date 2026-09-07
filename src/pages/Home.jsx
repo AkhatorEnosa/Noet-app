@@ -621,28 +621,38 @@ const Home = () => {
   // drop function - works with section-specific arrays and updates React Query cache
   const onDrop = (position, sectionNotes, isPinned) => {
 
+    // Reordering only makes sense in the custom (index_num) sort order
+    if (sortValue !== 'custom') return;
+
     if (!activeNote) return;
 
-    // Find the note to move in the section array
+    // Find the note being dragged in the target section (cross-section drops are not supported)
     const noteToMove = sectionNotes.find(note => note.index_num == activeNote.index_num)
-    if (!noteToMove) return;
+    if (!noteToMove) {
+      toast.info("Reordering works within the same section", {
+        className: "text-xs w-fit"
+      })
+      return;
+    }
+
+    // Guard against an invalid drop position
+    if (position < 0 || position >= sectionNotes.length) return;
 
     // Get the current position of the note being dragged
     const currentPosition = sectionNotes.findIndex(note => note.index_num == activeNote.index_num)
-    
-    // Create a copy and swap positions
-    const notesCopy = JSON.parse(JSON.stringify(sectionNotes))
-    
-    // Swap the index_num values between the two notes
-    const targetNote = notesCopy[position]
-    const tempIndex = notesCopy[currentPosition].index_num
-    
-    notesCopy[currentPosition].index_num = targetNote.index_num
-    notesCopy[position].index_num = tempIndex
 
-    // Sort by index_num descending
-    const sortedNotes = notesCopy.sort((a, b) => b.index_num - a.index_num)
-    
+    // Ignore drops onto the note itself
+    if (currentPosition === position) return;
+
+    // Shallow-copy the notes and swap the index_num values between the two notes
+    const notesCopy = sectionNotes.map(note => ({ ...note }))
+    const targetNote = notesCopy[position]
+    const draggedOriginalIndex = notesCopy[currentPosition].index_num
+    const targetOriginalIndex = targetNote.index_num
+
+    notesCopy[currentPosition].index_num = targetOriginalIndex
+    notesCopy[position].index_num = draggedOriginalIndex
+
     // Update React Query cache immediately for instant UI feedback
     const queryKey = isPinned 
       ? ['pinnedNotes', stateUser?.id, sortFilter, debouncedSearchInput, isOnline]
@@ -650,14 +660,21 @@ const Home = () => {
     
     queryClient.setQueryData(queryKey, (oldData) => {
       if (!oldData) return oldData
-      
-      // Update the first page with the sorted notes
-      const updatedPages = [{
-        notes: sortedNotes,
-        nextCursor: oldData.pages[0]?.nextCursor
-      }, ...oldData.pages.slice(1)]
-      
-      return { ...oldData, pages: updatedPages }
+
+      // Update the two swapped notes in place across all pages
+      // (avoids duplicating notes between pages)
+      const pages = oldData.pages.map(page => ({
+        ...page,
+        notes: page.notes
+          .map(note => {
+            if (note.id === targetNote.id) return { ...note, index_num: draggedOriginalIndex }
+            if (note.id === noteToMove.id) return { ...note, index_num: targetOriginalIndex }
+            return note
+          })
+          .sort((a, b) => b.index_num - a.index_num)
+      }))
+
+      return { ...oldData, pages }
     })
     
     // Update on server
@@ -823,6 +840,7 @@ const Home = () => {
                                   updateId={note.id}
                                   noteObj={note}
                                   activeNote={setactiveNote}
+                                  canReorder={sortValue === 'custom'}
                                   isRefetching={pinnedNotesQuery.isRefetching}
                                   handleDrop={() => onDrop(allPinnedNotes.indexOf(note), allPinnedNotes, true)}
                                   searchTerm={debouncedSearchInput}
@@ -874,6 +892,7 @@ const Home = () => {
                                 updateId={note.id}
                                 noteObj={note}
                                 activeNote={setactiveNote}
+                                canReorder={sortValue === 'custom'}
                                 isRefetching={unpinnedNotesQuery.isRefetching}
                                 handleDrop={() => onDrop(allUnpinnedNotes.indexOf(note), allUnpinnedNotes, false)}
                                 searchTerm={debouncedSearchInput}

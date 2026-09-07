@@ -8,9 +8,10 @@ const useUpdateNotes = () => {
     return useMutation({
         mutationFn: async ({id_one, index_two, id_two, index_one}) => {
 
-            // Use a temporary index value that won't conflict with existing notes
-            // index_num values start at 2, so -1 is safe
-            const tempIndex = -100;
+            // Use a unique temporary index value that won't conflict with existing notes
+            // (real index_num values start at 2) or with temp values left behind by
+            // earlier interrupted swaps. Negative keeps it sorting last if interrupted.
+            const tempIndex = -(Date.now());
 
             // First move id_one to a temp index to free up its current value
             const { error: step1Error } = await supabase
