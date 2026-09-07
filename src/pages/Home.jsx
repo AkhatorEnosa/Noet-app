@@ -483,11 +483,11 @@ const Home = () => {
     }
 
     // Proceed to save the note
-    mutate(
-      {
-        title: noteTitle,
-        data_value: noteInput,
-        bg_color: colorOptionValue == "" ? "bg-white" : colorOptionValue,
+      mutate(
+        {
+          title: noteTitle,
+          data_value: noteInput.trim(),
+          bg_color: colorOptionValue == "" ? "bg-white" : colorOptionValue,
         index_num: (lastIndexNum ?? 0) + 2,
         user_id: uid
       }, {
@@ -547,6 +547,34 @@ const Home = () => {
   }
 
   
+  // insert a tab space at the cursor when Tab is pressed in the add-note textarea
+  const handleKeyDown = (e) => {
+    if (e.key !== "Tab") return;
+
+    e.preventDefault();
+    const el = e.target;
+    const { selectionStart, selectionEnd } = el;
+    const tabChar = "\t";
+
+    // respect the character limit
+    if (noteInput.length + tabChar.length > MAX_NOTE_CHARACTERS) return;
+
+    const newValue =
+      noteInput.slice(0, selectionStart) + tabChar + noteInput.slice(selectionEnd);
+
+    setNoteInput(newValue);
+    setWordCount(newValue.length);
+    setWordStore("");
+
+    // restore cursor position after the inserted tab
+    requestAnimationFrame(() => {
+      el.setSelectionRange(
+        selectionStart + tabChar.length,
+        selectionStart + tabChar.length
+      );
+    });
+  }
+
   // onChange for input field
   const handleChange = (e) => {
     // handle words longer than MAX_NOTE_CHARACTERS
@@ -956,6 +984,7 @@ const Home = () => {
                         autoFocus
                         value={noteInput}
                         onChange={handleChange}
+                        onKeyDown={handleKeyDown}
                         className={`w-full flex-grow outline-none resize-none placeholder:text-${getColor(colorOptionValue)}/50 px-4 md:px-8 py-4 pb-5 text-base [unicode-bidi:plaintext] text-start ltr z-30 transition-all duration-150 bg-transparent`}
                         placeholder="Write Note"
                         dir="auto"

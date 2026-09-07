@@ -82,7 +82,7 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
       // setNotePrivacy(note_privacy)
       // setWordCount(note_value.length)
       // setWordStore("")
-  }, [isEditing, navigate, noteId, note_value, title, bgColor, note_privacy]);
+  }, [isEditing, navigate, noteId, note_value, title, bgColor, note_privacy, updating]);
 
   // update note_value function
   const updateNote = useCallback((title, input, color, privacy) => {
@@ -134,7 +134,7 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
 
       
       // update note if editing, note title and note has changed
-      if(!isEditing && (getNote?.trim() !== debouncedNoteInput?.trim() || getNoteTitle?.trim() !== debouncedTitleInput?.trim() || colorOptionValue !== debouncedColorOption || notePrivacy !== debouncedNotePrivacy) && autoSave !== "true" && !updating && !stateLoading) {
+      if(!isEditing && (getNote?.trim() !== debouncedNoteInput?.trim() || getNoteTitle?.trim() !== debouncedTitleInput?.trim() || colorOptionValue !== debouncedColorOption || notePrivacy !== debouncedNotePrivacy) && !updating && !stateLoading) {
 
         // setShowColorPallete(false)
         // setColorOptionValue(bgColor)

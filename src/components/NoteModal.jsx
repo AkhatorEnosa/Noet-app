@@ -202,10 +202,44 @@ const NoteModal = ({
       setWordStore("")
     }
 
+    // insert a tab space at the cursor when Tab is pressed
+    const handleKeyDown = (e) => {
+      if (e.key !== "Tab") return;
+
+      e.preventDefault();
+      const el = e.target;
+      const { selectionStart, selectionEnd } = el;
+      const tabChar = "\t";
+
+      // respect the character limit
+      if (getNote.length + tabChar.length > MAX_NOTE_CHARACTERS) return;
+
+      const newValue =
+        getNote.slice(0, selectionStart) + tabChar + getNote.slice(selectionEnd);
+
+      setGetNote(newValue);
+      setWordCount(newValue.length);
+      setWordStore("");
+
+      // restore cursor position after the inserted tab
+      requestAnimationFrame(() => {
+        el.setSelectionRange(
+          selectionStart + tabChar.length,
+          selectionStart + tabChar.length
+        );
+      });
+    }
+
     // handke note_value update
     const handleNoteUpdate = (e) => {
       e.preventDefault()
-      updateNote(getNoteTitle, getNote, colorOptionValue, notePrivacy, true);
+      // strip trailing tab characters from the note before saving
+      const cleanedNote = getNote.replace(/\t+$/, "");
+      // keep local state in sync with the cleaned value
+      setGetNote(cleanedNote);
+      setWordCount(cleanedNote.length);
+      updateNote(getNoteTitle, cleanedNote, colorOptionValue, notePrivacy, true);
+      isEditing && handleNav() // close modal if editing and update is successful
     }
 
     // handle color option
@@ -324,6 +358,7 @@ const NoteModal = ({
                 ref={textareaRef}
                 value={getNote}
                 onChange={handleChange}
+                onKeyDown={handleKeyDown}
                 className={`w-full flex-grow outline-none resize-none placeholder:text-${getColor(colorOptionValue)}/50 px-4 md:px-8 py-4 pb-5 text-base [unicode-bidi:plaintext] text-start ltr z-30 transition-all duration-150 bg-transparent`}
                 placeholder="Write Note"
                 dir="auto"
