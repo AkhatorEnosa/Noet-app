@@ -274,7 +274,7 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
           transition={{ duration: 0.3 }}
           // layoutId={`note_value-${noteId}`}
           className={`group flex flex-col justify-between relative break-inside-avoid pt-2 w-full ${bgColor} rounded-2xl text-lg break-words active:cursor-grab select-none touch-pan-y ${noteChecked ? "ring-black ring-[1px]" : showDrop ? "ring-[#114f60] ring-2 z-50" : "ring-[1px] ring-black/10"} ${toggleAction ? "z-[70]" : "z-10"} ${isEditing && (noteId == activeNoteId) ? "scale-0" : "scale-100"} transition-all duration-150 ease-in-out `} 
-          draggable={canReorder && !noteChecked}
+          draggable={!noteChecked}
           
           // long press and mobile drag events
           onMouseDown={startLongPress}
@@ -285,9 +285,15 @@ const Note = ({noteId, title, note_value, note_date, updated_at, note_privacy, b
           onTouchMove={cancelLongPress}
 
           // dragging events
-          onDragStart={() => activeNote(noteObj) & cancelLongPress()} 
+          onDragStart={() => {
+            canReorder ? activeNote(noteObj) & cancelLongPress() 
+            : 
+            toast.error("You cannot reorder notes when sort option is not set to Custom.", {
+              className: "text-xs w-fit pr-24"
+            })
+          }} 
           onDragEnd={() => activeNote(null)}
-          onDragEnter={() => setShowDrop(true)} 
+          onDragEnter={() => canReorder && setShowDrop(true)} 
           onDragLeave={() => setShowDrop(false)}
           onDrop={() => {
             handleDrop(),
