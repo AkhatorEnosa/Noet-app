@@ -1124,7 +1124,7 @@ const Home = () => {
           </AnimatePresence>
 
           {/* Add Noet Button */}
-            <Tooltip title="Add Noet" arrow placement="top"  className={`${markedNotes.length > 0 ? "opacity-0" : "opacity-100"} fixed bottom-4 md:bottom-10 right-10 lg:right-12 2xl:right-[20vw] duration-150 transition-all z-30`}>
+            <Tooltip title="Add Note" arrow placement="top"  className={`${markedNotes.length > 0 ? "opacity-0" : "opacity-100"} fixed bottom-4 md:bottom-10 right-10 lg:right-12 2xl:right-[20vw] duration-150 transition-all z-30`}>
                 <button type="submit" className="cursor-pointer flex justify-center items-center rounded-full shadow-lg text-white text-sm font-bold bg-[#255f6f] hover:bg-[#114f60] dark:bg-[#3b8a9e] dark:hover:bg-[#2d7a8a] px-4 py-4 transition-all duration-150 z-30" onClick={handleNav} disabled={markedNotes.length > 0}> 
                   <AddRoundedIcon sx={{ fontSize: 20 }}/> 
                   Add Note
