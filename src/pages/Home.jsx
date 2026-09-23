@@ -820,7 +820,7 @@ const Home = () => {
                         <button className={`w-fit flex justify-center items-center ${!closeSectionPinned ? (isDark ? 'bg-dark-border text-dark-text' : 'bg-[#f4f7f8] text-[#255f6f]') : (isDark ? 'bg-dark-surface text-dark-text border border-dark-border' : 'bg-white')} border-[1px] ${isDark ? 'border-dark-border' : 'border-gray-500/20'} pr-4 rounded-full z-40`} onClick={() => {
                           setCloseSectionPinned(!closeSectionPinned)
                         }}>
-                          <p className={`${!closeSectionPinned && "-rotate-180"} cursor-pointer duration-150`}>{closeSectionPinned ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
+                          <p className={`${closeSectionPinned && "-rotate-90"} cursor-pointer duration-150`}>{closeSectionPinned ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
                           <h2 className="uppercase text-center text-[10px] sm:text-xs font-medium tracking-wide">pinned notes</h2>
                         </button>
                       </Tooltip>
@@ -869,7 +869,7 @@ const Home = () => {
                         <button className={`w-fit flex justify-center items-center ${!closeSectionUnpinned ? (isDark ? 'bg-dark-border text-dark-text' : 'bg-[#f4f7f8] text-[#255f6f]') : (isDark ? 'bg-dark-surface text-dark-text border border-dark-border' : 'bg-white')} border-[1px] ${isDark ? 'border-dark-border' : 'border-gray-500/20'} pr-4 rounded-full z-40`} onClick={() => {
                           setCloseSectionUnpinned(!closeSectionUnpinned)
                         }}>
-                          <p className={`${!closeSectionUnpinned && "-rotate-180"} cursor-pointer duration-150`}>{closeSectionUnpinned ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
+                          <p className={`${closeSectionUnpinned && "-rotate-90"} cursor-pointer duration-150`}>{closeSectionUnpinned ? <ArrowDropDownRoundedIcon fontSize="large" /> : <ArrowDropDownIcon fontSize="large" />}</p>
                           <h2 className="uppercase text-center text-[10px] sm:text-xs font-medium tracking-wide">other notes</h2>
                         </button>
                       </Tooltip>
