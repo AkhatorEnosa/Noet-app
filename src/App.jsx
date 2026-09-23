@@ -30,7 +30,7 @@ function App() {
       <div className={`w-screen flex flex-col justify-between items-center relative`} translate="yes">
         
         {/* Refined Blueprint Grid */}
-        <div className={`absolute h-screen inset-0 z-0 ${isDark ? 'opacity-[0.05]' : 'opacity-[0.1]'}`} 
+        <div className={`h-screen fixed inset-0 z-0 ${isDark ? 'opacity-[0.05]' : 'opacity-[0.1]'}`} 
           style={{ 
             backgroundImage: `linear-gradient(${isDark ? '#3b82f6' : '#255f6f'} 1px, transparent 1px), linear-gradient(90deg, ${isDark ? '#3b82f6' : '#255f6f'} 1px, transparent 1px)`, 
             backgroundSize: '40px 40px' 
